@@ -94,7 +94,7 @@ i {
 #SOP {
   display: flex;
   height: 100%;
-  min-width: 1366px;
+  min-width: 1280px;
 }
 .basepage {
   display: flex;
@@ -111,6 +111,23 @@ i {
   }
   .header {
     width:100%;
+  }
+}
+// Dialog Style
+.vue-dialog {
+  .dialog-content {
+    padding: 0;
+    .dialog-c-title {
+      background-color: #5d5e68;
+      color: #fff;
+      padding: .8em 1.2em;
+    }
+    .dialog-c-text {
+      padding:20px;
+    }
+    .dialog-c-buttons {
+
+    }
   }
 }
 
@@ -145,7 +162,8 @@ i {
       .content {
         flex-grow: 1;
         background-color: #fff;
-        border:1px solid #ccc;
+        border:1px solid rgba(0, 0, 0, .15);
+        // box-shadow: 0 0 10px 0px rgba(0, 0, 0, .15);
         padding: 25px;
         .section{
           overflow: auto;
@@ -205,6 +223,7 @@ i {
   {
     #app {
       display: block;
+      padding-right: 5.5rem;
       #SopList {
         position: absolute;
         top:0;

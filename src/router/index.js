@@ -6,6 +6,7 @@ import MemberManage from '@/views/MemberManage.vue'
 import HistoryManage from '@/views/HistoryManage.vue'
 import StandardInfoManage from '@/views/StandardInfoManage.vue'
 import NoticeManage from '@/views/NoticeManage.vue'
+import TestPage from '@/views/TestPage.vue'
 import {
   SopList,
   SopEdit,
@@ -142,6 +143,11 @@ export default new Router({
       path: '/notice',
       name: 'notice-manage',
       component: NoticeManage
+    },
+    {
+      path: '/testpage',
+      name: 'test-page',
+      component: TestPage
     },
     {
       path: '/login',

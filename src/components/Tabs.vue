@@ -45,20 +45,19 @@ export default {
     flex-direction: column;
     .tabMenu {
       height: 56px;
-      z-index: 100;
+      z-index: 10;
       ul.menuList {
-          margin: 0;
+        margin: 0;
         margin-left: 20px;
         .tabItem {
           float:left;
-          min-width: 150px;
+          min-width: 165px;
           margin: 15px 5px 0 5px;
           background-color: #f3f2f2;
           text-align: center;
           border-radius: 5px 5px 0 0;
           margin-bottom: -1px;
           a {
-
               color:#ccc;
           }
           &.active {
@@ -74,7 +73,7 @@ export default {
           }
           a {
               display: block;
-              padding: .8em 5em;
+              padding: .8em 3em;
           }
         }
       }
