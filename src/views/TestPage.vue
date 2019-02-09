@@ -2,6 +2,30 @@
   div.home
     div MAIN PAGE
       div.ui.grid
+       
+        div.six.wide.column
+            div.ui.list
+              div.item
+                .content
+                  div.ui.grid
+                    .col.col-1.two.wide.column title
+                    .col.col-2.three.wide.column title
+                    .col.col-3.nine.wide.column title
+              div.item
+                .content
+                  div.ui.grid
+                    .col.col-1.two.wide.column title
+                    .col.col-2.three.wide.column title
+                    .col.col-3.nine.wide.column title
+              div.item
+                .content
+                  div.ui.grid
+                    .col.col-1.two.wide.column title
+                    .col.col-2.three.wide.column title
+                    .col.col-3.nine.wide.column title
+                //- .extra
+                //-   .ui.right.float.button extra
+               
         div.six.wide.column
             div.ui.segment
               div.treeView.list.level-0
@@ -65,8 +89,6 @@
         expanded)
         <i class="calendar alternate outline icon"></i>
     
-    div
-      SearchComp(:startDate="selectedDateStart", :endDate="selectedDateEnd")
     modals-container
     v-dialog
 </template>

@@ -23,11 +23,11 @@ export default {
   },
   data () {
     return {
-      activeTab: ''
+      activeTab: this.menuList.defaultTab
     }
   },
   created () {
-    this.activeTab = this.menuList.defaultTab
+    this.activeTab = this.$route.name
   },
   updated () {
     this.activeTab = this.$route.name
@@ -43,21 +43,24 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
+    background-color: #fff;
     .tabMenu {
       height: 56px;
       z-index: 10;
       ul.menuList {
-        margin: 0;
+          margin: 0;
         margin-left: 20px;
         .tabItem {
           float:left;
-          min-width: 165px;
+          width: 15%;
+          min-width: 150px;
           margin: 15px 5px 0 5px;
           background-color: #f3f2f2;
           text-align: center;
           border-radius: 5px 5px 0 0;
           margin-bottom: -1px;
           a {
+
               color:#ccc;
           }
           &.active {
@@ -73,7 +76,7 @@ export default {
           }
           a {
               display: block;
-              padding: .8em 3em;
+              padding: .8em 1.2em;
           }
         }
       }

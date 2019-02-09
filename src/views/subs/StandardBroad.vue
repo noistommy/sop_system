@@ -4,10 +4,6 @@
       div.sub-header
         div.title 표준 방송 관리
         SearchComp(
-          :startDate="selectedDateStart", 
-          :endDate="selectedDateEnd", 
-          :rangeDate="selectedDate",  
-          :isRange="searchType",
           :isDateSearch="false",
           :isTextSearch="true")
           template( slot="condition1", slot-scope="props")
@@ -19,12 +15,12 @@
         div.content.section.section-1
             DataTable(
               v-model="selected"
-              :headers="headers",
-              :items="sopHistoryData",
-              :isFooter="isfooter",
-              :isListNumber="isListNumber",
-              :isPagination="isPagination",
-              :page="pageInfo"
+              :headers="standardBroad.headers",
+              :items="standardBroad.standardBroadyData",
+              :isFooter="standardBroad.isfooter",
+              :isListNumber="standardBroad.isListNumber",
+              :isPagination="standardBroad.isPagination",
+              :page="standardBroad.pageInfo"
             ).ui.table.celled.selectable
               <template slot="items" slot-scope="props">
                 tr
@@ -43,11 +39,22 @@
 <script>
 import DataTable from '@/components/DataTable.vue'
 import SearchComp from '@/components/SearchComp.vue'
+import { standardBroadHeader } from '@/setting'
+
 
 export default {
   name: 'standard-broad',
   data () {
     return {
+      standardBroad: {
+        headers: standardBroadHeader.headers,
+        standardBroadData: [],
+        isFooter: false,
+        idPagination: false,
+        isListNumber: false,
+        pageInfo: {} 
+      },
+      selected: []
     }
   },
   components: {

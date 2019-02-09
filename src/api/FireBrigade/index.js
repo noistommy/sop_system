@@ -5,7 +5,7 @@ const TargetURL = '/n3n.sop.SlfdfnFbrdInfo'
 export default {
   TargetURL: '/n3n.sop.SlfdfnFbrdInfo',
   // 자위소방대트리목록조회
-  getFireBrigadeTreeList: () => {
+  getTreeList: () => {
     return HTTP.post(`${TargetURL}.selectSlfdfnFbrdTrList.do`, {}).then(res => {
       return res.data
     }).catch(error => {

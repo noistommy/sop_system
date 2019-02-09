@@ -1,5 +1,5 @@
 <template lang="pug">
-  div#Login.full
+  div#Login.full(@keyup.enter="onLogin")
     div.login-container.full
       div.logo
         img(src="../assets/CI_logo.png", alt="logo")
@@ -10,19 +10,58 @@
             .field
               .ui.left.icon.input
                 i.user.icon
-                input(type="text", name="userId", placeholder="사용자 아이디")
+                input(v-model="loginInfo.oprtrId", type="text", name="userId", placeholder="사용자 아이디")
             .field
               .ui.left.icon.input
                 i.lock.icon
-                input(type="password",name="password", placeholder="사용자 비밀번호")
+                input(v-model="loginInfo.oprtrPassword", type="password",name="password", placeholder="사용자 비밀번호")
             .field.loginBtn
-              .ui.fluid.large.teal.button
-                    router-link(:to="{ path: '/' }") Login
+              .ui.fluid.large.teal.button(@click="onLogin") Login
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+import { codeGenerator } from '@/util'
+
 export default {
-  name: 'login'
+  name: 'login',
+  data () {
+    return {
+      loginInfo: {
+        oprtrId: '',
+        oprtrPassword: ''
+      },
+      message: ''
+    }
+  },
+  methods: {
+    ...mapActions([
+      'login'
+    ]),
+    onLogin() {
+      const requestData = JSON.stringify(this.loginInfo)
+      this.login(requestData).then((result) => {
+        if(result.msgCode == 'Y') {
+          this.redirect()
+        } else {
+          const dialogData = codeGenerator(result.msgCode, result.msgValue)
+          this.showDialog(dialogData)
+        }
+      })
+    },
+    redirect () {
+      this.$router.push('/')
+    },
+    showDialog(data) {
+      this.$modal.show('dialog', {
+        title: data.title,
+        text: data.text,
+        buttons: [
+          data.button
+        ]
+      })
+    }
+  }
 }
 </script>
 

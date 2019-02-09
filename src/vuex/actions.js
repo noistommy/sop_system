@@ -1,7 +1,7 @@
 import * as types from './mutation-types'
 import doAsync from './async-util'
 
-// import { TestApi } from '@/api/Test'
+import AuthApi from '@/api/Auth'
 
 export const getAsync1 = (context) => {
   return doAsync(context, {
@@ -22,17 +22,21 @@ export const setModalData = ({ commit }, setdata) => {
   return commit('SET_MODAL_STATE', setdata)
 }
 
-// export const getAsync = async (context) => {
-//   context.commit(types.GET_INFO_ASYNC.BASE, { type: types.GET_INFO_ASYNC.PENDING, value: true })
-//   try {
-//     const response = await TestApi.getData()
-//     console.log(response)
-//     context.commit(types.GET_INFO_ASYNC.BASE, { type: types.GET_INFO_ASYNC.SUCCESS, response: response, statusCode: response.status })
-//     context.commit(types.GET_INFO_ASYNC.BASE, { type: types.GET_INFO_ASYNC.PENDING, value: false })
+export const login = ({ commit }, loginData) => {
+  return AuthApi.login(loginData).then(result => {
+    console.log(result)
+    commit('LOGIN')
+    return result.data
+  }).catch(error => {
+    console.log(error.response)
+    if (error.response.data != null) {
+      return error.response.data
+    }
+  })
+}
 
-//   } catch (error) {
-//     context.commit(types.GET_INFO_ASYNC.BASE, { type: types.GET_INFO_ASYNC.PENDING, value: false })
-
-//     console.log(error)
-//   }
-// }
+export const logout = ({ commit }) => {
+  return AuthApi.logout().then(result => {
+    commit('LOGOUT')
+  })
+}

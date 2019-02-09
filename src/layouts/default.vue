@@ -100,7 +100,7 @@ i {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: #f3f2f2;
   .container {
     overflow:hidden;
     flex-grow: 1;

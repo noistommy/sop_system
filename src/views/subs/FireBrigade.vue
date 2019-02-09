@@ -3,7 +3,7 @@
     div.sub-wrapper
       div.sub-header
         div.title 자위소방대관리
-        SearchComp(:isTextSearch="true")
+        SearchComp(v-model="searchData", :isTextSearch="true")
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown
               option 전제
@@ -17,12 +17,12 @@
           div.section.right-section
             h3 자위소방대
             DataTable(
-              :headers="headers",
-              :items="fireBrigadeGroup",
-              :isFooter="isFooter"
-              :isPagination="isPagination"
-              :isListNumber="isListNumber",
-              :page="pageInfo"
+              :headers="fireBrigade.headers",
+              :items="fireBrigade.fireBrigadeGroup",
+              :isFooter="fireBrigade.isFooter"
+              :isPagination="fireBrigade.isPagination"
+              :isListNumber="fireBrigade.isListNumber",
+              :page="fireBrigade.pageInfo"
             ).ui.table.celled.selectable
               <template slot="items" slot-scope="props">
                 tr
@@ -39,20 +39,24 @@ import DataTable from '@/components/DataTable.vue'
 import TreeView from '@/components/TreeView.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { fireBrigadeGroupHeader } from '@/setting'
+import FireBrigadeApi from '@/api/FireBrigade'
 import axios from 'axios'
 
 export default {
   name: 'firebrigade',
   data () {
     return {
-      headers: fireBrigadeGroupHeader.headers,
-      fireBrigadeGroup: [],
-      isFooter: true,
-      isPagination: false,
-      isListNumber: false,
-      pageInfo: {},
+      fireBrigade: {
+        headers: fireBrigadeGroupHeader.headers,
+        fireBrigadeGroup: [],
+        isFooter: true,
+        isPagination: false,
+        isListNumber: false,
+        pageInfo: {}
+      },
       treeviewData: [],
-      rootActive: true
+      rootActive: true,
+      searchData: {}
     }
   },
   components: {
@@ -61,22 +65,32 @@ export default {
     SearchComp
   },
   created () {
-    this.test2()
+    this.getList()
+    this.getTreeList()
   },
   methods: {
     setNumbering (num) {
       return (this.pageInfo.currentPageNo - 1) * 10 + num
     },
-    test2 () {
-      console.log('axios')
-      axios.post('http://172.16.10.202:18080/n3n.sop.SlfdfnFbrdInfo.selectSlfdfnFbrdTrList.do', {})
-        .then(res => {
-          console.log(res.data.slfdfnFbrdTrList)
-          this.treeviewData = res.data.slfdfnFbrdTrList
-        })
-        .catch(err => {
-          console.log(err)
-        })
+    getList() {
+      FireBrigadeApi.getAllFireman()
+      .then(result => {
+        console.log(result)
+        this.fireBrigade.fireBrigadeGroup = result.slfdfnFbrdEmpInfoAllList
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    },
+    getTreeList () {
+      FireBrigadeApi.getTreeList()
+      .then(result => {
+        console.log(result)
+        this.treeviewData = result.slfdfnFbrdTrList
+      })
+      .catch(err => {
+        console.log(err)
+      })  
     },
   }
 }

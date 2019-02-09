@@ -9,22 +9,20 @@
           :rangeDate="selectedDate",  
           :isRange="searchType",
           :isDateSearch="true")
-
-        //- div.divide
       div.sub-content
         div.content
           DataTable(
             v-model="selected"
-            :headers="headers",
-            :items="sopHistoryData",
-            :isFooter="isfooter",
-            :isListNumber="isListNumber",
-            :isPagination="isPagination",
-            :page="pageInfo"
+            :headers="sopHistory.headers",
+            :items="sopHistory.sopHistoryData",
+            :isFooter="sopHistory.isfooter",
+            :isListNumber="sopHistory.isListNumber",
+            :isPagination="sopHistory.isPagination",
+            :page="sopHistory.pageInfo"
           ).ui.table.celled.selectable
             <template slot="items" slot-scope="props">
               tr
-                td.center.aligned {{props.item.no}}
+                td(v-if="isListNumber").center.aligned {{props.idx}}
                 td {{props.item.date}}
                 td {{props.item.manager}}
                 td.center.aligned {{props.item.type}}
@@ -41,6 +39,7 @@
 import DataTable from '@/components/DataTable.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { sopHistoryTableHeader } from '@/setting'
+import HistoryApi from '@/api/History'
 
 export default {
   name: 'sophistory',
@@ -58,51 +57,36 @@ export default {
       },
       searchType: 'range',
       selected: [],
-      isfooter: true,
-      isPagination: false,
-      isListNumber: true,
-      pageInfo: {},
-      headers: sopHistoryTableHeader.headers,
-      sopHistoryData: []
+      sopHistory: {
+        isfooter: true,
+        isPagination: false,
+        isListNumber: true,
+        pageInfo: {},
+        headers: sopHistoryTableHeader.headers,
+        sopHistoryData: []
+      }
     }
   },
   created () {
   },
   methods: {
+    // getHistoryList () {
+    //   historyApi.getSOPHistory()
+    //   .then(result => {
+    //     console.log(`MemberList:${result}`)
+    //       this.sopHistory.sopHistoryData = result.deptEmpInfoList
+    //       this.sopHistory.pageInfo = result.param
+    //       this.sopHistory.pageInfo.totalCount = result.totCnt
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
   }
 }
 </script>
 
 <style lang="less" scoped>
 .sub-container {
-  // height:100%;
-  // display: flex;
-  // flex-direction: column;
-  // .sub-wrapper {
-  //   flex-grow: 1;
-  //   display:flex;
-  //   flex-direction: column;
-  //   .sub-header {
-  //     height: 60px;
-  //   }
-  //   .sub-content {
-  //     flex-grow: 1;
-  //     display: flex;
-  //     flex-direction: column;
-  //     padding: 20px;
-  //     .header {
-  //       height: 30px;
-  //       display: none;
-  //     }
-  //     .content {
-  //       flex-grow: 1;
-  //       background-color: #fff;
-  //     }
-  //     .footer {
-  //       padding: 20px 0;
-  //     }
-  //   }
-  // }
   .search-wrapper-content {
     display: flex;
     flex-direction: column;

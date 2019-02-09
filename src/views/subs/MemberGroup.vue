@@ -3,27 +3,29 @@
     div.sub-wrapper
       div.sub-header
         div.title 조직도 관리
-        SearchComp(:isTextSearch="true")
+        SearchComp(v-model="searchData", :isTextSearch="true", @search="getList")
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown
-              option 전제
-              option 부서
-              option 이름
+              option(value="00", default) 전제
+              option(value="01") 팀명
+              option(value="02") 이름
       div.sub-content
         div.content.row
           div.section.left-section
             div.treeView.list.level-0
-                  TreeView( v-for="item in treeviewData" :treeItem="item", :isActive="rootActive", :level="1")
+                  TreeView(v-model="selectTeam" v-for="item in treeviewData" :treeItem="item", :isActive="rootActive", :level="1")
           div.section.right-section
             h3 정규직원
             DataTable(
-              :tableType="type",
-              :headers="headers",
-              :items="memberGoupData",
-              :isFooter="isFooter"
-              :isPagination="isPagination"
-              :isListNumber="isListNumber",
-              :page="pageInfo"
+              v-model="selected",
+              :tableType="memberGroup.type",
+              :headers="memberGroup.headers",
+              :items="memberGroup.memberGoupData",
+              :isFooter="memberGroup.isFooter"
+              :isPagination="memberGroup.isPagination"
+              :isListNumber="memberGroup.isListNumber",
+              :page="memberGroup.pageInfo",
+              @search="getList"
             ).ui.table.selectable
               <template slot="items" slot-scope="props">
                 tr
@@ -44,6 +46,8 @@ import { memberGroupeHeader } from '@/setting'
 import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
 
+import MemberApi from '@/api/Member'
+
 export default {
   name: 'membergroup',
   components: {
@@ -53,50 +57,55 @@ export default {
   },
   data () {
     return {
-      type: 'celled',
-      headers: memberGroupeHeader.headers,
-      memberGoupData: [],
-      isFooter: true,
-      isPagination: true,
-      isListNumber: false,
-      pageInfo: {},
+      memberGroup: {
+        type: 'celled',
+        headers: memberGroupeHeader.headers,
+        memberGoupData: [],
+        isFooter: true,
+        isPagination: true,
+        isListNumber: false,
+        pageInfo: {}
+      },
+      selected: [],
       treeviewData: [],
-      rootActive: true
+      rootActive: true,
+      selectTeam: '',
+      searchData: {
+        type: "00",
+        value: ""
+      },
+      requestData: {
+        currPage: 1
+      }
     }
   },
   created () {
-    this.test()
+    this.getList()
     this.test2()
-    this.getAsync()
-    console.log(this.pageInfo)
   },
   computed: {
-    ...mapGetters([
-      'getData',
-      'getData1'
-    ]),
   },
   methods: {
-    ...mapActions('getData', [
-      'getAsync',
-      'getAsync1'
-    ]),
     setNumbering (num) {
       return (this.pageInfo.currentPageNo - 1) * 10 + num
     },
-    test () {
-      axios.post('http://172.16.10.202:18080/n3n.sop.OrgnztInfo.selectDeptEmpInfoList.do', {
-      })
-        .then(res => {
-          console.log(this.pageInfo)
-          this.memberGoupData = res.data.deptEmpInfoList
-          this.pageInfo = res.data.param
-          this.pageInfo.totalCount = res.data.totCnt
-          console.log(this.pageInfo)
-        })
-        .catch(err => {
-          console.log(err)
-        })
+    getList (targetNum) {
+      this.requestData.currPage = targetNum
+      const request = JSON.stringify(this.requestData)
+      const result = MemberApi.getItems(request)
+      console.log(`MemberList:${result}`)
+      this.memberGroup.memberGoupData = result.deptEmpInfoList
+      this.memberGroup.pageInfo = result.param
+      this.memberGroup.pageInfo.totalCount = result.totCnt
+      // axios.post('http://172.16.10.202:18080/n3n.sop.OrgnztInfo.selectDeptEmpInfoList.do', JSON.stringify(this.requestData))
+      //   .then(res => {
+      //     this.memberGroup.memberGoupData = res.data.deptEmpInfoList
+      //     this.memberGroup.pageInfo = res.data.param
+      //     this.memberGroup.pageInfo.totalCount = res.data.totCnt
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //   })
     },
     test2 () {
       console.log('axios')

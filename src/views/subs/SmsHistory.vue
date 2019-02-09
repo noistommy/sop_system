@@ -17,7 +17,7 @@
           ).ui.table.celled.selectable
             <template slot="items" slot-scope="props">
               tr
-                td.center.aligned {{props.item.no}}
+                td(v-if="isListNumber").center.aligned {{props.idx}}
                 td {{props.item.date}}
                 td {{props.item.manager}}
                 td.center.aligned {{props.item.type}}

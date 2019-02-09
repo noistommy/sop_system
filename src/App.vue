@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <v-dialog></v-dialog>
     <vue-extend-layouts />
   </div>
 </template>
@@ -16,7 +17,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
 
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -34,4 +35,22 @@ export default {
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+// Dialog Style
+.vue-dialog {
+  .dialog-content {
+    padding: 0 !important;
+    .dialog-c-title {
+      background-color: #5d5e68;
+      color: #fff;
+      padding: .8em 1.2em;
+    }
+    .dialog-c-text {
+      padding:20px;
+    }
+    .dialog-c-buttons {
+
+    }
+  }
+}
+
 </style>

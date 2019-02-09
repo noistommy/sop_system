@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 
 export default {
   name: 'run-sop-list',
@@ -48,9 +49,18 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'logout'
+    ]),
     toggleSideLayer () {
       console.log()
       this.activeSide = !this.activeSide
+    },
+    onLogout() {
+      this.logout().then((result) => {
+        console.log(result)
+        this.$router.push('/login')
+      })
     }
   }
 }
@@ -86,6 +96,7 @@ export default {
     padding: 0;
     height: 100%;
     margin:0;
+    z-index:100;
     -webkit-box-shadow: 0 0 20px 0 #333;
             box-shadow: 0 0 20px 0 #333;
     .transition;

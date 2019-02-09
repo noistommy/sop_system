@@ -7,22 +7,22 @@
         div.content
           DataTable(
             v-model="selected"
-            :headers="headers",
-            :items="sopHistoryData",
-            :isFooter="isfooter",
-            :isListNumber="isListNumber",
-            :isPagination="isPagination",
-            :page="pageInfo"
+            :headers="systemUser.headers",
+            :items="systemUser.systemUserData",
+            :isFooter="systemUser.isfooter",
+            :isListNumber="systemUser.isListNumber",
+            :isPagination="systemUser.isPagination",
+            :page="systemUser.pageInfo"
           ).ui.table.celled.selectable
             <template slot="items" slot-scope="props">
               tr
-                td.center.aligned {{props.item.no}}
-                td {{props.item.date}}
-                td {{props.item.manager}}
-                td.center.aligned {{props.item.type}}
-                td {{props.item.title}}
-                td.ellipse {{props.item.location}}
-                td {{props.item.endtime}}
+                td(v-if="systemUser.isListNumber").center.aligned {{props.idx+1}}
+                td {{props.item.oprtrId}}
+                td {{props.item.oprtrNm}}
+                td {{props.item.clsfCdNm}}
+                td {{props.item.ofcpsCdNm}}
+                td.ellipse {{props.item.moblphonNo}}
+                td {{props.item.oprtrFgCdNm}}
             </template>
         div.footer
 </template>
@@ -30,16 +30,46 @@
 <script>
 import DataTable from '@/components/DataTable.vue'
 import SearchComp from '@/components/SearchComp.vue'
+import { systemUserHeader } from '@/setting'
+import SystemUser from '@/api/Users'
 
 export default {
   name: 'system-user',
   data () {
     return {
+      selected: [],
+      systemUser: {
+        headers: systemUserHeader.headers,
+        systemUserData: [],
+        isFooter: false,
+        idPagination: false,
+        isListNumber: true,
+        pageInfo: {} 
+      },
     }
   },
   components: {
     DataTable,
     SearchComp
+  },
+  created() {
+    SystemUser.getUsersList().then(result => {
+      console.log(result)
+      this.systemUser.systemUserData=result.oprtrInfoList
+      if(this.systemUser.length >= result.param.pagePerCnt) {
+        this.systemUser.isPagination = false
+      } else {
+        this.systemUser.pageInfo=result.param
+        this.systemUser.pageInfo.totalPage = result.totalCount
+      }
+    }).catch(err => {
+      console.log(err)
+    })
+  },
+  methods: {
+    // getUserList() {
+
+    // }
   }
 }
 </script>

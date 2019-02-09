@@ -37,6 +37,9 @@ export default {
     },
     disabledEnd () {
       return this.current == this.totalPage
+    },
+    getCurrentList() {
+      return this.$emit('currpage', this.current)
     }
   },
   methods: {
@@ -65,6 +68,7 @@ export default {
         this.setPagination()
       }
       this.current++
+      this.$emit('currpage', this.current)
     },
     prev () {
       if (this.current - 1 < 1) return
@@ -74,6 +78,7 @@ export default {
         this.setPagination()
       }
       this.current--
+      this.$emit('currpage', this.current)
     }
   }
 }

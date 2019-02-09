@@ -4,22 +4,22 @@
       a(href="/")
         img(src="../assets/CI_logo.png", alt="vue-logo")
     div#mainNav
-        div.item(@click="activeNavigation('sop')", :class="{active:isActive == 'sop'}")
+        div.item(@click="activeNavigation('sop-list')", :class="{active:isActive == 'sop-list'}")
             router-link(:to="{ name: 'sop-list' }")
                 h6.ui.icon.header
                     i.icon-sop-management
                     .content SOP관리
-        div.item(@click="activeNavigation('member')", :class="{active:isActive == 'member'}")
+        div.item(@click="activeNavigation('membergroup')", :class="{active:isActive == 'membergroup'}")
             router-link(:to="{ name: 'membergroup' }")
                 h6.ui.icon.header
                     i.icon-sop-crew
                     .content 조직도관리
-        div.item(@click="activeNavigation('history')", :class="{active:isActive == 'history'}")
+        div.item(@click="activeNavigation('sophistory')", :class="{active:isActive == 'sophistory'}")
             router-link(:to="{ name: 'sophistory' }")
                 h6.ui.icon.header
                     i.icon-sop-history
                     .content 이력관리
-        div.item(@click="activeNavigation('info')", :class="{active:isActive == 'info'}")
+        div.item(@click="activeNavigation('location-info')", :class="{active:isActive == 'location-info'}")
             router-link(:to="{ name: 'location-info' }")
                 h6.ui.icon.header
                     i.icon-sop-watch
@@ -37,9 +37,12 @@ export default {
       isActive: ''
     }
   },
+  created() {
+      this.isActive = this.$route.name
+  },
   methods: {
     activeNavigation (menuItem) {
-      this.isActive = menuItem
+      this.isActive = this.$route.name
     }
   }
 }

@@ -1,8 +1,8 @@
 <template lang="pug">
-    div.treeitem
+    div.treeitem(:class="{active:selectedItem}", v-on:dblclick.stop="getList", , @click.stop="setActive")
         div.treecontent
             div.treeheader(@mouseover.self="selectHover")
-                i.icon.caret(:class="activeItem ? 'down' : 'right'", @click="setActive", v-if="treeItem.children != ''")
+                i.icon.caret(:class="activeItem ? 'down' : 'right'", v-if="treeItem.children != ''")
                 i.icon(v-else)
                 span {{treeItem.title}} 
                 span.badge(v-if="treeItem.children != ''") {{treeItem.children.length}}
@@ -21,22 +21,21 @@ export default {
     treeItem: Object,
     isRoot: Boolean,
     isActive: Boolean,
-    level: Number,
+    level: Number
   },
   data() {
       return {
-          childLevel: this.level,
+          childLevel: this.level + 1,
           childrenList: this.treeItem,
-          branchActive: false,
-          activeItem: this.isActive
+          branchActive: true,
+          activeItem: this.isActive,
+          selectedItem: false
       }
   },
   components: {
     'tree-view': TreeView
   },
   created() {
-    this.childLevel = this.childLevel + 1
-    
   },
   methods: {
       setActive() {
@@ -45,6 +44,10 @@ export default {
       selectHover(event) {
 
         //   $(event.target).css('background', '#ccc')
+      },
+      getList() {
+          $('.treeitem').removeClass('active')
+          this.selectedItem = !this.selectedItem
       }
   }
 }
@@ -78,6 +81,13 @@ export default {
                     color: #fff;
                     font-weight: bold;
                 }
+            }
+        }
+        &.active {
+            background-color: #80b7be;
+            >.treeheader {
+                color: #525252;
+                font-weight: bold;
             }
         }
     }
@@ -119,7 +129,7 @@ export default {
 
 
 .level-0 {
-    height: 100%;
+    max-height: 650px;
     background-color: #fff;
     background-color: #454545;
     color: #f2f2f2;

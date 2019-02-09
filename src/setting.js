@@ -37,13 +37,32 @@ const standardInfoMenuList = {
     { name: '운영자관리', pathName: 'system-user', default: false, icon: '' }
   ]
 }
+// MAIN TABLE
+
+const mainSopHistoryHeader = {
+  headers: [
+    { text: '날짜', align: 'center', value: 'date', size: '' },
+    { text: '분류', align: 'center', value: 'type', size: '' },
+    { text: 'SOP명', align: 'center', value: 'title', size: '' },
+    { text: '위치', align: 'center', value: 'location', size: 'four' }
+  ]
+}
+// sms전송이력
+const mainSmsHistoryHeader = {
+  headers: [
+    { text: '날짜', align: 'center', value: 'date', size: '' },
+    { text: '위치', align: 'center', value: 'location', size: 'four' },
+    { text: '전송인원', align: 'center', value: 'endtime', size: '' },
+    { text: '전송내용', align: 'center', value: 'endtime', size: 'six' }
+  ]
+}
 
 // TABLE HEADER
 // 실행이력
 
 const sopHistoryTableHeader = {
   headers: [
-    { text: 'NO', align: 'center', value: 'no', size: '' },
+    // { text: 'NO', align: 'center', value: 'no', size: '' },
     { text: '날짜', align: 'center', value: 'date', size: '' },
     { text: '분류', align: 'center', value: 'type', size: '' },
     { text: 'SOP명', align: 'center', value: 'title', size: '' },
@@ -54,7 +73,7 @@ const sopHistoryTableHeader = {
 // sms전송이력
 const smsHistoryTableHeader = {
   headers: [
-    { text: 'NO', align: 'center', value: 'no', size: '' },
+    // { text: 'NO', align: 'center', value: 'no', size: '' },
     { text: '날짜', align: 'center', value: 'date', size: '' },
     { text: '위치', align: 'center', value: 'location', size: 'four' },
     { text: '전송인원', align: 'center', value: 'endtime', size: '' },
@@ -64,7 +83,7 @@ const smsHistoryTableHeader = {
 // 센서탐지이력
 const sensorHistoryTableHeader = {
   headers: [
-    { text: 'NO', align: 'center', value: 'no', size: '' },
+    // { text: 'NO', align: 'center', value: 'no', size: '' },
     { text: '발생시간', align: 'center', value: 'date', size: '' },
     { text: '종료시간', align: 'center', value: 'date', size: '' },
     { text: '발생위치', align: 'center', value: 'location', size: 'four' },
@@ -114,14 +133,82 @@ const partnerGroupeHeader = {
   ]
 }
 // 건물/층 관리 - 건물관리
+const locationInfoHeader = {
+  headers: [
+    { text: '건물ID', align: 'center', value: 'buldId', size: '' },
+    { text: '건물명', align: 'center', value: 'buldNm', size: 'ten' }
+  ]
+}
 // 건물/층 관리 - 건물층 정보
+const locationFloorHeader = {
+  headers: [
+    { text: '층정보', align: 'center', value: 'buldFloor', size: '' },
+    { text: '알람허용여부', align: 'center', value: 'alarmPermYn', size: '' }
+  ]
+}
 // 장비관리-장비구분관리
+const sensorTypeHeader = {
+  headers: [
+    { text: '종류', align: 'center', value: 'eqpmnClId', size: '' },
+    { text: '종류명', align: 'center', value: 'eqpmnClNm', size: 'ten' }
+  ]
+}
 // 장비관리-구분별 센서 목록
+const sensorByTypeHeader = {
+  headers: [
+    { text: 'ID', align: 'center', value: 'iwId', size: '' },
+    { text: '센서명', align: 'center', value: 'sensorNm', size: '' },
+    { text: '건물명', align: 'center', value: 'buldNm', size: '' },
+    { text: '건물층', align: 'center', value: 'buldFloor', size: '' },
+    { text: '알람허용여부', align: 'center', value: 'alarmPermYn', size: '' }
+  ]
+}
 // 표준문자관리
+const standardSmsHeader = {
+  headers: [
+    { text: '문자제목', align: 'center', value: 'smsTitle', size: '' },
+    { text: '사용여부', align: 'center', value: 'useYn', size: '' }
+  ]
+}
 // 표준방송관리
+const standardBroadHeader = {
+  headers: [
+    { text: '방송제목', align: 'center', value: 'brdcstTitle', size: '' },
+    { text: '사용여부', align: 'center', value: 'useYn', size: '' }
+  ]
+}
 // 공통코드-공통코드 관리
+const publicCodeHeader = {
+  headers: [
+    { text: '코드그룹', align: 'center', value: 'cmmnCd', size: '' },
+    { text: '코드그룹명', align: 'center', value: 'cmmnCdNm', size: '' },
+    { text: '사용여부', align: 'center', value: 'useYn', size: '' }
+  ]
+}
 // 공통코드-공통코드 상세목록
+const publicCodeDetailHeader = {
+  headers: [
+    { text: '코드그룹', align: 'center', value: 'cmmnCd', size: '' },
+    { text: '코드그룹명', align: 'center', value: 'cmmnCdNm', size: '' },
+    { text: '표시순서', align: 'center', value: 'indictOrdr', size: '' },
+    { text: '파라미터1', align: 'center', value: 'userData1', size: '' },
+    { text: '파라미터2', align: 'center', value: 'userData2', size: '' },
+    { text: '파라미터3', align: 'center', value: 'userData3', size: '' },
+    { text: '파라미터4', align: 'center', value: 'userData4', size: '' },
+    { text: '파라미터5', align: 'center', value: 'userData5', size: '' }
+  ]
+}
 // 운영자 관리
+const systemUserHeader = {
+  headers: [
+    { text: '운영자ID', align: 'center', value: 'oprtrId', size: '' },
+    { text: '운영자명', align: 'center', value: 'oprtrNm', size: '' },
+    { text: '직위', align: 'center', value: 'clsfCdNm', size: '' },
+    { text: '직급', align: 'center', value: 'ofcpsCdNm', size: '' },
+    { text: '휴대전화번호', align: 'center', value: 'moblphonNo', size: '' },
+    { text: '운영권한', align: 'center', value: 'oprtrFgCdNm', size: '' }
+  ]
+}
 
 export {
   sopMenuList,
@@ -134,5 +221,16 @@ export {
   noticeTableHeader,
   memberGroupeHeader,
   fireBrigadeGroupHeader,
-  partnerGroupeHeader
+  partnerGroupeHeader,
+  locationInfoHeader,
+  locationFloorHeader,
+  sensorTypeHeader,
+  sensorByTypeHeader,
+  standardSmsHeader,
+  standardBroadHeader,
+  publicCodeHeader,
+  publicCodeDetailHeader,
+  systemUserHeader,
+  mainSopHistoryHeader,
+  mainSmsHistoryHeader
 }

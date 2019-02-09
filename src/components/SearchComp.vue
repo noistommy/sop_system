@@ -6,7 +6,7 @@
         template(v-if="isRange == 'range'")
           v-date-picker(mode='range', v-model='selectedDate', :class="isRange")
             div.ui.left.icon.input(:type='inputState.type', slot-scope='props')
-              input(type='text', 
+              input( 
               :value='props.inputValue', 
               :placeholder='inputState.message',
               @input='props.updateValue($event.target.value, { formatInput: false, hidePopover: false })',
@@ -16,7 +16,7 @@
         template(v-else)
           v-date-picker(mode='single', v-model='selectedDateStart')
             div.ui.left.icon.input(:type='inputState.type', slot-scope='props')
-              input(type='text', 
+              input( 
               :value='props.inputValue', 
               :placeholder='inputState.message',
               @input='props.updateValue($event.target.value, { formatInput: false, hidePopover: false })',
@@ -25,7 +25,7 @@
               <i class="calendar alternate outline icon"></i>
           v-date-picker(mode='single', v-model='selectedDateEnd')
             div.ui.left.icon.input(:type='inputState.type', slot-scope='props')
-              input(type='text', 
+              input( 
               :value='props.inputValue', 
               :placeholder='inputState.message',
               @input='props.updateValue($event.target.value, { formatInput: false, hidePopover: false })',
@@ -39,9 +39,9 @@
           option(value="2") 최근일년
       template(v-if="isTextSearch")
         div.ui.left.icon.input
-          input(:type="text")
+          input(v-model="searchText", @keyup="setText")
           i.icon.search
-      button.ui.button 검색
+      button(@click="searchList").ui.button 검색
 
 </template>
 
@@ -55,15 +55,23 @@ export default {
     startDate: Date,
     endDate: Date,
     rangeDate: Object,
-    isRange: String,
+    isRange:  String,
     isTextSearch: Boolean,
-    isDateSearch: Boolean
+    isDateSearch: Boolean,
+    value: {
+      type: Object || Array,
+      default: {
+        type: "00",
+        value: ""
+      }
+    }
   },
   data () {
     return {
        selectedDateStart: this.startDate,
        selectedDateEnd: this.endDate,
-       selectedDate: this.rangeDate
+       selectedDate: this.rangeDate,
+       searchText: ""
     }
   },
   created () {
@@ -87,6 +95,12 @@ export default {
     }
   },
   methods: {
+    searchList() {
+      this.$emit('search')
+    },
+    setText () {
+      this.value.value=this.searchText
+    }
   }
 }
 </script>
@@ -96,7 +110,7 @@ export default {
     position:absolute;
     top:0;
     right: 0;
-    width: 50%;
+    width: 70%;
     display: flex;
     justify-content: flex-end;
     > div {

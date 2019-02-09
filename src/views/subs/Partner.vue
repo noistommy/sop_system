@@ -3,7 +3,7 @@
     div.sub-wrapper
       div.sub-header
         div.title 협력업체관리
-        SearchComp(:isTextSearch="true")
+        SearchComp(v-model="searchData", :isTextSearch="true")
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown
               option 전제
@@ -52,7 +52,8 @@ export default {
       isListNumber: false,
       pageInfo: {},
       treeviewData: [],
-      rootActive: true
+      rootActive: true,
+      searchData: {}
     }
   },
   components: {

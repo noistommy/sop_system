@@ -2,7 +2,8 @@
     table.datatable(:class="tableType")
         thead
             tr
-                th( v-for="th of headers", :class="[`${th.align} aligned`]" ) {{th.text}}
+              th(v-if="isListNumber").center.aligned NO
+              th( v-for="th of headers", :class="[`${th.align} aligned`]" ) {{th.text}}
         tbody
             <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :selected="activeItem(item)"></slot>
         tfoot(v-if="isFooter")
@@ -10,7 +11,7 @@
                 th( :colspan="colspan" )
                     template(v-if="isPagination && page.totalCount > 10")
                         Pagination( :totalCount="page.totalCount",
-                        :currentPage="page.currentPageNo",
+                        :currentPage="pageInfo.currentPageNo",
                         :recordCountPerPage="page.recordCountPerPage",
                         @currpage="setCurrentPage" )
 
@@ -39,23 +40,25 @@ export default {
       selItem: false,
       colspan: 0,
       listNumber: 1,
-      pageInfo: {}
+      pageInfo: this.page
     }
   },
   created () {
     if(this.headers){
       this.colspan = this.headers.length
+      if (this.isListNumber) {
+        this.colspan = this.headers.length + 1
+      }
     }
-    this.pageInfo = this.page
-    console.log(this.pageInfo)
   },
   methods: {
     setCurrentPage (pagenum) {
-      console.log(pagenum)
-      this.page.currPage = pagenum
+      this.pageInfo.currPage = pagenum
+      this.$emit('search', pagenum)
     },
     activeItem(data) {
       let isSelected = false
+      if(this.value == []) return 
       this.value.forEach((e, i) => {
         if(e.id == data.id) {
           isSelected = true
