@@ -2,15 +2,15 @@ const codeGenerator = (code, text) => {
   const dialog = {
     title: '',
     text: '',
-    botton: {}
+    botton: []
   }
   switch (code) {
     case 'B':
       dialog.title = 'Login Error'
       dialog.text = text
-      dialog.button = {
+      dialog.button = [{
         title: '확인'
-      }
+      }]
       console.log(code, text)
       break
     case 'E':

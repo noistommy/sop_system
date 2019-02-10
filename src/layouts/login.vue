@@ -41,6 +41,8 @@ export default {
     onLogin() {
       const requestData = JSON.stringify(this.loginInfo)
       this.login(requestData).then((result) => {
+        console.log(result)
+        if(result == 'undefined') return
         if(result.msgCode == 'Y') {
           this.redirect()
         } else {
@@ -56,9 +58,7 @@ export default {
       this.$modal.show('dialog', {
         title: data.title,
         text: data.text,
-        buttons: [
-          data.button
-        ]
+        buttons: data.button
       })
     }
   }

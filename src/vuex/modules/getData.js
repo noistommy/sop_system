@@ -21,7 +21,6 @@ Object.keys(types).forEach(type => {
         return Vue.set(state, types[type].statusCode, payload.statusCode)
     }
   }
-  console.log(`mutations:${mutations}`)
 })
 
 const actions = { getAsync, getAsync1 }

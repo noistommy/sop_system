@@ -24,14 +24,11 @@ export const setModalData = ({ commit }, setdata) => {
 
 export const login = ({ commit }, loginData) => {
   return AuthApi.login(loginData).then(result => {
-    console.log(result)
     commit('LOGIN')
-    return result.data
+    return result
   }).catch(error => {
-    console.log(error.response)
-    if (error.response.data != null) {
-      return error.response.data
-    }
+    console.log(error)
+    return error
   })
 }
 

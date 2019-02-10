@@ -1,13 +1,12 @@
 <template>
   <div id="app">
-    <v-dialog></v-dialog>
+    <v-dialog/>
     <vue-extend-layouts />
   </div>
 </template>
 
 <script>
 import VueExtendLayouts from 'vue-extend-layout'
-import Modal from '@/components/Modal.vue'
 
 export default {
   name: 'App',
