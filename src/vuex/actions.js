@@ -1,7 +1,9 @@
 import * as types from './mutation-types'
 import doAsync from './async-util'
+// import axios from 'axios'
 
-// import { TestApi } from '@/api/Test'
+import AuthApi from '@/api/Auth'
+// import { restElement } from 'babel-types';
 
 export const getAsync1 = (context) => {
   return doAsync(context, {
@@ -22,17 +24,27 @@ export const setModalData = ({ commit }, setdata) => {
   return commit('SET_MODAL_STATE', setdata)
 }
 
-// export const getAsync = async (context) => {
-//   context.commit(types.GET_INFO_ASYNC.BASE, { type: types.GET_INFO_ASYNC.PENDING, value: true })
-//   try {
-//     const response = await TestApi.getData()
-//     console.log(response)
-//     context.commit(types.GET_INFO_ASYNC.BASE, { type: types.GET_INFO_ASYNC.SUCCESS, response: response, statusCode: response.status })
-//     context.commit(types.GET_INFO_ASYNC.BASE, { type: types.GET_INFO_ASYNC.PENDING, value: false })
+export const login = ({ commit }, loginData) => {
+  commit('LOGIN')
+  return AuthApi.login(loginData).then(result => {
+    if (result.data.oprtrFgCd) {
+      commit('LOGIN_SUCCESS', result.data)
+    } else {
+      commit('LOGIN_FAILED', 'Not Found SessionId')
+    }
+    return result
+  }).catch(error => {
+    console.log(error)
+    commit('LOGIN_FAILED', 'Login Error')
+    return error.response
+  })
+}
 
-//   } catch (error) {
-//     context.commit(types.GET_INFO_ASYNC.BASE, { type: types.GET_INFO_ASYNC.PENDING, value: false })
-
-//     console.log(error)
-//   }
-// }
+export const logout = ({ commit }) => {
+  return AuthApi.logout().then(result => {
+    commit('LOGOUT')
+    return result
+  }).catch(error => {
+    return error.response
+  })
+}

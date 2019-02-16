@@ -3,7 +3,7 @@
     div.sub-wrapper
       div.sub-header
         div.title 협력업체관리
-        SearchComp(:isTextSearch="true")
+        SearchComp(v-model="searchData", :isTextSearch="true")
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown
               option 전제
@@ -12,8 +12,9 @@
       div.sub-content
         div.content.row
           div.section.left-section
-            div.treeView.list.level-0
-                  TreeView( v-for="item in treeviewData" :treeItem="item", :isActive="rootActive", :level="1")
+            div.treeView-wrapper
+              div.treeView.list.level-0
+                    TreeView( v-for="item in treeviewData" :treeItem="item", :isActive="rootActive", :level="1")
           div.section.right-section
             h3 협력업체
             DataTable(
@@ -52,7 +53,9 @@ export default {
       isListNumber: false,
       pageInfo: {},
       treeviewData: [],
-      rootActive: true
+      rootActive: true,
+      searchData: {},
+      isEdit: false
     }
   },
   components: {
@@ -80,5 +83,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.transition (@type: all, @duration: 250ms, @Function: ease-out) {
+  -webkit-transition: @arguments;
+  -moz-transition: @arguments;
+  -ms-transition: @arguments;
+  -o-transition: @arguments;
+  transition: @arguments;
+}
+
+
 
 </style>

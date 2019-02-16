@@ -3,34 +3,32 @@
     div.sub-wrapper
       div.sub-header
         div.title SOP실행이력
-        SearchComp(
+        SearchDate(
+          v-model="searchData",
           :startDate="selectedDateStart", 
-          :endDate="selectedDateEnd", 
-          :rangeDate="selectedDate",  
+          :endDate="selectedDateEnd",   
           :isRange="searchType",
-          :isDateSearch="true")
-
-        //- div.divide
+          @search="getHistoryList")
       div.sub-content
         div.content
           DataTable(
-            v-model="selected"
-            :headers="headers",
-            :items="sopHistoryData",
-            :isFooter="isfooter",
-            :isListNumber="isListNumber",
-            :isPagination="isPagination",
-            :page="pageInfo"
+            v-model="sopHistory.selected"
+            :headers="sopHistory.headers",
+            :items="sopHistory.sopHistoryData",
+            :itemKey="sopHistory.itemkey"
+            :isFooter="sopHistory.isfooter",
+            :isListNumber="sopHistory.isListNumber",
+            :isPagination="sopHistory.isPagination",
+            :page="sopHistory.pageInfo"
           ).ui.table.celled.selectable
             <template slot="items" slot-scope="props">
               tr
-                td.center.aligned {{props.item.no}}
-                td {{props.item.date}}
-                td {{props.item.manager}}
-                td.center.aligned {{props.item.type}}
+                td(v-if="isListNumber").center.aligned {{props.idx}}
+                td {{props.item.executBeginDt}}
+                td {{props.item.oprtrNm}}
                 td {{props.item.title}}
-                td.ellipse {{props.item.location}}
-                td {{props.item.endtime}}
+                td.ellipse {{props.item.buldNm}} {{props.item.buldFloor}}
+                td {{props.item.executEndDt}}
             </template>
         div.footer
           //- button.ui.button SEND
@@ -39,70 +37,67 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
-import SearchComp from '@/components/SearchComp.vue'
+import SearchDate from '@/components/SearchDate.vue'
 import { sopHistoryTableHeader } from '@/setting'
+import { convertDateFormat } from '@/util'
+import HistoryApi from '@/api/History'
 
 export default {
   name: 'sophistory',
   components: {
     DataTable,
-    SearchComp
+    SearchDate
   },
   data () {
     return {
-      selectedDateStart: new Date(2019, 0, 27),
+      selectedDateStart: new Date(),
       selectedDateEnd: new Date(),
-      selectedDate: {
-        start: new Date(2019, 0, 23),
-        end: new Date(2019, 0, 30)  
+      searchType: 'single',
+      searchData: {
+        start: '',
+        end: ''
       },
-      searchType: 'range',
-      selected: [],
-      isfooter: true,
-      isPagination: false,
-      isListNumber: true,
-      pageInfo: {},
-      headers: sopHistoryTableHeader.headers,
-      sopHistoryData: []
+      sopHistory: {
+        selected: [],
+        isfooter: true,
+        isPagination: true,
+        isListNumber: true,
+        pageInfo: {},
+        headers: sopHistoryTableHeader.headers,
+        sopHistoryData: [],
+        itemkey: 'rn'
+      }
     }
   },
   created () {
+    // const initDate
+    this.searchData.start = convertDateFormat(new Date(), '')
+    this.searchData.end = convertDateFormat(new Date(), '')
+    this.getHistoryList()
   },
   methods: {
+    getHistoryList () {
+      const requestData = JSON.stringify({
+        executEndFromDt: this.searchData.start,
+        executEndToDt: this.searchData.end,
+      })
+      HistoryApi.getSOPList(requestData)
+      .then(result => {
+          console.log(result)
+          this.sopHistory.sopHistoryData = result.data.sopExecutEndHistList
+          result.data.param.totalCount = result.data.totCnt
+          this.sopHistory.pageInfo = result.data.param
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
   }
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
 .sub-container {
-  // height:100%;
-  // display: flex;
-  // flex-direction: column;
-  // .sub-wrapper {
-  //   flex-grow: 1;
-  //   display:flex;
-  //   flex-direction: column;
-  //   .sub-header {
-  //     height: 60px;
-  //   }
-  //   .sub-content {
-  //     flex-grow: 1;
-  //     display: flex;
-  //     flex-direction: column;
-  //     padding: 20px;
-  //     .header {
-  //       height: 30px;
-  //       display: none;
-  //     }
-  //     .content {
-  //       flex-grow: 1;
-  //       background-color: #fff;
-  //     }
-  //     .footer {
-  //       padding: 20px 0;
-  //     }
-  //   }
-  // }
   .search-wrapper-content {
     display: flex;
     flex-direction: column;

@@ -4,14 +4,8 @@ const TargetURL = '/n3n.sop.OprtrInfo'
 
 export default {
   // 운영자관리목록조회
-  getUsersList: () => {
+  getList: () => {
     return HTTP.post(`${TargetURL}.selectOprtrInfoList.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
   },
   // 운영자상세조회
   getUsersDetail: () => {
@@ -54,13 +48,7 @@ export default {
       })
   },
   // 운영자비밀번호초기화저장
-  resetUserPassword: () => {
-    return HTTP.post(`${TargetURL}.updatePasswordInit.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  resetPassword: (payload) => {
+    return HTTP.post(`${TargetURL}.updatePasswordInit.do`, payload)
   }
 }

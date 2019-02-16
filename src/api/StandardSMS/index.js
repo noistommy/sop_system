@@ -4,14 +4,8 @@ const TargetURL = '/n3n.sop.SmsManage'
 
 export default {
   // 표준문자목록조회
-  getStandardSMSList: () => {
+  getList: () => {
     return HTTP.post(`${TargetURL}.selectStdSmsList.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
   },
   // 표준문자상세정보조회
   getStandardSMSDetail: () => {

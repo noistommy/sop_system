@@ -1,6 +1,6 @@
 <template lang="pug">
   div#SOP.full
-    Modal( :type="setModal.type", :isVisible="setModal.isVisible", :headerText="setModal.title")
+    //- Modal( :type="setModal.type", :isVisible="setModal.isVisible", :headerText="setModal.title")
     div.ui.basepage
       Header
       div.container
@@ -90,17 +90,27 @@ i {
   margin-top: 3px;
 }
 
+.ui.button {
+  border-radius: 0 !important;
+}
+
+.ui.form {
+  .readonly {
+    border: 0 !important;
+  }
+}
+
 // base css
 #SOP {
   display: flex;
   height: 100%;
-  min-width: 1366px;
+  min-width: 1280px;
 }
 .basepage {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: #f3f2f2;
   .container {
     overflow:hidden;
     flex-grow: 1;
@@ -109,7 +119,7 @@ i {
       height: 100%;
     }
   }
-  .header {
+  > .header {
     width:100%;
   }
 }
@@ -135,20 +145,20 @@ i {
       }
     }
     .sub-content {
-
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      .header {
+      > .header {
         height: 30px;
       }
-      .content {
+      > .content {
         flex-grow: 1;
         background-color: #fff;
-        border:1px solid #ccc;
+        border:1px solid rgba(0, 0, 0, .15);
+        // box-shadow: 0 0 10px 0px rgba(0, 0, 0, .15);
         padding: 25px;
         .section{
-          overflow: auto;
+          overflow-y: auto;
           padding: 20px;
           &.left-section {
             width: 400px;
@@ -169,7 +179,7 @@ i {
       &.column {
           padding:0;
           flex-direction: row;
-          .content {
+          > .content {
             &.section {
               width: 40%;
               margin-right: 20px
@@ -190,6 +200,17 @@ i {
       border-bottom: 2px solid #f2f2f2;
     }
   }
+  .btnSet {
+    display:flex;
+    justify-content: space-between;
+    padding-top: 15px;
+    &.center {
+      justify-content: center;
+    }
+    &.right {
+      justify-content: flex-end;
+    }
+  }
 }
 
 .main-container {
@@ -205,6 +226,7 @@ i {
   {
     #app {
       display: block;
+      padding-right: 5.5rem;
       #SopList {
         position: absolute;
         top:0;

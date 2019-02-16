@@ -1,311 +1,169 @@
 <template lang="pug">
   div.home
-    div MAIN PAGE
-      div.ui.grid
-        div.six.wide.column
-            div.ui.segment
-              div.treeView.list.level-0
-                TreeView( v-for="item in treeviewData" :treeItem="item", :isActive="true", :level="1")
-
-        div.eight.wide.column
-          data-table(:headers="headers").ui.table.selectable.celled.tableset
-          div.table-wrapper
-            data-table(
-              v-model="selected"
-              :items="testData"
-            ).ui.table.selectable
-              <template slot="items" slot-scope="props">
-                tr(:class="{ active:props.selected }", @click="props.selected = !props.selected" )
-                    td.center.aligned {{props.item.emplNm}}
-                    td.center.aligned {{props.item.deptNm}}
-                    td.center.aligned {{props.item.ofcpsCdNm}}
-                    td.center.aligned.ellipse {{props.item.clsfCdNm}}
-                    td.center.aligned {{props.item.moblphonNo}}
-              </template>
-        div.six.wide.column
-          div.tablelist
-            div.lhead.ui.relaxed.divided.list
-              div.item.tablelistitem.th
-                div.cell.center 인사
-                div.cell.center 누가
-                div.cell.center 뭐
-            div.lbody.ui.relaxed.divided.list
-              div.item( v-for="item in 10").tablelistitem
-                div.cell 안녕하세요
-                div.cell 저는
-                div.cell 사람입니다
-        div.six.wide.column
-          button(@click.stop="test").ui.button TEST
-          button(@click.stop="test2").ui.button TEST2
-          button(@click="getAsync").ui.button {{getData}}
-          button(@click="secondgetAsync1").ui.button {{getData1}}
-          button(@click="setModalData(modalData)").ui.button MODAL
-          router-link(:to="{ name: 'notice-manage'}" ).ui.button NOTICE
-          Pagination( :totalCount="pageInfo.totalCount",
-            :currentPage="pageInfo.currentPage",
-            :recordCountPerPage="pageInfo.recordCountPerPage",
-            :startRow="pageInfo.startRow",
-            :endRow="pageInfo.endRow",
-            @currpage="setCurrentPage" )
-
-    
-
-    v-date-picker(mode='range', v-model='selectedDate')
-      div.ui.left.icon.input(:type='inputState.type', slot-scope='props')
-        input(type='text', 
-        :value='props.inputValue', 
-        :placeholder='inputState.message',
-        @input='props.updateValue($event.target.value, { formatInput: false, hidePopover: false })',
-        @change='props.updateValue($event.target.value, { formatInput: true, hidePopover: false })', 
-        expanded)
-        <i class="calendar alternate outline icon"></i>
-    
-    div
-      SearchComp(:startDate="selectedDateStart", :endDate="selectedDateEnd")
-        
+    div.ui.grid
+      div.ten.wide.column
+        div.main-wrapper
+          div.btn-link
+            router-link(:to="{ name: 'sophistory' }").ui.button.basic.small 자세히보기
+          div.header 
+            h3 SOP 실행이력
+          div.mainContent
+            div.content
+              DataTable(
+                v-model="selected"
+                :headers="mainSopHistory.headers",
+                :items="mainSopHistory.sopHistoryData",
+                :isFooter="mainSopHistory.isfooter",
+                :isListNumber="mainSopHistory.isListNumber",
+                :isPagination="mainSopHistory.isPagination",
+                :page="mainSopHistory.pageInfo"
+              ).ui.table.celled.selectable
+                <template slot="items" slot-scope="props">
+                  tr
+                    td.center.aligned(v-if="mainSopHistory.isListNumber") {{props.idx+1}}
+                    td {{props.item.date}}
+                    td {{props.item.manager}}
+                    td.center.aligned {{props.item.type}}
+                    td {{props.item.title}}
+                    td.ellipse {{props.item.location}}
+                    td {{props.item.endtime}}
+                </template>
+            router-link(:to="{ name: 'test-page'}" ).ui.button NOTICE
+      div.six.wide.column
+        div.main-wrapper
+          div.btn-link
+            router-link(:to="{ name: 'sensorhistory' }").ui.button.basic.small 자세히보기
+          div.header 
+            h3 센서탐지분석
+          div.mainContent
+            div.content.chart-wrapper
+              PieChart(:data="chartData.data", :options="chartData.options")
+      div.ten.wide.column
+        div.main-wrapper
+          div.btn-link
+            router-link(:to="{ name: 'smshistory' }").ui.button.basic.small 자세히보기
+          div.header 
+            h3 SMS전송이력
+          div.mainContent
+            div.content
+              DataTable(
+                v-model="selected"
+                :headers="mainSmsHistory.headers",
+                :items="mainSmsHistory.smsHistoryData",
+                :isFooter="mainSmsHistory.isfooter",
+                :isListNumber="mainSmsHistory.isListNumber",
+                :isPagination="mainSmsHistory.isPagination",
+                :page="mainSmsHistory.pageInfo"
+              ).ui.table.celled.selectable
+                <template slot="items" slot-scope="props">
+                  tr
+                    td.center.aligned {{props.item.no}}
+                    td {{props.item.date}}
+                    td {{props.item.manager}}
+                    td.center.aligned {{props.item.type}}
+                    td {{props.item.title}}
+                    td.ellipse {{props.item.location}}
+                    td {{props.item.endtime}}
+                </template>
+      div.six.wide.column
+        div.main-wrapper
+          div.btn-link
+            router-link(:to="{ name: 'notice-manage' }").ui.button.basic.small 자세히보기
+          div.header 
+            h3 공지사항
+          div.mainContent
+            div.content
+              div.ui.list.celled
+                div.item(v-for="item in 2")
+                  div.right.floated.content
+                    div 2019.0101
+                  div.content
+                    div 내용
+                
 </template>
 
 <script>
-// import { createNamespacedHelpers } from 'vuex'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import DataTable from '@/components/DataTable.vue'
-import Pagination from '@/components/Pagination.vue'
-import Modal from '@/components/Modal.vue'
-import TreeView from '@/components/TreeView.vue'
-import SearchComp from '@/components/SearchComp.vue'
-import axios from 'axios'
-
-import TestApi from '@/api/Test'
-
-// const { mapGetters } = createNamespacedHelpers('getData')
+import PieChart from '@/components/PieChart'
+import { mainSopHistoryHeader, mainSmsHistoryHeader } from '@/setting'
 
 export default {
   name: 'home',
-  components: {
-    DataTable,
-    Pagination,
-    Modal,
-    TreeView,
-    SearchComp
-  },
   data () {
     return {
-      selectedDateStart: new Date(2019, 0, 27),
-      selectedDateEnd: new Date(2019, 0, 30),
-      selectedDate: {
-        start: new Date(2019, 0, 23),
-        end: new Date(2019, 0, 30)  
-      },
-      // selectedValue: null,
-      childLevel : 0,
-      modalData: {
-        type: '',
-        title: '테스트 제목',
-        isVisilbe: true
-      },
-      pageInfo: {
-        totalCount: 301,
-        currentPage: 1,
-        recordCountPerPage: 10,
-        startRow: 0,
-        endRow: 10
-      },
       selected: [],
-      headers: [
-        { text: '이름', align: 'center', value: 'emplNm', size: '' },
-        { text: '직급', align: 'center', value: 'ofcpsCdNm', size: '' },
-        { text: '직위', align: 'center', value: 'clsfCdNm', size: '' },
-        { text: '부서', align: 'center', value: 'deptNm', size: '' },
-        { text: '휴대전화번호', align: 'center', value: 'moblphonNo', size: 'four' }
-      ],
-      testData: [
-      ],
-      treeviewData: [
-      ]
-    }
-  },
-  component: {
-    DataTable
-  },
-  created () {
-    console.log(this.$store.getters.getDataTest)
-    this.test()
-    this.test2()
-    TestApi.getData()
-    TestApi.getDataList()
-    
-  },
-  mounted() {
-    $('.ui.dropdown').dropdown();
-  },
-  computed: {
-    ...mapGetters([
-      'getData',
-      'getData1'
-    ]),
-    inputState() {
-      if (!this.selectedValue) {
-        return {
-          type: 'is-danger',
-          message: 'Date required.'
-        }
-      }
-      return {
-        type: 'is-primary',
-        message: ''
-      }
-    }
-  },
-  methods: {
-    ...mapActions('getData', [
-      'getAsync',
-      'getAsync1'
-    ]),
-    ...mapActions('getDataTest', {
-      secondgetAsync: 'getAsync',
-      secondgetAsync1: 'getAsync'
+      mainSopHistory: {
+        isfooter: false,
+        isPagination: false,
+        isListNumber: true,
+        pageInfo: {},
+        headers: mainSopHistoryHeader.headers,
+        sopHistoryData: []
+      },
+      mainSmsHistory: {
+        isfooter: false,
+        isPagination: false,
+        isListNumber: true,
+        pageInfo: {},
+        headers: mainSmsHistoryHeader.headers,
+        smsHistoryData: []
+      },
+      chartData: {
+        data: {
+          labels: ["Red", "Blue"],
+          datasets: [{
+            labels: 'Test Chart',
+            data: [80, 20],
+            backgroundColor: [],
+            borderColor: [],
+            borderWidth: 1
+          }]
+        },
+        options: {
 
-    }),
-    ...mapActions([
-      'setModalData'
-    ]),
-    activeSelected (index) {
-      console.log(index)
-      this.selected[index] = !this.selected[index]
-      console.log(this.selected[index])
-    },
-    test () {
-      axios.post('http://172.16.10.202:18080/n3n.sop.OrgnztInfo.selectDeptEmpInfoList.do', {
-      })
-        .then(res => {
-          this.testData = res.data.deptEmpInfoList
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
-    test2 () {
-      console.log('axios')
-      axios.post('http://172.16.10.202:18080/n3n.sop.OrgnztInfo.selectOrgnztInfoTrList.do', {})
-        .then(res => {
-          console.log(res.data.trOrgnList)
-          this.treeviewData = res.data.trOrgnList
-        })
-        .catch(err => {
-          console.log(err)
-        })
-    },
-    setCurrentPage (page) {
-      console.log(page)
-      this.pageInfo.currentpage = page
+        }
+      } 
     }
+  },
+  components: {
+    DataTable,
+    PieChart
+  },
+  created() {
   }
+  
 }
+
 </script>
 
-<style lang="less">
-.border-radius (@tl: 0px, @bl: 0px, @tr: 0px, @br: 0px) {
-  border-top-left-radius: @tl;
-  border-bottom-left-radius: @bl;
-  border-top-right-radius: @tr;
-  border-bottom-right-radius: @br;
-}
-
-  .tablelist {
-    width: 100%;
-    .lhead.list,
-    .lbody.list {
-      // box-shadow: inset 0 0px 50px -20px rgba(0, 0, 0, .35);
-      margin: 0;
-      border: 1px solid rgba(34,36,38,.15);
-      .border-radius(0, 5px, 0, 5px);
-      .tablelistitem.item {
-        padding: 0 !important;
-        display: flex;
-        .cell {
-          border-right: 1px solid rgba(34,36,38,.15);
-          padding: .9rem 1.2rem;
-          width: 20%;
-          &:last-child {
-            border:0;
-            flex-grow: 1;
-
-          }
-          &.center {text-align: center;}
-          &.left {text-align: left;}
-          &.right {text-align: right;}
-        }
-        &.th {
-          background-color: #f9fafb;
-          font-weight: bold;
-        }
-      }
-    }
-    .lhead.list {
-      .border-radius(5px, 0, 5px, 0);
-      border-bottom: 0
-    }
-    .lbody.list {
-      .border-radius(0, 5px, 0, 5px);
-      overflow-y: auto;
-      max-height: 400px;
-    }
-    ::-webkit-scrollbar {
-      width:0;
-      position: absolute;
-      top:0;
-      right: 0;
-    }
-  }
-  .testdatepicker {
+<style lang="less" scoped>
+.home {
+  padding: 10px 30px;
+  .main-wrapper {
     position: relative;
-    width: 45%;
-    display: flex;
-    > div {
-      padding-right: 15px !important;
-    }
-    .button {
+    width: 100%;
+    
+    .btn-link {
       position: absolute;
-      right: 0;
+      top: 9px;
+      right: 7px;
+    }
+    .header {
+      padding: 20px 0 20px 0;
+    }
+    .mainContent {
+      min-height: 330px;
+      max-height: 330px;
+      padding: 20px;
+      background-color: #fff;
+    }
+    .chart-wrapper {
+        width: 60%;
+        padding: 20px;
+        margin: 0 auto;
     }
   }
-
-  .table-wrapper {
-    width:100%;
-    height: 400px;
-    overflow-y: auto;
-    // border:  1.2px solid rgba(143, 143, 143, 0.15);
-    margin: 0; 
-    padding: 0;
-  }
-  .tableset th{
-    min-width: 150px;
-    &:last-child {
-      min-width: 200px;
-    }
-  }
-  // table.datatable {
-  //   width: 100%;
-  //   tbody {
-  //     height: 300px;
-  //     overflow-y: auto;
-  //     width: 100%;
-  //   }
-  //   thead.tbody,tr,td,th {
-  //     display: block;
-  //   }
-  //   tbody {
-  //     td {
-  //       float:left;
-  //     }
-  //   }
-  //   thead {
-  //     tr{
-  //       th {
-  //         float:left;
-  //       }
-  //     }
-  //   }
-  // }
-
+}
 </style>
+

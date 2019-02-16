@@ -6,6 +6,7 @@ import MemberManage from '@/views/MemberManage.vue'
 import HistoryManage from '@/views/HistoryManage.vue'
 import StandardInfoManage from '@/views/StandardInfoManage.vue'
 import NoticeManage from '@/views/NoticeManage.vue'
+import TestPage from '@/views/TestPage.vue'
 import {
   SopList,
   SopEdit,
@@ -26,6 +27,11 @@ import {
 
 Vue.use(Router)
 
+const requireAuth = () => (from, to, next) => {
+  if (localStorage.accessToken) return next()
+  next('/login')
+}
+
 export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -33,7 +39,8 @@ export default new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Home,
+      beforeEnter: requireAuth()
     },
     {
       path: '/sopmanage',
@@ -132,6 +139,11 @@ export default new Router({
           component: PublicCode
         },
         {
+          path: 'notice',
+          name: 'notice-manage',
+          component: NoticeManage
+        },
+        {
           path: 'systemuser',
           name: 'system-user',
           component: SystemUser
@@ -139,9 +151,9 @@ export default new Router({
       ]
     },
     {
-      path: '/notice',
-      name: 'notice-manage',
-      component: NoticeManage
+      path: '/testpage',
+      name: 'test-page',
+      component: TestPage
     },
     {
       path: '/login',

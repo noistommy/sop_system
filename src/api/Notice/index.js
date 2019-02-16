@@ -4,53 +4,23 @@ const TargetURL = '/n3n.sop.Notice'
 
 export default {
   // 공지사항목록조회
-  getNoticeList: () => {
+  getList: () => {
     return HTTP.post(`${TargetURL}.selectNoticeList.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
   },
   // 공지사항상세조회
-  getNoticeDetail: () => {
+  getItem: () => {
     return HTTP.post(`${TargetURL}.selectNoticeDetail.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
   },
   // 공지사항저장
-  setNotice: () => {
+  setItem: () => {
     return HTTP.post(`${TargetURL}.saveNotice.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
   },
   // 공지사항수정
-  updateNotice: () => {
+  updateItem: () => {
     return HTTP.post(`${TargetURL}.saveNotice.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
   },
   // 공지사항목록삭제
-  deleteNotice: () => {
-    return HTTP.post(`${TargetURL}.deleteNotice.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  deleteItem: (payload) => {
+    return HTTP.post(`${TargetURL}.deleteNotice.do`, payload)
   }
 }

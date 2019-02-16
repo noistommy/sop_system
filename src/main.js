@@ -7,11 +7,18 @@ import axios from 'axios'
 import VCalendar from 'v-calendar'
 import 'v-calendar/lib/v-calendar.min.css'
 
+import VModal from 'vue-js-modal'
+
 // Import Semantic ui
 import '../semantic/dist/semantic'
 import '../semantic/dist/semantic.min.css'
 
 import './assets/css/fontello.css'
+Vue.use(VModal, {
+  dynamic: true,
+  injectModalsContainer: true,
+  dialog: true
+})
 
 Vue.use(VCalendar, {
   firstDayOfWeek: 1

@@ -4,14 +4,8 @@ const TargetURL = '/n3n.sop.CmmnCd'
 
 export default {
   // 공통코드목록조회
-  getPublicCodeList: () => {
+  getList: () => {
     return HTTP.post(`${TargetURL}.selectCmmnCdList.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
   },
   // 공통코드상세정보조회
   getPublicCodeDetail: () => {

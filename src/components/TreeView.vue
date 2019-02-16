@@ -1,14 +1,14 @@
 <template lang="pug">
-    div.treeitem
+    div.treeitem(v-on:dblclick.stop="setActive")
         div.treecontent
-            div.treeheader(@mouseover.self="selectHover")
-                i.icon.caret(:class="activeItem ? 'down' : 'right'", @click="setActive", v-if="treeItem.children != ''")
+            div.treeheader(@mouseover.self="selectHover", :class="{active:selectedItem}", @click.stop="getList(treeItem)")
+                i.icon.caret(:class="activeItem ? 'down' : 'right'", v-if="treeItem.children != ''", @click.stop="setActive")
                 i.icon(v-else)
                 span {{treeItem.title}} 
                 span.badge(v-if="treeItem.children != ''") {{treeItem.children.length}}
             <template>
                 div.list(:class="[{active:activeItem}, `level-${level}`]", v-if="treeItem.children != ''" )
-                    tree-view( v-for="item in treeItem.children", :treeItem="item", :level="childLevel", , :isActive=" branchActive")
+                    tree-view(v-model="selectTeam", @select="getItemInfo", v-for="item in treeItem.children", :treeItem="item", :level="childLevel", :isActive=" branchActive")
             </template>
 </template>
 
@@ -22,29 +22,43 @@ export default {
     isRoot: Boolean,
     isActive: Boolean,
     level: Number,
+    value: Object
   },
   data() {
       return {
-          childLevel: this.level,
+          childLevel: this.level + 1,
           childrenList: this.treeItem,
-          branchActive: false,
-          activeItem: this.isActive
+          branchActive: true,
+          activeItem: this.isActive,
+          selectedItem: false,
+          selectTeam: {}
       }
   },
   components: {
     'tree-view': TreeView
   },
-  created() {
-    this.childLevel = this.childLevel + 1
-    
+  created () {
   },
   methods: {
       setActive() {
           return this.activeItem = !this.activeItem
       },
       selectHover(event) {
+      },
+      getList(selItem) {
+        //   if(selItem.title == this.selectTeam.title){
+        //       this.selectedItem = true
+        //   }
 
-        //   $(event.target).css('background', '#ccc')
+        //   if(!this.selectedItem){
+        //       console.log(this.selectedItem)
+        //       this.selectedItem = !this.selectedItem
+        //   }
+          this.$emit('select', selItem)
+      },
+      getItemInfo(item) {
+        this.$emit('select', item)
+        this.$emit('input', item)
       }
   }
 }
@@ -61,8 +75,8 @@ export default {
   }
 
 .treeView .list {
+    overflow: hidden;
     height: 0;
-    overflow: auto;
     padding: 0 !important;
     .transition;
     .treeitem {
@@ -78,8 +92,16 @@ export default {
                     color: #fff;
                     font-weight: bold;
                 }
+                &.active {
+                    background-color: #80b7be;
+                    >.treeheader {
+                        color: #525252;
+                        font-weight: bold;
+                    }
+                }
             }
         }
+        
     }
     &.active{
         height: auto;
@@ -119,7 +141,7 @@ export default {
 
 
 .level-0 {
-    height: 100%;
+    max-height: 650px;
     background-color: #fff;
     background-color: #454545;
     color: #f2f2f2;

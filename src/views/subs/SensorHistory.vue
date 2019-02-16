@@ -3,7 +3,11 @@
     div.sub-wrapper
       div.sub-header
         div.title 센서탐지이력
-        SearchComp(:startDate="selectedDateStart", :endDate="selectedDateEnd", :isDateSearch="true")
+        SearchComp(
+          v-model="searchData", 
+          :startDate="selectedDateStart", 
+          :endDate="selectedDateEnd", 
+          :isDateSearch="true")
         div.divide
       div.sub-content
         div.content
@@ -32,7 +36,7 @@
 <script>
 import DataTable from '@/components/DataTable.vue'
 import SearchComp from '@/components/SearchComp.vue'
-import { sopHistoryTableHeader } from '@/setting'
+import { sensorHistoryTableHeader } from '@/setting'
 
 export default {
   name: 'sensorhistory',
@@ -42,15 +46,16 @@ export default {
   },
   data () {
     return {
+      selected: [],
+      searchData: {},
       selectedDateStart: new Date(2019, 0, 27),
       selectedDateEnd: new Date(),
       searchType: 'range',
-      selected: [],
       isfooter: true,
       isPagination: false,
       isListNumber: true,
       pageInfo: {},
-      headers: sopHistoryTableHeader.headers,
+      headers: sensorHistoryTableHeader.headers,
       sopHistoryData: [
       ]
     }

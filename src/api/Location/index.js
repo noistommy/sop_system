@@ -4,20 +4,13 @@ const TargetURL = '/n3n.sop.BuldManage'
 
 export default {
   // 건물관리목록조회
-  getLocationList: () => {
-    return HTTP.post(`${TargetURL}.selectBuldManageList.do`, {}).then(res => {
-      return res.data
-    }).catch(error => {
-      return console.log(`ERROR:${error}`)
-    })
+  getList: () => {
+    return HTTP.post(`${TargetURL}.selectBuldManageList.do`, {})
   },
   // 건물층정보목록조회
-  getFloorList: () => {
-    return HTTP.post(`${TargetURL}.selectDeptEmpInfoList.do`, {}).then(res => {
-      return res.data
-    }).catch(error => {
-      return console.log(`ERROR:${error}`)
-    })
+  getItem: (payload) => {
+    console.log(payload)
+    return HTTP.post(`${TargetURL}.selectBuldFloorInfoList.do`, payload)
   },
   // 건물상세정보수정
   updateLocationList: () => {
@@ -28,11 +21,7 @@ export default {
     })
   },
   // 건물층정보목록수정
-  updateFloorList: () => {
-    return HTTP.post(`${TargetURL}.updateBuldfloorInfo.do`, {}).then(res => {
-      return res.data
-    }).catch(error => {
-      return console.log(`ERROR:${error}`)
-    })
+  updateItem: (payload) => {
+    return HTTP.post(`${TargetURL}.updateBuldfloorInfo.do`, payload)
   }
 }

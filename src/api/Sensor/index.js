@@ -4,24 +4,12 @@ const TargetURL = '/n3n.sop.EqpmnFgManage'
 
 export default {
   // 장비구분관리목록조회
-  getSensorList: () => {
+  getList: () => {
     return HTTP.post(`${TargetURL}.selectEqpmnFgManageList.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
   },
   // 장비구분별센서목록조회
-  getSensorTypeList: () => {
-    return HTTP.post(`${TargetURL}.selectEqpmnFgManageList.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  getDetail: (payload) => {
+    return HTTP.post(`${TargetURL}Service.selectEqpmnFgSensorList.do`, payload)
   },
   // 장비구분상세정보수정
   updateSensorDetail: () => {

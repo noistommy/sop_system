@@ -7,8 +7,8 @@
         div.userSetting
           //- div.user
           //-   | User님
-          router-link(:to="{ name: 'login' }" class="ui button mini") 로그아웃
-          router-link(:to="{ name: 'login' }" class="ui button mini") 비밀번호변경
+          div(@click="onLogout", class="ui button mini") 로그아웃
+          div(@click="resetPassword" class="ui button mini") 비밀번호변경
       div.item.totalAlarm
         div.header
           span.alarm-icon
@@ -39,6 +39,9 @@
 </template>
 
 <script>
+import ResetPassword from '@/components/ResetPassword'
+import { mapActions } from 'vuex'
+import About from '@/views/About'
 
 export default {
   name: 'run-sop-list',
@@ -47,10 +50,31 @@ export default {
       activeSide: true
     }
   },
+  components: {
+    ResetPassword
+  },
   methods: {
+    ...mapActions([
+      'logout'
+    ]),
     toggleSideLayer () {
       console.log()
       this.activeSide = !this.activeSide
+    },
+    onLogout() {
+      this.logout().then((result) => {
+        console.log(result)
+        this.$router.push('/login')
+      }).catch(error => {
+        console.log(error.response)
+      })
+    },
+    resetPassword () {
+      this.$modal.show(ResetPassword, {
+        title: '비밀번호변경',
+      }, {
+        width: '350px'
+      })
     }
   }
 }
@@ -86,6 +110,7 @@ export default {
     padding: 0;
     height: 100%;
     margin:0;
+    z-index:100;
     -webkit-box-shadow: 0 0 20px 0 #333;
             box-shadow: 0 0 20px 0 #333;
     .transition;
