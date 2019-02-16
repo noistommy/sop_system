@@ -3,7 +3,6 @@
     div.sub-wrapper
       div.sub-header
         div.title 건물/층 관리
-<<<<<<< HEAD
       div.sub-content.column
         div.content.section.section-1
           h3.title 건물관리
@@ -15,34 +14,12 @@
               :itemKey="locationInfo.itemkey",
               :isListNumber="locationInfo.isListNumber",
             )
-=======
-        SearchComp(
-            :isDateSearch="false",
-            :isTextSearch="true")
-            template( slot="condition1", slot-scope="props")
-              select.ui.dropdown
-                option 1
-                option 2
-                option 3
-      div.sub-content.column
-        div.content.section.section-1
-            DataTable(
-              v-model="selected"
-              :headers="locationInfo.headers",
-              :items="locationInfo.sopHistoryData",
-              :isFooter="locationInfo.isfooter",
-              :isListNumber="locationInfo.isListNumber",
-              :isPagination="locationInfo.isPagination",
-              :page="locationInfo.pageInfo"
-            ).ui.table.celled.selectable
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
               <template slot="items" slot-scope="props">
                 div.item.lr.listitem(:class="{active:props.selected}", @click.stop="selectedItem(props)" )
                   .ld {{props.item.buldId}}
                   .ld {{props.item.buldNm}}
               </template>
         div.content.section.section-2
-<<<<<<< HEAD
           h3.title 건물상세정보
           div.contant-wrapper
             div.setion_1
@@ -94,28 +71,6 @@
                 div.buttons
                   button.ui.button.blue(@click="updateDetail") 저장
                   button.ui.button(@click="reload") 취소
-=======
-          DataTable(
-              v-model="selected"
-              :headers="locationFloor.headers",
-              :items="locationFloor.locationFloorData",
-              :isFooter="locationFloor.isfooter",
-              :isListNumber="locationFloor.isListNumber",
-              :isPagination="locationFloor.isPagination",
-              :page="locationFloor.pageInfo"
-            ).ui.table.celled.selectable
-              <template slot="items" slot-scope="props">
-                tr
-                  td.center.aligned {{props.item.no}}
-                  td {{props.item.date}}
-                  td {{props.item.manager}}
-                  td.center.aligned {{props.item.type}}
-                  td {{props.item.title}}
-                  td.ellipse {{props.item.location}}
-                  td {{props.item.endtime}}
-              </template>
-
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       div.sub-footer
 </template>
 
@@ -124,17 +79,13 @@ import DataList from '@/components/DataList.vue'
 import DataTable from '@/components/DataTable.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { locationInfoHeader, locationFloorHeader } from '@/setting'
-<<<<<<< HEAD
 import LocationApi from '@/api/Location'
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 
 export default {
   name: 'location-info',
   data () {
     return {
       locationInfo: {
-<<<<<<< HEAD
         selected: [],
         headers: locationInfoHeader.headers,
         locationInfoData: [],
@@ -154,24 +105,6 @@ export default {
         itemkey: 'buldFloor'
       },
       checkedList: []
-=======
-        headers: locationInfoHeader.headers,
-        locationInfoData: [],
-        isFooter: false,
-        idPagination: false,
-        isListNumber: false,
-        pageInfo: {} 
-      },
-      locationFloor: {
-        headers: locationFloorHeader.headers,
-        locationFloorData: [],
-        isFooter: false,
-        idPagination: false,
-        isListNumber: false,
-        pageInfo: {} 
-      },
-      selected: []
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     }
   },
   components: {

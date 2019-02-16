@@ -17,19 +17,13 @@
                 input(v-model="loginInfo.oprtrPassword", type="password",name="password", placeholder="사용자 비밀번호")
             .field.loginBtn
               .ui.fluid.large.teal.button(@click="onLogin") Login
-<<<<<<< HEAD
               .ui.fluid.large.teal.button(@click="onLogout") Logout
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 import { codeGenerator } from '@/util'
-<<<<<<< HEAD
 import ResetPassword from '@/components/ResetPassword'
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 
 export default {
   name: 'login',
@@ -42,24 +36,17 @@ export default {
       message: ''
     }
   },
-<<<<<<< HEAD
   created() {
   },
   methods: {
     ...mapActions([
       'login',
       'logout'
-=======
-  methods: {
-    ...mapActions([
-      'login'
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     ]),
     onLogin() {
       const requestData = JSON.stringify(this.loginInfo)
       this.login(requestData).then((result) => {
         console.log(result)
-<<<<<<< HEAD
         if(result == 'undefined') return 
         if(result.data.msgCode == 'Y') {
           this.$router.replace('/')
@@ -72,19 +59,10 @@ export default {
           })
         }else {
           this.$modal.show('dialog', codeGenerator(result.data.msgCode, result.data.msgValue))
-=======
-        if(result == 'undefined') return
-        if(result.msgCode == 'Y') {
-          this.redirect()
-        } else {
-          const dialogData = codeGenerator(result.msgCode, result.msgValue)
-          this.showDialog(dialogData)
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
         }
       })
     },
     redirect () {
-<<<<<<< HEAD
       const {search} = window.location
       if(search === '') {
         this.$router.push('/')
@@ -101,17 +79,10 @@ export default {
     },
     showDialog(el,data) {
       el.$modal.show('dialog', {
-=======
-      this.$router.push('/')
-    },
-    showDialog(data) {
-      this.$modal.show('dialog', {
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
         title: data.title,
         text: data.text,
         buttons: data.button
       })
-<<<<<<< HEAD
     },
     onLogout() {
       this.logout().then((result) => {
@@ -120,8 +91,6 @@ export default {
       }).catch(error => {
         console.log(error.response)
       })
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     }
   }
 }

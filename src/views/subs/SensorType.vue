@@ -3,7 +3,6 @@
     div.sub-wrapper
       div.sub-header
         div.title 장비유형 관리
-<<<<<<< HEAD
       div.sub-content.column
         div.content.section.section-1
           h3.title 장비관리
@@ -15,34 +14,12 @@
               :itemKey="sensorType.itemkey",
               :isListNumber="sensorType.isListNumber",
             )
-=======
-        SearchComp(
-          :isDateSearch="false",
-          :isTextSearch="true")
-          template( slot="condition1", slot-scope="props")
-            select.ui.dropdown
-              option 1
-              option 2
-              option 3
-      div.sub-content.column
-        div.content.section.section-1
-            DataTable(
-              v-model="selected"
-              :headers="sensorType.headers",
-              :items="sensorType.sensorTypeData",
-              :isFooter="sensorType.isfooter",
-              :isListNumber="sensorType.isListNumber",
-              :isPagination="sensorType.isPagination",
-              :page="sensorType.pageInfo"
-            ).ui.table.celled.selectable
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
               <template slot="items" slot-scope="props">
                 div.item.lr.listitem(:class="{active:props.selected}", @click="selectedItem(props)" )
                   .ld.center {{props.item.eqpmnClId}}
                   .ld {{props.item.eqpmnClNm}}
               </template>
         div.content.section.section-2
-<<<<<<< HEAD
           h3.title 장비상세정보
           div.contant-wrapper
             div.section_1
@@ -91,27 +68,6 @@
                     div.buttons
                       button.ui.button.blue 저장
                       button.ui.button 취소
-=======
-          DataTable(
-              v-model="selected"
-              :headers="sensorByType.headers",
-              :items="sensorByType.sensorByTypeData",
-              :isFooter="sensorByType.isfooter",
-              :isListNumber="sensorByType.isListNumber",
-              :isPagination="sensorByType.isPagination",
-              :page="sensorByType.pageInfo"
-            ).ui.table.celled.selectable
-              <template slot="items" slot-scope="props">
-                tr
-                  td.center.aligned {{props.item.no}}
-                  td {{props.item.date}}
-                  td {{props.item.manager}}
-                  td.center.aligned {{props.item.type}}
-                  td {{props.item.title}}
-                  td.ellipse {{props.item.location}}
-                  td {{props.item.endtime}}
-              </template>
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       div.sub-footer
 </template>
 
@@ -120,17 +76,13 @@ import DataTable from '@/components/DataTable.vue'
 import DataList from '@/components/DataList.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { sensorTypeHeader, sensorByTypeHeader } from '@/setting'
-<<<<<<< HEAD
 import SensorApi from '@/api/Sensor'
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 
 export default {
   name: 'sensor-type',
   data () {
     return {
       sensorType: {
-<<<<<<< HEAD
         selected: [],
         headers: sensorTypeHeader.headers,
         sensorTypeData: [],
@@ -147,24 +99,6 @@ export default {
         isListNumber: false,
         pageInfo: {} 
       }
-=======
-        headers: sensorTypeHeader.headers,
-        sensorTypeData: [],
-        isFooter: false,
-        idPagination: false,
-        isListNumber: false,
-        pageInfo: {} 
-      },
-      sensorByType: {
-        headers: sensorByTypeHeader.headers,
-        sensorByTypeData: [],
-        isFooter: false,
-        idPagination: false,
-        isListNumber: false,
-        pageInfo: {} 
-      },
-      selected: []
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     }
   },
   components: {

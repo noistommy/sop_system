@@ -39,13 +39,9 @@
 </template>
 
 <script>
-<<<<<<< HEAD
 import ResetPassword from '@/components/ResetPassword'
 import { mapActions } from 'vuex'
 import About from '@/views/About'
-=======
-import { mapActions } from 'vuex'
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 
 export default {
   name: 'run-sop-list',
@@ -69,7 +65,6 @@ export default {
       this.logout().then((result) => {
         console.log(result)
         this.$router.push('/login')
-<<<<<<< HEAD
       }).catch(error => {
         console.log(error.response)
       })
@@ -79,8 +74,6 @@ export default {
         title: '비밀번호변경',
       }, {
         width: '350px'
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       })
     }
   }

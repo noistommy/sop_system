@@ -51,17 +51,10 @@ const mainSopHistoryHeader = {
 // sms전송이력
 const mainSmsHistoryHeader = {
   headers: [
-<<<<<<< HEAD
     { text: '날짜', align: 'center', value: 'regDt', size: '' },
     { text: '위치', align: 'center', value: 'buldNm', size: 'four' },
     { text: '전송인원', align: 'center', value: 'cnt', size: '' },
     { text: '전송내용', align: 'center', value: 'smsContents', size: 'six' }
-=======
-    { text: '날짜', align: 'center', value: 'date', size: '' },
-    { text: '위치', align: 'center', value: 'location', size: 'four' },
-    { text: '전송인원', align: 'center', value: 'endtime', size: '' },
-    { text: '전송내용', align: 'center', value: 'endtime', size: 'six' }
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   ]
 }
 
@@ -81,19 +74,11 @@ const sopHistoryTableHeader = {
 // sms전송이력
 const smsHistoryTableHeader = {
   headers: [
-<<<<<<< HEAD
     { text: '날짜', align: 'center', value: 'regDt', size: '' },
     { text: '위치', align: 'center', value: 'buldNm', size: 'four' },
     { text: '전송인원', align: 'center', value: 'cnt', size: '' },
     { text: '전송내용', align: 'center', value: 'smsContents', size: 'six' },
     { text: '완료', align: 'center', value: 'result', size: '' }
-=======
-    // { text: 'NO', align: 'center', value: 'no', size: '' },
-    { text: '날짜', align: 'center', value: 'date', size: '' },
-    { text: '위치', align: 'center', value: 'location', size: 'four' },
-    { text: '전송인원', align: 'center', value: 'endtime', size: '' },
-    { text: '전송내용', align: 'center', value: 'endtime', size: 'six' }
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   ]
 }
 // 센서탐지이력
@@ -148,13 +133,8 @@ const partnerGroupeHeader = {
 // 건물/층 관리 - 건물관리
 const locationInfoHeader = {
   headers: [
-<<<<<<< HEAD
     { text: '건물ID', align: 'center', value: 'buldId', size: '1' },
     { text: '건물명', align: 'center', value: 'buldNm', size: '1' }
-=======
-    { text: '건물ID', align: 'center', value: 'buldId', size: '' },
-    { text: '건물명', align: 'center', value: 'buldNm', size: 'ten' }
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   ]
 }
 // 건물/층 관리 - 건물층 정보
@@ -167,13 +147,8 @@ const locationFloorHeader = {
 // 장비관리-장비구분관리
 const sensorTypeHeader = {
   headers: [
-<<<<<<< HEAD
     { text: '종류', align: 'center', value: 'eqpmnClId', size: '1' },
     { text: '종류명', align: 'center', value: 'eqpmnClNm', size: '3' }
-=======
-    { text: '종류', align: 'center', value: 'eqpmnClId', size: '' },
-    { text: '종류명', align: 'center', value: 'eqpmnClNm', size: 'ten' }
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   ]
 }
 // 장비관리-구분별 센서 목록
@@ -182,34 +157,21 @@ const sensorByTypeHeader = {
     { text: 'ID', align: 'center', value: 'iwId', size: '' },
     { text: '센서명', align: 'center', value: 'sensorNm', size: '' },
     { text: '건물명', align: 'center', value: 'buldNm', size: '' },
-<<<<<<< HEAD
     { text: '건물층', align: 'center', value: 'buldFloor', size: 'two' },
     { text: '알람허용여부', align: 'center', value: 'alarmPermYn', size: 'three' }
-=======
-    { text: '건물층', align: 'center', value: 'buldFloor', size: '' },
-    { text: '알람허용여부', align: 'center', value: 'alarmPermYn', size: '' }
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   ]
 }
 // 표준문자관리
 const standardSmsHeader = {
   headers: [
-<<<<<<< HEAD
     { text: '문자제목', align: 'center', value: 'smsTitle', size: 'twelve' },
-=======
-    { text: '문자제목', align: 'center', value: 'smsTitle', size: '' },
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     { text: '사용여부', align: 'center', value: 'useYn', size: '' }
   ]
 }
 // 표준방송관리
 const standardBroadHeader = {
   headers: [
-<<<<<<< HEAD
     { text: '방송제목', align: 'center', value: 'brdcstTitle', size: 'twelve' },
-=======
-    { text: '방송제목', align: 'center', value: 'brdcstTitle', size: '' },
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     { text: '사용여부', align: 'center', value: 'useYn', size: '' }
   ]
 }
@@ -245,7 +207,6 @@ const systemUserHeader = {
     { text: '운영권한', align: 'center', value: 'oprtrFgCdNm', size: '' }
   ]
 }
-<<<<<<< HEAD
 
 // 재난절차목록
 
@@ -257,8 +218,6 @@ const sopListHeader = {
     { text: 'SOP제목', align: 'center', value: 'sopTitle', size: 'eight' }
   ]
 }
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 
 export {
   sopMenuList,
@@ -282,10 +241,6 @@ export {
   publicCodeDetailHeader,
   systemUserHeader,
   mainSopHistoryHeader,
-<<<<<<< HEAD
   mainSmsHistoryHeader,
   sopListHeader
-=======
-  mainSmsHistoryHeader
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 }

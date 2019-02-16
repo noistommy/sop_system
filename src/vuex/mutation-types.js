@@ -11,11 +11,8 @@ const createAsyncMutation = (type) => ({
 })
 
 export const LOGIN = 'LOGIN'
-<<<<<<< HEAD
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_FAILED = 'LOGIN_FAILED'
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 export const LOGOUT = 'LOGOUT'
 
 export const SET_MODAL_STATE = 'SET_MODAL_STATE'

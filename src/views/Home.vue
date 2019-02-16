@@ -1,7 +1,6 @@
 <template lang="pug">
   div.home
     div.ui.grid
-<<<<<<< HEAD
       div.ten.wide.column
         div.main-wrapper
           div.btn-link
@@ -81,70 +80,12 @@
                   div.content
                     div 내용
                 
-=======
-      div.eight.wide.column
-        div.mainContent
-          h3.header SOP 실행이력
-          div.content
-            DataTable(
-              v-model="selected"
-              :headers="mainSopHistory.headers",
-              :items="mainSopHistory.sopHistoryData",
-              :isFooter="mainSopHistory.isfooter",
-              :isListNumber="mainSopHistory.isListNumber",
-              :isPagination="mainSopHistory.isPagination",
-              :page="mainSopHistory.pageInfo"
-            ).ui.table.celled.selectable
-              <template slot="items" slot-scope="props">
-                tr
-                  td.center.aligned(v-if="mainSopHistory.isListNumber") {{props.idx+1}}
-                  td {{props.item.date}}
-                  td {{props.item.manager}}
-                  td.center.aligned {{props.item.type}}
-                  td {{props.item.title}}
-                  td.ellipse {{props.item.location}}
-                  td {{props.item.endtime}}
-              </template>
-          router-link(:to="{ name: 'test-page'}" ).ui.button NOTICE
-      div.eight.wide.column
-        div.mainContent
-          h3.header 센서탐지분석
-      div.eight.wide.column
-        div.mainContent
-          h3.header SOP 실행이력
-          div.content
-            DataTable(
-              v-model="selected"
-              :headers="mainSmsHistory.headers",
-              :items="mainSmsHistory.smsHistoryData",
-              :isFooter="mainSmsHistory.isfooter",
-              :isListNumber="mainSmsHistory.isListNumber",
-              :isPagination="mainSmsHistory.isPagination",
-              :page="mainSmsHistory.pageInfo"
-            ).ui.table.celled.selectable
-              <template slot="items" slot-scope="props">
-                tr
-                  td.center.aligned {{props.item.no}}
-                  td {{props.item.date}}
-                  td {{props.item.manager}}
-                  td.center.aligned {{props.item.type}}
-                  td {{props.item.title}}
-                  td.ellipse {{props.item.location}}
-                  td {{props.item.endtime}}
-              </template>
-      div.eight.wide.column
-        div.mainContent content4
-    
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 import DataTable from '@/components/DataTable.vue'
-<<<<<<< HEAD
 import PieChart from '@/components/PieChart'
-=======
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 import { mainSopHistoryHeader, mainSmsHistoryHeader } from '@/setting'
 
 export default {
@@ -167,7 +108,6 @@ export default {
         pageInfo: {},
         headers: mainSmsHistoryHeader.headers,
         smsHistoryData: []
-<<<<<<< HEAD
       },
       chartData: {
         data: {
@@ -189,13 +129,6 @@ export default {
   components: {
     DataTable,
     PieChart
-=======
-      }
-    }
-  },
-  components: {
-    DataTable
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   },
   created() {
   }
@@ -206,7 +139,6 @@ export default {
 
 <style lang="less" scoped>
 .home {
-<<<<<<< HEAD
   padding: 10px 30px;
   .main-wrapper {
     position: relative;
@@ -231,18 +163,6 @@ export default {
         padding: 20px;
         margin: 0 auto;
     }
-=======
-  padding: 1rem;
-  .mainContent {
-    padding: 10px;
-    background-color: #fff;
-    .header {
-
-    }
-    .content {
-      
-    }
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   }
 }
 </style>

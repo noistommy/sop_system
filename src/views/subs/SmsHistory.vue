@@ -24,20 +24,11 @@
             <template slot="items" slot-scope="props">
               tr
                 td(v-if="isListNumber").center.aligned {{props.idx}}
-<<<<<<< HEAD
                 td {{props.item.regDt}}
                 td {{props.item.buldNm}}
                 td.center.aligned {{props.item.cnt}}
                 td {{props.item.smsContents}}
                 td.ellipse {{props.item.result}}
-=======
-                td {{props.item.date}}
-                td {{props.item.manager}}
-                td.center.aligned {{props.item.type}}
-                td {{props.item.title}}
-                td.ellipse {{props.item.location}}
-                td {{props.item.endtime}}
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
             </template>
         div.footer
 </template>

@@ -5,27 +5,17 @@
         div.title 조직도 관리
         SearchComp(v-model="searchData", :isTextSearch="true", @search="getList")
           template(slot="condition1", slot-scope="props")
-<<<<<<< HEAD
             select.ui.dropdown(v-model="searchData.type")
               option(value="", default) 분류
               option(value="00") 전체
-=======
-            select.ui.dropdown
-              option(value="00", default) 전제
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
               option(value="01") 팀명
               option(value="02") 이름
       div.sub-content
         div.content.row
           div.section.left-section
-<<<<<<< HEAD
             div.treeView-wrapper
               div.treeView.list.level-0
                     TreeView(v-model="selectTeam", @select="getItemInfo", v-for="item in treeviewData" :treeItem="item", :isActive="rootActive", :level="1", @search="getList")
-=======
-            div.treeView.list.level-0
-                  TreeView(v-model="selectTeam" v-for="item in treeviewData" :treeItem="item", :isActive="rootActive", :level="1")
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
           div.section.right-section
             h3.table-title {{selectTeam.title}}
               span.total 총 {{memberGroup.pageInfo.totalCount}}명
@@ -39,11 +29,7 @@
               :isListNumber="memberGroup.isListNumber",
               :page="memberGroup.pageInfo",
               @search="getList"
-<<<<<<< HEAD
             ).ui.table
-=======
-            ).ui.table.selectable
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
               <template slot="items" slot-scope="props">
                 tr
                   td.center.aligned {{props.item.emplNm}}
@@ -86,7 +72,6 @@ export default {
       selected: [],
       treeviewData: [],
       rootActive: true,
-<<<<<<< HEAD
       selectTeam: {},
       searchData: {
         searchCnd: '',
@@ -94,26 +79,12 @@ export default {
         childDeptId: '',
         upperDeptId: '',
         currPage: 1,
-=======
-      selectTeam: '',
-      searchData: {
-        type: "00",
-        value: ""
-      },
-      requestData: {
-        currPage: 1
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       }
     }
   },
   created () {
-<<<<<<< HEAD
     this.getTreeList()
     
-=======
-    this.getList()
-    this.test2()
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   },
   computed: {
   },
@@ -122,7 +93,6 @@ export default {
       return (this.pageInfo.currentPageNo - 1) * 10 + num
     },
     getList (targetNum) {
-<<<<<<< HEAD
       if(targetNum == undefined) {targetNum = 1}
       if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
       this.searchData.currPage = targetNum
@@ -138,24 +108,6 @@ export default {
       }).catch(error => {
         console.log(error)
       })
-=======
-      this.requestData.currPage = targetNum
-      const request = JSON.stringify(this.requestData)
-      const result = MemberApi.getItems(request)
-      console.log(`MemberList:${result}`)
-      this.memberGroup.memberGoupData = result.deptEmpInfoList
-      this.memberGroup.pageInfo = result.param
-      this.memberGroup.pageInfo.totalCount = result.totCnt
-      // axios.post('http://172.16.10.202:18080/n3n.sop.OrgnztInfo.selectDeptEmpInfoList.do', JSON.stringify(this.requestData))
-      //   .then(res => {
-      //     this.memberGroup.memberGoupData = res.data.deptEmpInfoList
-      //     this.memberGroup.pageInfo = res.data.param
-      //     this.memberGroup.pageInfo.totalCount = res.data.totCnt
-      //   })
-      //   .catch(err => {
-      //     console.log(err)
-      //   })
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     },
     getTreeList () {
       // const request = JSON.stringify(this.requestData)

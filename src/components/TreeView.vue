@@ -1,15 +1,8 @@
 <template lang="pug">
-<<<<<<< HEAD
     div.treeitem(v-on:dblclick.stop="setActive")
         div.treecontent
             div.treeheader(@mouseover.self="selectHover", :class="{active:selectedItem}", @click.stop="getList(treeItem)")
                 i.icon.caret(:class="activeItem ? 'down' : 'right'", v-if="treeItem.children != ''", @click.stop="setActive")
-=======
-    div.treeitem(:class="{active:selectedItem}", v-on:dblclick.stop="getList", , @click.stop="setActive")
-        div.treecontent
-            div.treeheader(@mouseover.self="selectHover")
-                i.icon.caret(:class="activeItem ? 'down' : 'right'", v-if="treeItem.children != ''")
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
                 i.icon(v-else)
                 span {{treeItem.title}} 
                 span.badge(v-if="treeItem.children != ''") {{treeItem.children.length}}
@@ -28,12 +21,8 @@ export default {
     treeItem: Object,
     isRoot: Boolean,
     isActive: Boolean,
-<<<<<<< HEAD
     level: Number,
     value: Object
-=======
-    level: Number
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   },
   data() {
       return {
@@ -41,22 +30,14 @@ export default {
           childrenList: this.treeItem,
           branchActive: true,
           activeItem: this.isActive,
-<<<<<<< HEAD
           selectedItem: false,
           selectTeam: {}
-=======
-          selectedItem: false
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       }
   },
   components: {
     'tree-view': TreeView
   },
-<<<<<<< HEAD
   created () {
-=======
-  created() {
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   },
   methods: {
       setActive() {
@@ -69,7 +50,6 @@ export default {
         //       this.selectedItem = true
         //   }
 
-<<<<<<< HEAD
         //   if(!this.selectedItem){
         //       console.log(this.selectedItem)
         //       this.selectedItem = !this.selectedItem
@@ -79,13 +59,6 @@ export default {
       getItemInfo(item) {
         this.$emit('select', item)
         this.$emit('input', item)
-=======
-        //   $(event.target).css('background', '#ccc')
-      },
-      getList() {
-          $('.treeitem').removeClass('active')
-          this.selectedItem = !this.selectedItem
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       }
   }
 }
@@ -128,17 +101,7 @@ export default {
                 }
             }
         }
-<<<<<<< HEAD
         
-=======
-        &.active {
-            background-color: #80b7be;
-            >.treeheader {
-                color: #525252;
-                font-weight: bold;
-            }
-        }
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     }
     &.active{
         height: auto;

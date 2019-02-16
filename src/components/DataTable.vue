@@ -2,7 +2,6 @@
     table.datatable(:class="tableType")
         thead
             tr
-<<<<<<< HEAD
               th(v-if="isSelect").center.aligned.collapsing
               th(v-if="isListNumber", :class="['wide one']").center.aligned NO
               th( v-for="th of headers", :class="[`${th.align} aligned`, `wide ${th.size}`]" ) {{th.text}}
@@ -15,12 +14,6 @@
                 span.header NO DATA
                 span 데이터가 없습니다
           <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :colspan="colspan" :selected="activeItem(item)"></slot>
-=======
-              th(v-if="isListNumber").center.aligned NO
-              th( v-for="th of headers", :class="[`${th.align} aligned`]" ) {{th.text}}
-        tbody
-            <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :selected="activeItem(item)"></slot>
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
         tfoot(v-if="isFooter")
             tr
                 th( :colspan="colspan" )
@@ -44,17 +37,11 @@ export default {
     tableType: String,
     headers: Array || Object,
     items: Array,
-<<<<<<< HEAD
     itemKey: String,
     isFooter: Boolean,
     isPagination: Boolean,
     isListNumber: Boolean,
     isSelect: Boolean,
-=======
-    isFooter: Boolean,
-    isPagination: Boolean,
-    isListNumber: Boolean,
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     page: Object,
     value: Array
   },
@@ -70,14 +57,10 @@ export default {
     if(this.headers){
       this.colspan = this.headers.length
       if (this.isListNumber) {
-<<<<<<< HEAD
         this.colspan++
       }
       if (this.isSelect) {
         this.colspan++
-=======
-        this.colspan = this.headers.length + 1
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       }
     }
   },
@@ -90,18 +73,11 @@ export default {
       let isSelected = false
       if(this.value == []) return 
       this.value.forEach((e, i) => {
-<<<<<<< HEAD
         if(e[this.itemKey] == data[this.itemKey]) {
           return isSelected = true
         }
       })
       
-=======
-        if(e.id == data.id) {
-          isSelected = true
-        }
-      })
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       return isSelected
     }
   }

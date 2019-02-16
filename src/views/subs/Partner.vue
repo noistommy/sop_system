@@ -54,12 +54,8 @@ export default {
       pageInfo: {},
       treeviewData: [],
       rootActive: true,
-<<<<<<< HEAD
       searchData: {},
       isEdit: false
-=======
-      searchData: {}
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     }
   },
   components: {
