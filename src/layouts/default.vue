@@ -123,6 +123,23 @@ i {
     width:100%;
   }
 }
+// Dialog Style
+.vue-dialog {
+  .dialog-content {
+    padding: 0;
+    .dialog-c-title {
+      background-color: #5d5e68;
+      color: #fff;
+      padding: .8em 1.2em;
+    }
+    .dialog-c-text {
+      padding:20px;
+    }
+    .dialog-c-buttons {
+
+    }
+  }
+}
 
 .main-container,.sub-container {
   width: 100%;

@@ -28,6 +28,7 @@
                
         div.six.wide.column
             div.ui.segment
+<<<<<<< HEAD
               //- div.treeEdit(:class="{editable:isEdit}")
               //-   div.editor
               //-     div.title 상세정보 수정
@@ -57,19 +58,32 @@
               div.treeView-wrapper
                 div.treeView.list.level-0
                   TreeView( v-for="item in treeviewData" :treeItem="item", :isActive="true", :level="1")
+=======
+              div.treeView.list.level-0
+                TreeView( v-for="item in treeviewData" :treeItem="item", :isActive="true", :level="1")
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 
         div.eight.wide.column
           div.table-wrapper
             data-table(
+<<<<<<< HEAD
               v-model="selected",
               :items="testData",
               :itemKey="itemkey"
+=======
+              v-model="selected"
+              :items="testData"
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
             ).ui.table.selectable
               <template slot="items" slot-scope="props">
                 tr(:active="props.selected", @click="selectedItems(props)" )
                   td
                     div.ui.checkbox
+<<<<<<< HEAD
                       input(type="checkbox", :checked="props.selected")
+=======
+                      input(type="checkbox", name="selected", :checked="props.selected")
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
                       label
                   td.center.aligned {{props.item.name}}
                   td.center.aligned {{props.item.username}}
@@ -77,6 +91,7 @@
                   td.center.aligned.ellipse {{props.item.website}}
                   td.center.aligned {{props.item.phone}}
               </template>
+<<<<<<< HEAD
         div.ten.wide.column
           //- DataList(v-model="selected", :headers="headers", :isListNumber="isListNumber", :items="testData")
           //-   <template slot="items" slot-scope="props">
@@ -102,6 +117,20 @@
           //-       div.cell 안녕하세요
           //-       div.cell 저는
           //-       div.cell 사람입니다
+=======
+        div.six.wide.column
+          div.tablelist
+            div.lhead.ui.relaxed.divided.list
+              div.item.tablelistitem.th
+                div.cell.center 인사
+                div.cell.center 누가
+                div.cell.center 뭐
+            div.lbody.ui.relaxed.divided.list
+              div.item( v-for="item in 10").tablelistitem
+                div.cell 안녕하세요
+                div.cell 저는
+                div.cell 사람입니다
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
         div.six.wide.column
           button(@click.stop="test").ui.button TEST
           button(@click.stop="test2").ui.button TEST2
@@ -130,15 +159,23 @@
         expanded)
         <i class="calendar alternate outline icon"></i>
     
+<<<<<<< HEAD
     //- modals-container(name='testmodal')
     //- v-dialog
+=======
+    modals-container
+    v-dialog
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 </template>
 
 <script>
 // import { createNamespacedHelpers } from 'vuex'
 import { mapActions, mapGetters } from 'vuex'
 import DataTable from '@/components/DataTable.vue'
+<<<<<<< HEAD
 import DataList from '@/components/DataList.vue'
+=======
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 import Pagination from '@/components/Pagination.vue'
 import Modal from '@/components/Modal.vue'
 import TreeView from '@/components/TreeView.vue'
@@ -154,7 +191,10 @@ export default {
   name: 'home',
   components: {
     DataTable,
+<<<<<<< HEAD
     DataList,
+=======
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     Pagination,
     Modal,
     TreeView,
@@ -183,6 +223,7 @@ export default {
         startRow: 0,
         endRow: 10
       },
+<<<<<<< HEAD
       isListNumber: false,
       selected: [],
       itemkey: 'id',
@@ -193,18 +234,35 @@ export default {
         { text: '직위', align: 'center', value: 'clsfCdNm', size: '1' },
         { text: '부서', align: 'center', value: 'deptNm', size: '1' },
         { text: '휴대전화번호', align: 'center', value: 'moblphonNo', size: '2' }
+=======
+      selected: [],
+      // selected: [true, true, true, false, false, false],
+      headers: [
+        { text: '이름', align: 'center', value: 'emplNm', size: '' },
+        { text: '직급', align: 'center', value: 'ofcpsCdNm', size: '' },
+        { text: '직위', align: 'center', value: 'clsfCdNm', size: '' },
+        { text: '부서', align: 'center', value: 'deptNm', size: '' },
+        { text: '휴대전화번호', align: 'center', value: 'moblphonNo', size: 'four' }
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       ],
       testData: [
       ],
       treeviewData: [
       ],
+<<<<<<< HEAD
       titleText: 'Modal title',
       isEdit: false
+=======
+      titleText: 'Modal title'
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     }
   },
   created () {
     console.log(this.$store.getters.getDataTest)
+<<<<<<< HEAD
     this.test()
+=======
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   },
   mounted() {
     $('.ui.dropdown').dropdown();
@@ -229,6 +287,10 @@ export default {
     }
   },
     updated () {
+<<<<<<< HEAD
+=======
+    console.log(this)
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   },
   methods: {
     ...mapActions('getData', [
@@ -299,11 +361,19 @@ export default {
       })
     },
     selectedItems(itemInfo) {
+<<<<<<< HEAD
       const id = this.itemkey
       console.log(itemInfo.item[id])
       if(itemInfo.selected) {
         this.selected.forEach((e, i) => {
           if(e[id] == itemInfo.item[id]) {
+=======
+      console.log(itemInfo)
+      if(itemInfo.selected) {
+        this.selected.forEach((e, i) => {
+          if(e.id == itemInfo.item.id) {
+            console.log(e.id)
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
             this.selected.splice(i, 1)
           }
         })
@@ -389,6 +459,7 @@ export default {
       right: 0;
     }
   }
+<<<<<<< HEAD
   
 
   .section {
@@ -467,6 +538,13 @@ export default {
     }
   }
 }
+=======
+  tr[active] {
+    background-color: #aaa;
+  }
+
+
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   // .table-wrapper {
   //   width:100%;
   //   height: 400px;
@@ -504,6 +582,10 @@ export default {
   //     }
   //   }
   // }
+<<<<<<< HEAD
 .ld, .lh {
 }
+=======
+
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 </style>

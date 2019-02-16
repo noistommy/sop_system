@@ -8,6 +8,7 @@
           :startDate="selectedDateStart", 
           :endDate="selectedDateEnd",   
           :isRange="searchType",
+<<<<<<< HEAD
           @search="getHistoryList")
       div.sub-content
         div.content
@@ -16,6 +17,15 @@
             :headers="sopHistory.headers",
             :items="sopHistory.sopHistoryData",
             :itemKey="sopHistory.itemkey"
+=======
+          :isDateSearch="true")
+      div.sub-content
+        div.content
+          DataTable(
+            v-model="selected"
+            :headers="sopHistory.headers",
+            :items="sopHistory.sopHistoryData",
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
             :isFooter="sopHistory.isfooter",
             :isListNumber="sopHistory.isListNumber",
             :isPagination="sopHistory.isPagination",
@@ -24,8 +34,14 @@
             <template slot="items" slot-scope="props">
               tr
                 td(v-if="isListNumber").center.aligned {{props.idx}}
+<<<<<<< HEAD
                 td {{props.item.executBeginDt}}
                 td {{props.item.oprtrNm}}
+=======
+                td {{props.item.date}}
+                td {{props.item.manager}}
+                td.center.aligned {{props.item.type}}
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
                 td {{props.item.title}}
                 td.ellipse {{props.item.buldNm}} {{props.item.buldFloor}}
                 td {{props.item.executEndDt}}
@@ -39,7 +55,10 @@
 import DataTable from '@/components/DataTable.vue'
 import SearchDate from '@/components/SearchDate.vue'
 import { sopHistoryTableHeader } from '@/setting'
+<<<<<<< HEAD
 import { convertDateFormat } from '@/util'
+=======
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
 import HistoryApi from '@/api/History'
 
 export default {
@@ -57,6 +76,7 @@ export default {
         start: '',
         end: ''
       },
+<<<<<<< HEAD
       sopHistory: {
         selected: [],
         isfooter: true,
@@ -66,6 +86,17 @@ export default {
         headers: sopHistoryTableHeader.headers,
         sopHistoryData: [],
         itemkey: 'rn'
+=======
+      searchType: 'range',
+      selected: [],
+      sopHistory: {
+        isfooter: true,
+        isPagination: false,
+        isListNumber: true,
+        pageInfo: {},
+        headers: sopHistoryTableHeader.headers,
+        sopHistoryData: []
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
       }
     }
   },
@@ -76,6 +107,7 @@ export default {
     this.getHistoryList()
   },
   methods: {
+<<<<<<< HEAD
     getHistoryList () {
       const requestData = JSON.stringify({
         executEndFromDt: this.searchData.start,
@@ -92,6 +124,19 @@ export default {
           console.log(err)
         })
     }
+=======
+    // getHistoryList () {
+    //   historyApi.getSOPHistory()
+    //   .then(result => {
+    //     console.log(`MemberList:${result}`)
+    //       this.sopHistory.sopHistoryData = result.deptEmpInfoList
+    //       this.sopHistory.pageInfo = result.param
+    //       this.sopHistory.pageInfo.totalCount = result.totCnt
+    //     })
+    //     .catch(err => {
+    //       console.log(err)
+    //     })
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   }
 }
 </script>

@@ -52,7 +52,11 @@ export default {
         margin-left: 20px;
         .tabItem {
           float:left;
+<<<<<<< HEAD
           width: 13%;
+=======
+          width: 15%;
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
           min-width: 150px;
           margin: 15px 5px 0 5px;
           background-color: #f3f2f2;

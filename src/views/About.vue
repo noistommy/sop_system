@@ -1,8 +1,12 @@
 <template lang="pug">
   div.modal
     div.modal-header {{title}}
+<<<<<<< HEAD
     div.modal-content 
       | {{text}}
+=======
+    div.modal-content Content
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     div.modal-close(@click="$emit('close')")
         //- i.icon.close
         div.close close
@@ -15,8 +19,12 @@ export default {
   components: {
   },
   props: {
+<<<<<<< HEAD
     title: String,
     text: String
+=======
+    title: String
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   },
   data () {
     return {
@@ -29,9 +37,17 @@ export default {
 
 <style lang="less">
 .modal {
+<<<<<<< HEAD
     background-color: #fff;
     // border: 1px solid #5d5e68;
     // border-radius: 5px;
+=======
+    width: 600px;
+    background-color: #fff;
+    height: 500px;
+    // border: 1px solid #5d5e68;
+    border-radius: 5px;
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     // box-shadow: 0 0 10px rgba(0, 0, 0, .5);
     display: flex;
     flex-direction: column;

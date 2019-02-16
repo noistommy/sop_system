@@ -7,6 +7,7 @@ const state = {
 }
 
 const mutations = {
+<<<<<<< HEAD
   [types.LOGIN] (state) {
     console.log('Ready to Login')
   },
@@ -22,6 +23,13 @@ const mutations = {
   [types.LOGOUT] (state) {
     state.accessToken = null
     delete localStorage.accessToken
+=======
+  [types.LOGIN] (state, payload) {
+    state.accessToken = payload.accessToken
+  },
+  [types.LOGOUT] (state) {
+    state.accessToken = null
+>>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
   }
 }
 
