@@ -13,10 +13,10 @@
               input(type="text", v-model="setData.noticeTitle")
             div.field
               label 내용
-              textarea(row="2", v-model="setData.noticeContents")
-          div.btnSet.center
-            button.ui.button.blue.large(@click="setNotice") 저장
-            button.ui.button.large(@click="$emit('close')") 취소
+              textarea(rows="3", v-model="setData.noticeContents")
+        div.btnSet.center
+          button.ui.button.blue.large(@click="setNotice") 저장
+          button.ui.button.large(@click="$emit('close')") 취소
       div.modal-close(@click="$emit('close')")
           //- i.icon.close
           div.close X

@@ -74,13 +74,7 @@ export default {
 </script>
 
 <style lang="less">
-.ui.form {
-  .inline {
-    label {
-      width: 32% !important;
-    }
-  }
-}
+
 .modal {
     background-color: #fff;
     position: relative;
@@ -141,6 +135,13 @@ export default {
       justify-content: center;
       .ui.button {
         border-radius: 0 !important;
+      }
+    }
+    .ui.form {
+      .inline {
+        label {
+          width: 32%;
+        }
       }
     }
 }

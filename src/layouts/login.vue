@@ -4,7 +4,7 @@
       div.logo
         img(src="../assets/CI_logo.png", alt="logo")
       div.login-panel
-        div.header 재난관리시스템
+        div.header(@click="onLogout") 재난관리시스템
         div.content
           div.ui.form
             .field
@@ -17,7 +17,6 @@
                 input(v-model="loginInfo.oprtrPassword", type="password",name="password", placeholder="사용자 비밀번호")
             .field.loginBtn
               .ui.fluid.large.teal.button(@click="onLogin") Login
-              .ui.fluid.large.teal.button(@click="onLogout") Logout
 </template>
 
 <script>

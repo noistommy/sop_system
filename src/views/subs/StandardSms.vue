@@ -27,6 +27,93 @@
                     td {{props.item.useYn}}
                 </template>
         div.content.section.section-2
+          h3.title 표준문자 상세정보
+          div.contant-wrapper
+            div.section_1
+              div.ui.form.tiny
+                table.ui.table.celled
+                  tbody
+                    tr
+                      td.center.aligned
+                        span 문자제목
+                      td
+                        input(type="text")
+                        label
+                    tr
+                      td.center.aligned 
+                        span 문자내용
+                      td
+                        textarea(rows='3')
+                        label
+                    tr
+                      td.center.aligned 
+                        span 파라미터1
+                      td
+                        div.fields
+                          div.field.six.wide
+                            label
+                            select.ui.dropdown
+                          div.field.ten.wide
+                            label
+                            input(type="text", placeholder='EX.')
+                    tr
+                      td.center.aligned 
+                        span 파라미터2
+                      td
+                        div.fields
+                          div.field.six.wide
+                            label
+                            select.ui.dropdown
+                          div.field.ten.wide
+                            label
+                            input(type="text", placeholder='EX.')
+                    tr
+                      td.center.aligned 
+                        span 파라미터3
+                      td
+                        div.fields
+                          div.field.six.wide
+                            label
+                            select.ui.dropdown
+                          div.field.ten.wide
+                            label
+                            input(type="text", placeholder='EX.')
+                    tr
+                      td.center.aligned 
+                        span 파라미터4
+                      td
+                        div.fields
+                          div.field.six.wide
+                            label
+                            select.ui.dropdown
+                          div.field.ten.wide
+                            label
+                            input(type="text", placeholder='EX.')
+                    tr
+                      td.center.aligned 
+                        span 파라미터5
+                      td
+                        div.fields
+                          div.field.six.wide
+                            label
+                            select.ui.dropdown
+                          div.field.ten.wide
+                            label
+                            input(type="text", placeholder='EX.')
+                    tr
+                      td.center.aligned 
+                        span 사용여부
+                      td
+                        div.ui.toggle.checkbox(@click="toggleCheck")
+                          input(type="checkbox", :checked="alarmYn")
+                          label 허용
+            div.btnSet
+                div.btn-wrap.right
+                  button.ui.button.large.blue 신규등록
+                div.btn-group.left
+                  button.ui.button.large.blue 저장
+                  button.ui.button.large 취소
+          
       div.sub-footer
 </template>
 
@@ -80,10 +167,13 @@ export default {
 <style lang="less" >
 .StandardSms {
   .content.section.section-1 {
-    width: 35% !important;
+    width: 30% !important;
   }
   .ld,.lh {
     width: 80% !important;
+  }
+  .ui.form td .fields {
+    margin: 0;
   }
  
 }

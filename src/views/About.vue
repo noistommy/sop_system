@@ -1,12 +1,8 @@
 <template lang="pug">
   div.modal
     div.modal-header {{title}}
-<<<<<<< HEAD
     div.modal-content 
       | {{text}}
-=======
-    div.modal-content Content
->>>>>>> 3887f403d138979981a62ed2274db8600bc5aa8e
     div.modal-close(@click="$emit('close')")
         //- i.icon.close
         div.close close
@@ -16,7 +12,7 @@
 
 export default {
   name: 'about',
-  components: {
+  componentss: {
   },
   props: {
     title: String,

@@ -156,11 +156,6 @@ export default new Router({
       component: TestPage
     },
     {
-      path: '/testpage',
-      name: 'test-page',
-      component: TestPage
-    },
-    {
       path: '/login',
       name: 'login',
       // component: () => import(/* webpackChunkName: "about" */ '@/views/About.vue')
