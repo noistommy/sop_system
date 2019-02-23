@@ -4,8 +4,8 @@ const TargetURL = '/n3n.sop.SopManage'
 
 export default {
   // SOP 목록조회
-  getList: () => {
-    return HTTP.post(`${TargetURL}.selectSopManageList.do`, {})
+  getList: (payload) => {
+    return HTTP.post(`${TargetURL}.selectSopManageList.do`, payload)
   },
   // SOP 상세조회
   getItem: (payload) => {
@@ -15,7 +15,7 @@ export default {
   createItem: (payload) => {
     return HTTP.post(`${TargetURL}.saveSopManageInfo.do`, payload)
   },
-  // SOP 생성
+  // SOP 삭제
   deleteItem: (payload) => {
     return HTTP.post(`${TargetURL}.deleteSopManageInfo.do`, payload)
   }

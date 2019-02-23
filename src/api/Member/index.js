@@ -4,7 +4,7 @@ const TargetURL = '/n3n.sop.OrgnztInfo'
 
 export default {
   // 조직도 목록조회
-  getList: () => {
+  getTree: () => {
     return HTTP.post(`${TargetURL}.selectOrgnztInfoTrList.do`, {})
   },
   // 조직직원목록조회

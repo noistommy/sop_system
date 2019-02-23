@@ -8,16 +8,16 @@ export default {
     return HTTP.post(`${TargetURL}.selectNoticeList.do`, {})
   },
   // 공지사항상세조회
-  getItem: () => {
-    return HTTP.post(`${TargetURL}.selectNoticeDetail.do`, {})
+  getItem: (payload) => {
+    return HTTP.post(`${TargetURL}.selectNoticeDetail.do`, payload)
   },
   // 공지사항저장
-  setItem: () => {
-    return HTTP.post(`${TargetURL}.saveNotice.do`, {})
+  setItem: (payload) => {
+    return HTTP.post(`${TargetURL}.saveNotice.do`, payload)
   },
   // 공지사항수정
-  updateItem: () => {
-    return HTTP.post(`${TargetURL}.saveNotice.do`, {})
+  updateItem: (payload) => {
+    return HTTP.post(`${TargetURL}.saveNotice.do`, payload)
   },
   // 공지사항목록삭제
   deleteItem: (payload) => {

@@ -12,7 +12,7 @@
 
 export default {
   name: 'about',
-  componentss: {
+  components: {
   },
   props: {
     title: String,

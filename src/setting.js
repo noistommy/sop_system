@@ -42,18 +42,20 @@ const standardInfoMenuList = {
 
 const mainSopHistoryHeader = {
   headers: [
-    { text: '날짜', align: 'center', value: 'date', size: '' },
-    { text: '분류', align: 'center', value: 'type', size: '' },
-    { text: 'SOP명', align: 'center', value: 'title', size: '' },
-    { text: '위치', align: 'center', value: 'location', size: 'four' }
+    { text: '실행일시', align: 'center', value: 'executBeginDt', size: '' },
+    { text: '재난절차', align: 'center', value: 'msfrtnKndCdNm', size: '' },
+    { text: '위기발령단계', align: 'center', value: 'titcrisisGnfdStepNmle', size: '' },
+    { text: 'SOP', align: 'center', value: 'sopTitle', size: '' },
+    { text: '위치', align: 'center', value: 'buldNm', size: '' },
+    { text: '담당자', align: 'center', value: 'oprtrNm', size: '' }
   ]
 }
 // sms전송이력
 const mainSmsHistoryHeader = {
   headers: [
     { text: '날짜', align: 'center', value: 'regDt', size: '' },
-    { text: '위치', align: 'center', value: 'buldNm', size: 'four' },
-    { text: '전송인원', align: 'center', value: 'cnt', size: '' },
+    { text: '위치', align: 'center', value: 'buldNm', size: '' },
+    { text: '전송인원', align: 'center', value: 'cnt', size: 'two' },
     { text: '전송내용', align: 'center', value: 'smsContents', size: 'six' }
   ]
 }
@@ -63,19 +65,19 @@ const mainSmsHistoryHeader = {
 
 const sopHistoryTableHeader = {
   headers: [
-    // { text: 'NO', align: 'center', value: 'no', size: '' },
-    { text: '날짜', align: 'center', value: 'date', size: '' },
-    { text: '분류', align: 'center', value: 'type', size: '' },
-    { text: 'SOP명', align: 'center', value: 'title', size: 'five' },
-    { text: '위치', align: 'center', value: 'location', size: '' },
-    { text: '종료시간', align: 'center', value: 'endtime', size: '' }
+    { text: '실행일시', align: 'center', value: 'executBeginDt', size: '' },
+    { text: '재난절차', align: 'center', value: 'msfrtnKndCdNm', size: '' },
+    { text: '위기발령단계', align: 'center', value: 'crisisGnfdStepNm', size: '' },
+    { text: 'SOP', align: 'center', value: 'sopTitle', size: '' },
+    { text: '위치', align: 'center', value: 'buldNm', size: '' },
+    { text: '담당자', align: 'center', value: 'oprtrNm', size: '' }
   ]
 }
 // sms전송이력
 const smsHistoryTableHeader = {
   headers: [
     { text: '날짜', align: 'center', value: 'regDt', size: '' },
-    { text: '위치', align: 'center', value: 'buldNm', size: 'four' },
+    { text: '위치', align: 'center', value: 'buldNm', size: '' },
     { text: '전송인원', align: 'center', value: 'cnt', size: '' },
     { text: '전송내용', align: 'center', value: 'smsContents', size: 'six' },
     { text: '완료', align: 'center', value: 'result', size: '' }
@@ -85,12 +87,14 @@ const smsHistoryTableHeader = {
 const sensorHistoryTableHeader = {
   headers: [
     // { text: 'NO', align: 'center', value: 'no', size: '' },
-    { text: '발생시간', align: 'center', value: 'date', size: '' },
-    { text: '종료시간', align: 'center', value: 'date', size: '' },
-    { text: '발생위치', align: 'center', value: 'location', size: '' },
-    { text: '구역명', align: 'center', value: 'endtime', size: '' },
-    { text: '센서종류', align: 'center', value: 'endtime', size: '' },
-    { text: '처리상태', align: 'center', value: 'endtime', size: 'two' }
+    { text: '감사일시', align: 'center', value: 'prcpDt', size: '' },
+    { text: '오작동여부', align: 'center', value: 'date', size: '' },
+    { text: '센서종류', align: 'center', value: 'location', size: '' },
+    { text: '센서아이디', align: 'center', value: 'sensorId', size: '' },
+    { text: '발생위치', align: 'center', value: 'buldId', size: '' },
+    { text: 'SOP명', align: 'center', value: 'sopTitle', size: '' },
+    { text: '담당자', align: 'center', value: 'endtime', size: '' },
+    { text: '처리상태', align: 'center', value: 'endtime', size: '' }
   ]
 }
 // 공지사항
@@ -189,6 +193,7 @@ const publicCodeDetailHeader = {
     { text: '코드그룹', align: 'center', value: 'cmmnCd', size: '' },
     { text: '코드그룹명', align: 'center', value: 'cmmnCdNm', size: '' },
     { text: '표시순서', align: 'center', value: 'indictOrdr', size: '' },
+    { text: '사용여부', align: 'center', value: 'useYn', size: '' },
     { text: '파라미터1', align: 'center', value: 'userData1', size: '' },
     { text: '파라미터2', align: 'center', value: 'userData2', size: '' },
     { text: '파라미터3', align: 'center', value: 'userData3', size: '' },

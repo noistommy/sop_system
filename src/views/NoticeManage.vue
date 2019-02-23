@@ -76,11 +76,28 @@ export default {
         console.log(error)
       })
     },
+    createNoticeItem() {
+      const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
+      NoticeApi.updateItem(requestData).then(result => {
+        console.log('success')
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    },
+    updateNoticeItem() {
+      const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
+      NoticeApi.updateItem(requestData).then(result => {
+        console.log('success')
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    },
     deleteNoticeItem() {
       const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
       NoticeApi.deleteItem(requestData).then(result => {
         console.log('success')
-        location.reload()
       })
       .catch(error => {
         console.log(error)

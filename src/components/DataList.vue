@@ -5,8 +5,14 @@
               div.lh(v-if="isListNumber").center.aligned NO
               div.lh( v-for="lh of headers", :class="[`${lh.align} aligned`]") {{lh.text}}
         div.lbody.ui.list(:class="listType")
-            <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :selected="activeItem(item)"></slot>
-
+          <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :selected="activeItem(item)"></slot>
+        div.ui.form(v-if="isEditor")
+          div.lfoot.ui.list(:class="listType")
+            div.item.lr.listitem
+              div.ld(v-for="lf in headers")
+                div.field
+                  label
+                  input(typw="text", placeholder="lf.text")
 </template>
 
 <script>
@@ -20,6 +26,7 @@ export default {
     headers: Array || Object,
     items: Array,
     isListNumber: Boolean,
+    isEditor: Boolean,
     itemKey: String,
     value: Array
   },
@@ -58,14 +65,17 @@ export default {
  }
 
  .datalist {
+    position: relative;
     width: 100%;
     height: 100%;
     border-radius: 5px;
     overflow: hidden;
     border: 1px solid rgba(34,36,38,.15);
     .lhead.list,
-    .lbody.list {
+    .lbody.list,
+    .lfoot.list {
       margin: 0;
+      overflow-x: hidden;
       .listitem.item.lr {
         padding: 0 !important;
         background-color: #fff;
@@ -91,6 +101,10 @@ export default {
         }
       }
     }
+    .lfoot.list {
+      position: absolute;
+      top:0;
+    }
     .lhead.list {
       // .border-radius(5px, 0, 5px, 0);
       border-bottom: 0;
@@ -108,7 +122,7 @@ export default {
           background-color: #fff;
         }
         &.active {
-          background-color: rgba(3, 3, 3, 0.651);
+          background-color: rgba(74, 151, 202, 0.815);
           color: #fff;
         }
       }
@@ -119,6 +133,11 @@ export default {
     //   top:0;
     //   right: 0;
     // }
+    .ui.form {
+      position {
+        
+      }
+    }
   }
 
 </style>

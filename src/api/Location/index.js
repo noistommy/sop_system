@@ -12,16 +12,16 @@ export default {
     console.log(payload)
     return HTTP.post(`${TargetURL}.selectBuldFloorInfoList.do`, payload)
   },
-  // 건물상세정보수정
-  updateLocationList: () => {
-    return HTTP.post(`${TargetURL}.updateBuldDetailIfno.do`, {}).then(res => {
-      return res.data
-    }).catch(error => {
-      return console.log(`ERROR:${error}`)
-    })
-  },
+  // // 건물상세정보수정
+  // updateLocationList: () => {
+  //   return HTTP.post(`${TargetURL}.updateBuldDetailIfno.do`, {}).then(res => {
+  //     return res.data
+  //   }).catch(error => {
+  //     return console.log(`ERROR:${error}`)
+  //   })
+  // },
   // 건물층정보목록수정
   updateItem: (payload) => {
-    return HTTP.post(`${TargetURL}.updateBuldfloorInfo.do`, payload)
+    return HTTP.post(`${TargetURL}.saveBuldDetailInfo.do`, payload)
   }
 }

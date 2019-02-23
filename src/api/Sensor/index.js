@@ -9,26 +9,20 @@ export default {
   },
   // 장비구분별센서목록조회
   getDetail: (payload) => {
-    return HTTP.post(`${TargetURL}Service.selectEqpmnFgSensorList.do`, payload)
+    return HTTP.post(`${TargetURL}.selectEqpmnFgSensorList.do`, payload)
   },
   // 장비구분상세정보수정
-  updateSensorDetail: () => {
-    return HTTP.post(`${TargetURL}.updateEqpmnFgDetailInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
-  },
-  // 장비구분별센서목록수정
-  updateSensorTypeDetail: () => {
-    return HTTP.post(`${TargetURL}.updateEqpmnFgSensorList.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  updateItem: (payload) => {
+    return HTTP.post(`${TargetURL}.saveEqpmnFgDetailInfo.do`, payload)
   }
+  // 장비구분별센서목록수정
+  // updateSensorTypeDetail: () => {
+  //   return HTTP.post(`${TargetURL}.updateEqpmnFgSensorList.do`, {})
+  //     .then(res => {
+  //       return res.data
+  //     })
+  //     .catch(error => {
+  //       return console.log(`ERROR:${error}`)
+  //     })
+  // }
 }

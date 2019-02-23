@@ -18,20 +18,26 @@
             :itemKey="sopHistory.itemkey"
             :isFooter="sopHistory.isfooter",
             :isListNumber="sopHistory.isListNumber",
+            :isSelect="sopHistory.isSelect",
             :isPagination="sopHistory.isPagination",
-            :page="sopHistory.pageInfo"
+            :page="sopHistory.pageInfo",
+            @search="getHistoryList"
           ).ui.table.celled.selectable
             <template slot="items" slot-scope="props">
               tr
-                td(v-if="isListNumber").center.aligned {{props.idx}}
-                td {{props.item.executBeginDt}}
-                td {{props.item.oprtrNm}}
-                td {{props.item.title}}
-                td.ellipse {{props.item.buldNm}} {{props.item.buldFloor}}
-                td {{props.item.executEndDt}}
+                td(v-if="sopHistory.isListNumber").center.aligned {{(sopHistory.pageInfo.currPage - 1) * 10 + props.idx + 1}}
+                td.center.aligned {{props.item.executBeginDt}}
+                td.center.aligned {{props.item.msfrtnKndCdNm}}
+                td.center.aligned {{props.item.crisisGnfdStepCdNm}}
+                td.ellipse {{props.item.sopTitle}}
+                td {{props.item.buldNm}} {{props.item.buldFloor}}
+                td {{props.item.oprtrId}}
             </template>
         div.footer
-          //- button.ui.button SEND
+          div.btnSet
+            div.btn-group.left
+            div.btn-wrap.right
+              button.ui.button.large.blue(@click="sopDownload") 파일다운로드
 
 </template>
 
@@ -62,6 +68,7 @@ export default {
         isfooter: true,
         isPagination: true,
         isListNumber: true,
+        isSelect: false,
         pageInfo: {},
         headers: sopHistoryTableHeader.headers,
         sopHistoryData: [],
@@ -73,25 +80,41 @@ export default {
     // const initDate
     this.searchData.start = convertDateFormat(new Date(), '')
     this.searchData.end = convertDateFormat(new Date(), '')
-    this.getHistoryList()
+    this.getHistoryList(1)
   },
   methods: {
-    getHistoryList () {
+    getHistoryList (targetNum) {
+      if(targetNum == undefined) {targetNum = 1}
+      const requestData = JSON.stringify({
+      executEndFromDt: this.searchData.start,
+      executEndToDt: this.searchData.end,
+      currPage: targetNum
+    })
+    HistoryApi.getSOPList(requestData)
+    .then(result => {
+        console.log(result)
+        this.sopHistory.sopHistoryData = result.data.sopExecutEndHistList
+        result.data.param.totalCount = result.data.totCnt
+        this.sopHistory.pageInfo = result.data.param
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    },
+    sopDownload () {
       const requestData = JSON.stringify({
         executEndFromDt: this.searchData.start,
         executEndToDt: this.searchData.end,
+        currPage: targetNum
       })
-      HistoryApi.getSOPList(requestData)
+      HistoryApi.getSOPExcel(requestData)
       .then(result => {
           console.log(result)
-          this.sopHistory.sopHistoryData = result.data.sopExecutEndHistList
-          result.data.param.totalCount = result.data.totCnt
-          this.sopHistory.pageInfo = result.data.param
         })
         .catch(err => {
           console.log(err)
         })
-    }
+      }
   }
 }
 </script>

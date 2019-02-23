@@ -6,22 +6,21 @@
         SearchComp(
           v-model="searchData",
           :isTextSearch='true'
-          :isDateSearch="false")
+          :isDateSearch="false",
+          @search="getSopList")
           template(slot="condition1", slot-scope="props")
-            select.ui.dropdown(v-model="contData_1")
-              option(value="00", default) 전제
-              option(value="01") OPtion1
-              option(value="02") OPTION2
+            select.ui.dropdown(v-model="req.msfrtnKndCd")
+              option(value="") 재난종류
+              option(v-for="code in typeCode", value="code.cmmnCd") {{code.cmmnCdNm}}
 
           template(slot="condition2", slot-scope="props")
-            select.ui.dropdown(v-model="contData_2")
-              option(value="00", default) 전제
-              option(value="01") OPtion1
-              option(value="02") OPTION2
+            select.ui.dropdown(v-model="req.crisisGnfdStepCd")
+              option(value="") 위기발령단계
+              option(v-for="code in stepCode", value="code.cmmnCd") {{code.cmmnCdNm}}
       div.sub-content
         div.content
           DataTable(
-            v-model="selected"
+            v-model="sopList.selected"
             :headers="sopList.headers",
             :items="sopList.sopListData",
             :itemKey="sopList.itemkey",
@@ -46,11 +45,13 @@
         div.footer
           div.btnSet
             div.btn-group.left
-              button.ui.button.large 편집
-              button.ui.button.large 삭제
-              button.ui.button.large.green SOP실행
+              template(v-if="getUser.userCode == 'S0400100'")
+                button.ui.button.large() 편집
+                button.ui.button.large(@click="deleteSop") 삭제
+                button.ui.button.large.green SOP실행
             div.btn-wrap.right
-              button.ui.button.large.blue 생성
+              template(v-if="getUser.userCode == 'S0400100'")
+              button.ui.button.large.blue 재난절차생성
 
 </template>
 
@@ -59,16 +60,21 @@ import DataTable from '@/components/DataTable'
 import SearchComp from '@/components/SearchComp'
 import { sopListHeader } from '@/setting'
 import SopManageApi from '@/api/SopManage'
+import { mapGetters, mapActions } from 'vuex'
+import PublicCodeApi from '@/api/PublicCode'
 
 export default {
   name: 'sop-list',
   data () {
     return {
-      contData_1: "00",
-      contData_2: "00",
-      selected: [],
       searchData: {},
+      req: {
+        msfrtnKndCd: "",
+        crisisGnfdStepCd: "",
+        sopTitle: ""
+      },
       sopList: {
+        selected: [],
         isfooter: true,
         isPagination: true,
         isListNumber: true,
@@ -77,7 +83,9 @@ export default {
         pageInfo: {},
         headers: sopListHeader.headers,
         sopListData: []
-      }
+      },
+      typeCode: [],
+      stepCode: []
     }
   },
   components: {
@@ -85,25 +93,60 @@ export default {
     SearchComp
   },
   created() {
+    this.typeCode = this.getCodeList ('S090')
+    this.stepCode = this.getCodeList ('S100')
     this.getSopList()
+  },
+  computed: {
+    ...mapGetters([
+      'getUser'
+    ])
   },
   methods: {
     getSopList () {
-      SopManageApi.getList().then(result => {
+      this.req.sopTitle = this.searchData.searchTexts
+      const requestData = JSON.stringify(this.req)
+      SopManageApi.getList(requestData).then(result => {
         console.log(result.data)
         this.sopList.sopListData = result.data.sopMgmtList
+      }).catch(error => {
+        console.log(error.response)
+      })
+    },
+    getSopItem () {
+      const requestData = JSON.stringify({})
+      SopManageApi.getItem(requestData).then(result => {
+        console.log(result.data)
+      }).catch(error => {
+        console.log(error.response)
       })
     },
     deleteSop () {
-      SopManageApi.deleteItem().then(result => {
+      const requestData = JSON.stringify({
+        sopId: this.sopList.selected[0].sopId
+      })
+      SopManageApi.deleteItem(requestData).then(result => {
         console.log(result.data)
-        this.sopList.sopListData = result.data.sopMgmtList
+        this.getSopList()
+      }).catch(error => {
+        console.log(error.response)
+      })
+    },
+    getCodeList (code) {
+      const requestData = JSON.stringify({
+        cmmnCd: code
+      })
+      PublicCodeApi.getList(requestData).then(result => {
+        console.log(result)
+        return result.data.cmmnCdDetailList
+      }).catch(error => {
+        console.log(error.response)
       })
     },
     selectedItem(itemInfo) {
-      this.selected = []
+      this.sopList.selected = []
       if(!itemInfo.selected) {
-        this.selected.push(this.sopList.sopListData[itemInfo.idx])
+        this.sopList.selected.push(this.sopList.sopListData[itemInfo.idx])
       }
     }
   }

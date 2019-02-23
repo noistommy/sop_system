@@ -1,11 +1,11 @@
 <template lang="pug">
     div.treeitem(v-on:dblclick.stop="setActive")
         div.treecontent
-            div.treeheader(@mouseover.self="selectHover", :class="{active:selectedItem}", @click.stop="getList(treeItem)")
+            div.treeheader(:class="{active:selectedItem}", @click.stop="getClick(treeItem)")
                 i.icon.caret(:class="activeItem ? 'down' : 'right'", v-if="treeItem.children != ''", @click.stop="setActive")
                 i.icon(v-else)
                 span {{treeItem.title}} 
-                span.badge(v-if="treeItem.children != ''") {{treeItem.children.length}}
+                span.badge(v-if="treeItem.children != ''") {{childCount}}
             <template>
                 div.list(:class="[{active:activeItem}, `level-${level}`]", v-if="treeItem.children != ''" )
                     tree-view(v-model="selectTeam", @select="getItemInfo", v-for="item in treeItem.children", :treeItem="item", :level="childLevel", :isActive=" branchActive")
@@ -26,12 +26,12 @@ export default {
   },
   data() {
       return {
-          childLevel: this.level + 1,
-          childrenList: this.treeItem,
-          branchActive: true,
-          activeItem: this.isActive,
-          selectedItem: false,
-          selectTeam: {}
+        childLevel: this.level + 1,
+        childrenList: this.treeItem,
+        branchActive: true,
+        activeItem: this.isActive,
+        selectedItem: false,
+        selectTeam: {}
       }
   },
   components: {
@@ -39,22 +39,21 @@ export default {
   },
   created () {
   },
+  computed: {
+      childCount () {
+        if(this.treeItem.children.length == undefined) return 
+        return this.treeItem.children.length 
+      }
+  },
   methods: {
       setActive() {
           return this.activeItem = !this.activeItem
       },
       selectHover(event) {
       },
-      getList(selItem) {
-        //   if(selItem.title == this.selectTeam.title){
-        //       this.selectedItem = true
-        //   }
-
-        //   if(!this.selectedItem){
-        //       console.log(this.selectedItem)
-        //       this.selectedItem = !this.selectedItem
-        //   }
-          this.$emit('select', selItem)
+      getClick(selItem) {
+        // this.selectedItem = true
+        this.$emit('select', selItem)
       },
       getItemInfo(item) {
         this.$emit('select', item)

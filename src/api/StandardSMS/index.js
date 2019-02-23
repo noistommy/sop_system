@@ -8,24 +8,12 @@ export default {
     return HTTP.post(`${TargetURL}.selectStdSmsList.do`, {})
   },
   // 표준문자상세정보조회
-  getStandardSMSDetail: () => {
-    return HTTP.post(`${TargetURL}.selectStdSmsDetailInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  getDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.selectStdSmsDetailInfo.do`, payload)
   },
   // 표준문자정보저장
-  updateStandardSMS: () => {
-    return HTTP.post(`${TargetURL}.saveStdSmsInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  updateDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.saveStdSmsInfo.do`, payload)
   },
   // 표준문자검증
   checkStandardSMS: () => {

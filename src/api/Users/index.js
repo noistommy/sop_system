@@ -8,7 +8,7 @@ export default {
     return HTTP.post(`${TargetURL}.selectOprtrInfoList.do`, {})
   },
   // 운영자상세조회
-  getUsersDetail: () => {
+  getDetail: () => {
     return HTTP.post(`${TargetURL}.selectOprtrInfoDetail.do`, {})
       .then(res => {
         return res.data
@@ -18,34 +18,16 @@ export default {
       })
   },
   // 운영자정보삭제
-  deleteUserInfo: () => {
-    return HTTP.post(`${TargetURL}.deleteOprtrInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  deleteUser: (payload) => {
+    return HTTP.post(`${TargetURL}.deleteOprtrInfo.do`, payload)
   },
   // 운영자정보등록
-  setUserInfo: () => {
-    return HTTP.post(`${TargetURL}.saveOprtrInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  createUser: (payload) => {
+    return HTTP.post(`${TargetURL}.saveOprtrInfo.do`, payload)
   },
   // 운영자정보수정
-  updateUserInfo: () => {
-    return HTTP.post(`${TargetURL}.saveOprtrInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  updateUser: (payload) => {
+    return HTTP.post(`${TargetURL}.saveOprtrInfo.do`, payload)
   },
   // 운영자비밀번호초기화저장
   resetPassword: (payload) => {

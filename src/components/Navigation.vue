@@ -9,7 +9,7 @@
                 h6.ui.icon.header
                     i.icon-sop-management
                     .content SOP관리
-        div.item(@click="activeNavigation('membergroup')", :class="{active:isActive == 'membergroup'}")
+        div.item(v-if="getUser.userCode == 'S0400100'",@click="activeNavigation('membergroup')", :class="{active:isActive == 'membergroup'}")
             router-link(:to="{ name: 'membergroup' }")
                 h6.ui.icon.header
                     i.icon-sop-crew
@@ -19,7 +19,7 @@
                 h6.ui.icon.header
                     i.icon-sop-history
                     .content 이력관리
-        div.item(@click="activeNavigation('location-info')", :class="{active:isActive == 'location-info'}")
+        div.item(v-if="getUser.userCode == 'S0400100'", @click="activeNavigation('location-info')", :class="{active:isActive == 'location-info'}")
             router-link(:to="{ name: 'location-info' }")
                 h6.ui.icon.header
                     i.icon-sop-watch
@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'navigation',
@@ -39,6 +40,11 @@ export default {
   },
   created() {
       this.isActive = this.$route.name
+  },
+  computed: {
+      ...mapGetters([
+          'getUser'
+      ])
   },
   methods: {
     activeNavigation (menuItem) {

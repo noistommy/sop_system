@@ -8,24 +8,12 @@ export default {
     return HTTP.post(`${TargetURL}.selectStdBrdcstList.do`, {})
   },
   // 표준방송상세정보조회
-  getStandardBroadDetail: () => {
-    return HTTP.post(`${TargetURL}.selectStdBrdcstDetailInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  getDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.selectStdBrdcstDetailInfo.do`, payload)
   },
   // 표준방송정보저장
-  updateStandardBroad: () => {
-    return HTTP.post(`${TargetURL}.saveStdBrdcstInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  updateDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.saveStdBrdcstInfo.do`, payload)
   },
   // 표준방송검증
   checkStandardBroad: () => {

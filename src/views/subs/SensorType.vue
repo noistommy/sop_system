@@ -30,13 +30,13 @@
                       td.center.aligned
                         span 종류
                       td
-                        input(type="text", readonly, v-model="sensorDetail").readonly
+                        input(type="text", readonly, v-model="sensorDetail.eqpmnClId").readonly
                         label
                     tr
                       td.center.aligned 
                         span 종류명*
                       td
-                        input(type="text", v-model="sensorDetail")
+                        input(type="text", v-model="sensorDetail.eqpmnClNm")
                         label
                     tr
                       td.center.aligned 
@@ -55,7 +55,8 @@
                     :isFooter="sensorByType.isfooter",
                     :isListNumber="sensorByType.isListNumber",
                     :isPagination="sensorByType.isPagination",
-                    :page="sensorByType.pageInfo"
+                    :page="sensorByType.pageInfo",
+                    @search="getSensorDetail"
                   ).ui.table.celled.selectable
                     template(slot="items", slot-scope="props")
                       tr
@@ -63,7 +64,15 @@
                         td {{props.item.sensorNm}}
                         td {{props.item.buldNm}}
                         td.center.aligned {{props.item.buldFloor}}
-                        td {{props.item.alarmPermYn}}
+                        td.center.aligned 
+                          div.ui.toggle.checkbox()
+                            input(v-model="sensorByType.sensorByTypeData[props.idx].alarmPermYn",
+                              true-value="Y",
+                              false-value="N",
+                              type="checkbox",
+                              :checked="props.item.alarmPermYn=='Y'",
+                              :disabled="alarmYn == false")
+                            label 허용
                 div.btnSet.right
                     div.buttons
                       button.ui.button.blue 저장
@@ -94,8 +103,8 @@ export default {
         selected: [],
         headers: sensorByTypeHeader.headers,
         sensorByTypeData: [],
-        isFooter: true,
-        idPagination: true,
+        isfooter: true,
+        isPagination: true,
         isListNumber: false,
         pageInfo: {} 
       }
@@ -118,6 +127,7 @@ export default {
     getSensorlist () {
       SensorApi.getList()
       .then(result => {
+        console.log(result)
         this.sensorType.sensorTypeData = result.data.eqpmnFgManageList
         this.sensorType.selected[0]=result.data.eqpmnFgManageList[0]
         this.getSensorDetail()
@@ -126,12 +136,15 @@ export default {
         console.log(error)
       })
     },
-    getSensorDetail () {
+    getSensorDetail (targetNum) {
+      if(targetNum == undefined) {targetNum = 1}
       const requestData = JSON.stringify({
+        currPage: targetNum,
         eqpmnClId: this.sensorType.selected[0].eqpmnClId
       })
-      SensorApi.getDetail()
+      SensorApi.getDetail(requestData)
       .then(result => {
+        console.log(result)
         this.sensorByType.sensorByTypeData = result.data.eqpmnFgSensorList
         this.sensorDetail = result.data.eqpmnFgInfo
         result.data.param.totalCount = result.data.totCnt
@@ -139,6 +152,17 @@ export default {
       })
       .catch(error => {
         console.log(error)
+      })
+    },
+    updateDetail () {
+      const requestObj = Object.assign({eqpmnFgInfo: this.sensorDetail}, { eqpmnFgSensorList:this.sensorByType.sensorByTypeData})
+      console.log(requestObj)
+      const requestData = JSON.stringify(requestObj)
+      SensorApi.updateItem(requestData).then(result => {
+        console.log(result)
+        this.getSensorlist()
+      }).catch(error => {
+        console.log(error.response)
       })
     },
     selectedItem(itemInfo) {

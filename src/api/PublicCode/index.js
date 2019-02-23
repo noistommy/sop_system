@@ -4,37 +4,19 @@ const TargetURL = '/n3n.sop.CmmnCd'
 
 export default {
   // 공통코드목록조회
-  getList: () => {
-    return HTTP.post(`${TargetURL}.selectCmmnCdList.do`, {})
+  getList: (payload) => {
+    return HTTP.post(`${TargetURL}.selectCmmnCdDetailList.do`, payload)
   },
   // 공통코드상세정보조회
-  getPublicCodeDetail: () => {
-    return HTTP.post(`${TargetURL}.selectCmmnCdDetailList.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  getItem: (payload) => {
+    return HTTP.post(`${TargetURL}.selectCmmnCdDetailInfo.do`, payload)
   },
   // 공통코드그룹정보저장
-  updatePublicCode: () => {
-    return HTTP.post(`${TargetURL}.saveCmmnCdGroupInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  updateCodeGroup: (payload) => {
+    return HTTP.post(`${TargetURL}.saveCmmnCdGroupInfo.do`, payload)
   },
   // 공통코드상세정보저장
-  updatePublicCodeDetail: () => {
-    return HTTP.post(`${TargetURL}.CmmnCdDetailInfo.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  updateCodeItem: (payload) => {
+    return HTTP.post(`${TargetURL}.saveCmmnCdDetailInfo.do`, payload)
   }
 }

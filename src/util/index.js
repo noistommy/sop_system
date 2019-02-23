@@ -19,6 +19,17 @@ const codeGenerator = (code, text) => {
       dialog.title = 'Page Not Found'
       dialog.text = text
       break
+    case 'L':
+      dialog.title = 'Logout'
+      dialog.text = text
+      dialog.button = [{
+        title: '확인',
+        default: true,
+        handler: () => {
+          this.$router.push('/login')
+        }
+      }]
+      break
     default:
       console.log(code, text)
   }

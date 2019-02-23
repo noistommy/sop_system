@@ -3,6 +3,7 @@ import doAsync from './async-util'
 // import axios from 'axios'
 
 import AuthApi from '@/api/Auth'
+import PublicCodeApi from '@/api/PublicCode'
 // import { restElement } from 'babel-types';
 
 export const getAsync1 = (context) => {
@@ -43,6 +44,28 @@ export const login = ({ commit }, loginData) => {
 export const logout = ({ commit }) => {
   return AuthApi.logout().then(result => {
     commit('LOGOUT')
+    return result
+  }).catch(error => {
+    return error.response
+  })
+}
+
+export const getCodeList = ({ commit }, publicCode) => {
+  const req = JSON.stringify({
+    cmmnCd: publicCode
+  })
+  return PublicCodeApi.getList(req).then(result => {
+    console.log(result)
+    commit('GET_CODE_LIST')
+    return result
+  }).catch(error => {
+    return error.response
+  })
+}
+
+export const getCodeItem = ({ commit }, publicCode) => {
+  return PublicCodeApi.getItem().then(result => {
+    commit('GET_CODE_ITEM')
     return result
   }).catch(error => {
     return error.response

@@ -5,7 +5,7 @@
         div.title 조직도 관리
         SearchComp(v-model="searchData", :isTextSearch="true", @search="getList")
           template(slot="condition1", slot-scope="props")
-            select.ui.dropdown(v-model="searchData.type")
+            select.ui.dropdown(v-model="searchData.searchCnd")
               option(value="", default) 분류
               option(value="00") 전체
               option(value="01") 팀명
@@ -101,7 +101,6 @@ export default {
       const requestData = JSON.stringify(this.searchData)
 
       MemberApi.getItems(requestData).then(result => {
-        console.log(`memberdata: ${result.data}`)
         this.memberGroup.memberGoupData = result.data.deptEmpInfoList
         result.data.param.totalCount = result.data.totCnt
         this.memberGroup.pageInfo = result.data.param
@@ -111,7 +110,7 @@ export default {
     },
     getTreeList () {
       // const request = JSON.stringify(this.requestData)
-      MemberApi.getList().then(result => {
+      MemberApi.getTree().then(result => {
         console.log(`treedata: ${result.data}`)
         this.treeviewData = result.data.trOrgnList
         this.selectTeam = result.data.trOrgnList[0]
@@ -135,16 +134,16 @@ export default {
 .treeView-wrapper {
   overflow-y: auto;
   height: 100%;
-  .treeEdit {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    // background-color: rgba(0, 0, 0, .5);
-    background-color: rgba(0, 0, 0, 1);
-    color: #fff;
-    z-index: 999;
-  }
+  // .treeEdit {
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100%;
+  //   // background-color: rgba(0, 0, 0, .5);
+  //   background-color: rgba(0, 0, 0, 1);
+  //   color: #fff;
+  //   z-index: 999;
+  // }
 }
 </style>

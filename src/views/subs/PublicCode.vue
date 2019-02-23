@@ -3,52 +3,70 @@
     div.sub-wrapper
       div.sub-header
         div.title 공통코드 관리
-        SearchComp(
-          v-model="searchData"
-          :isDateSearch="false",
-          :isTextSearch="true")
       div.sub-content.column
         div.content.section.section-1
-            DataList(
-              v-model="publicCode.selected"
-              :headers="publicCode.headers",
-              :items="publicCode.publicCodeData",
-              :isListNumber="publicCode.isListNumber",
-              :itemKey="publicCode.itemkey"
-            ).ui.table.celled.selectable
-              <template slot="items" slot-scope="props">
-                div.item.lr.listitem(:class="{active:props.selected}", @click="selectedItem(props)" )
-                  .ld {{props.item.cmmnCd}}
-                  .ld {{props.item.cmmnCdNm}}
-                  .ld.center.aligned {{props.item.useYn}}
-              </template>
+          h3.title 공통코드정보
+          div.contant-wrapper
+            div.section_1
+              DataList(
+                v-model="publicCode.selected"
+                :headers="publicCode.headers",
+                :items="publicCode.publicCodeData",
+                :isListNumber="publicCode.isListNumber",
+                :isEditor="publicCode.isEditor",
+                :itemKey="publicCode.itemkey"
+              ).ui.table.celled.selectable
+                <template slot="items" slot-scope="props">
+                  div.item.lr.listitem(:class="{active:props.selected}", @click="selectedGroup(props)" )
+                    .ld {{props.item.cmmnCd}}
+                    .ld {{props.item.cmmnCdNm}}
+                    .ld.center.aligned {{props.item.useYn}}
+                </template>
+            div.btnSet
+              div.btn-wrap.right
+              div.btn-group.left
+                button.ui.button.blue(@click="editCode('group', 'new')") 그룹신규
+                button.ui.button.blue.basic(@click="editCode('group', 'edit')") 그룹편집
         div.content.section.section-2
-          DataTable(
-              v-model="publicCodeDetail.selected"
-              :headers="publicCodeDetail.headers",
-              :items="publicCodeDetail.publicCodeDetailData",
-              :isFooter="publicCodeDetail.isfooter",
-              :isListNumber="publicCodeDetail.isListNumber",
-              :isPagination="publicCodeDetail.isPagination",
-              :page="publicCodeDetail.pageInfo"
-            ).ui.table.celled.selectable
-              <template slot="items" slot-scope="props">
-                tr
-                  td.center.aligned {{props.item.no}}
-                  td {{props.item.date}}
-                  td {{props.item.manager}}
-                  td.center.aligned {{props.item.type}}
-                  td {{props.item.title}}
-                  td.ellipse {{props.item.location}}
-                  td {{props.item.endtime}}
-              </template>
+          h3.title 공통코드상세정보
+          div.contant-wrapper
+            div.section_1
+              div.wrapper
+                DataTable(
+                    v-model="publicCodeDetail.selected"
+                    :headers="publicCodeDetail.headers",
+                    :items="publicCodeDetail.publicCodeDetailData",
+                    :itemKey="publicCodeDetail.itemkey",
+                    :isFooter="publicCodeDetail.isfooter",
+                    :isListNumber="publicCodeDetail.isListNumber",
+                    :isPagination="publicCodeDetail.isPagination",
+                    :page="publicCodeDetail.pageInfo"
+                  ).ui.table.celled.selectable
+                    template(slot="items", slot-scope="props")
+                      tr(:active="props.selected", @click="selectedItem(props)" )
+                        td {{props.item.cmmnCd}}
+                        td {{props.item.cmmnCdNm}}
+                        td {{props.item.indictOrdr}}
+                        td {{props.item.useYn}}
+                        td {{props.item.userData1}}
+                        td {{props.item.userData2}}
+                        td {{props.item.userData3}}
+                        td {{props.item.userData4}}
+                        td {{props.item.userData5}}
+          div.btnSet
+              div.btn-wrap.right
+              div.btn-group.left
+                button.ui.button.blue(@click="editCode('code', 'new')") 코드신규
+                button.ui.button.basic(@click="editCode('code', 'edit')") 코드편집
       div.sub-footer
+
 </template>
 
 <script>
 import DataTable from '@/components/DataTable.vue'
 import DataList from '@/components/DataList.vue'
 import SearchComp from '@/components/SearchComp.vue'
+import CodeEditor from '@/components/CodeEditor.vue'
 import { publicCodeHeader, publicCodeDetailHeader } from '@/setting'
 import PublicCodeApi from '@/api/PublicCode'
 
@@ -61,14 +79,17 @@ export default {
         headers: publicCodeHeader.headers,
         publicCodeData: [],
         isListNumber: false,
+        isEditor: true,
         itemkey: 'cmmnCd'
       },
+      publicCodeInfo: {},
       publicCodeDetail: {
         selected: [],
         headers: publicCodeDetailHeader.headers,
         publicCodeDetailData: [],
-        isFooter: false,
-        idPagination: false,
+        itemkey: 'cmmnCd',
+        isfooter: true,
+        isPagination: true,
         isListNumber: false,
         pageInfo: {} 
       },
@@ -78,33 +99,138 @@ export default {
   components: {
     DataTable,
     DataList,
-    SearchComp
+    SearchComp,
+    CodeEditor
   },
   created () {
     this.getCodeList()
-    
   },
   methods: {
     getCodeList () {
-      PublicCodeApi.getList().then(result => {
+      const requestData = JSON.stringify({
+        cmmnCd:  ''
+      })
+      PublicCodeApi.getList(requestData).then(result => {
         console.log(result)
-        this.publicCode.publicCodeData = result.data.cmmnCdList
+        this.publicCode.publicCodeData = result.data.cmmnCdDetailList
+        this.publicCode.selected[0]=this.publicCode.publicCodeData[0]
+      }).then(() => {
+        this.getCodeItem()
       }).catch(error => {
         console.log(`${error}`)
       })
     },
-    selectedItem(itemInfo) {
+    getCodeItem () {
+      const requestData = JSON.stringify({
+        cmmnCd:  this.publicCode.selected[0].cmmnCd
+      })
+      PublicCodeApi.getItem(requestData).then(result => {
+        console.log(result)
+        this.publicCodeDetail.publicCodeDetailData = result.data.cmmnCdDetailInfo
+        this.publicCodeDetail.selected[0] = this.publicCodeDetail.publicCodeDetailData[0]
+      }).catch(error => {
+        console.log(error)
+      })
+    },
+    updateCodeGroup () {
+      const requestData = JSON.stringify({
+        cmmnCd:  this.publicCode.selected[0]
+      })
+      PublicCodeApi.updateCodeGroup(requestData).then(result => {
+        console.log(result)
+        this.getCodeList ()
+      }).catch(error => {
+        console.log(`${error}`)
+      })
+    },
+    updateCodeItem () {
+      const requestData = JSON.stringify({
+        cmmnCd:  this.publicCodeDetail.selected[0].cmmnCd,
+        cmmnCdNm:  this.publicCodeDetail.selected[0].cmmnCdNm,
+        indictOrdr:  this.publicCodeDetail.selected[0].indictOrdr,
+        useYn:  this.publicCodeDetail.selected[0].useYn,
+      })
+      PublicCodeApi.updateCodeItem(requestData).then(result => {
+        console.log(result)
+        this.getCodeItem ()
+      }).catch(error => {
+        console.log(`${error}`)
+      })
+    },
+    editCode (itemType, editType) {
+      let editdata = {
+        title: '공통코드',
+        type: editType,
+        item: itemType,
+        data: {
+          cmmnCd: '',
+          cnnmCdNm: '',
+          indictOrdr: 0,
+          useYn: 'N'
+        }
+      }
+      
+      if(editType == 'edit') {
+        if(itemType == 'code') {
+          editdata.data = this.publicCodeDetail.selected[0]
+        }else {
+          editdata.data = this.publicCode.selected[0]
+        }
+      }
+      console.log(editdata)
+      this.$modal.show(CodeEditor, editdata, { height: 'auto', draggable: true})
+    },
+    createCodeItem () {
+      console.log('click')
+    },
+    selectedGroup(itemInfo) {
       this.publicCode.selected = []
-      this.publicCode.selected.push(this.publicCode.publicCodeData[itemInfo.idx])
-    }
+      if (!itemInfo.selected) {
+        this.publicCode.selected.push(this.publicCode.publicCodeData[itemInfo.idx])
+      }
+      this.getCodeItem()
+    },
+    selectedItem(itemInfo) {
+      this.publicCodeDetail.selected = []
+      if (!itemInfo.selected) {
+        this.publicCodeDetail.selected.push(this.publicCodeDetail.publicCodeDetailData[itemInfo.idx])
+      }
+    },
+    toggleCheck () {
+      this.publicCodeDetail.useYn = this.publicCodeDetail.useYn == 'Y' ? 'N' : 'Y'
+    },
   }
 }
 </script>
 
 <style lang="less">
 .PublicCode {
+  .contant-wrapper {
+    height: 85%;
+    max-height: auto;
+    display: flex;
+    flex-direction: column;
+    // flex: 1 2 auto;
+    > div {
+      padding-bottom: 15px
+    }
+    .section_1{
+      height: 100%;
+    }
+    .section_2{
+    }
+    .ui.form .ui.table {
+      tr {
+        td{
+          &:nth-child(1) {
+            background-color: #f9fafb;
+          }
+        }
+      }
+    }
+  }
   .content.section.section-1 {
-    width: 25% !important;
+    width: 15% !important;
   }
   .ld {
     width: 60% !important;

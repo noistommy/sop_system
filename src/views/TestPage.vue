@@ -4,27 +4,11 @@
       div.ui.grid
        
         div.six.wide.column
-            div.ui.list
-              div.item
-                .content
-                  div.ui.grid
-                    .col.col-1.two.wide.column title
-                    .col.col-2.three.wide.column title
-                    .col.col-3.nine.wide.column title
-              div.item
-                .content
-                  div.ui.grid
-                    .col.col-1.two.wide.column title
-                    .col.col-2.three.wide.column title
-                    .col.col-3.nine.wide.column title
-              div.item
-                .content
-                  div.ui.grid
-                    .col.col-1.two.wide.column title
-                    .col.col-2.three.wide.column title
-                    .col.col-3.nine.wide.column title
-                //- .extra
-                //-   .ui.right.float.button extra
+            button.ui.button(@click="activeTreeView") TREEVIEW
+            modals-container(
+              name="treeviewmodal",
+              @selectedTeam="beforeClose"
+              )
                
         div.six.wide.column
             div.ui.segment
@@ -78,6 +62,8 @@
                   td.center.aligned {{props.item.phone}}
               </template>
         div.ten.wide.column
+          div.ui.form
+            check-text-count(:maxLength="500")
           //- div.tablelist
           //-   div.lhead.ui.relaxed.divided.list
           //-     div.item.tablelistitem.th
@@ -130,8 +116,11 @@ import Pagination from '@/components/Pagination.vue'
 import Modal from '@/components/Modal.vue'
 import TreeView from '@/components/TreeView.vue'
 import SearchComp from '@/components/SearchComp.vue'
+import CheckTextCount from '@/components/CheckTextCount.vue'
 import About from '@/views/About.vue'
 import axios from 'axios'
+import MemberApi from '@/api/Member'
+import TreeModal from '@/components/TreeModal'
 
 import TestApi from '@/api/Test'
 
@@ -146,7 +135,9 @@ export default {
     Modal,
     TreeView,
     SearchComp,
-    About
+    About,
+    CheckTextCount,
+    TreeModal
   },
   data () {
     return {
@@ -184,14 +175,24 @@ export default {
       testData: [
       ],
       treeviewData: [
+        {
+          title: 'A',
+          childlen: [
+            {title: 'a', childlen: [{title: '1', childlen: []},{title: '2', childlen: []},{title: '3', childlen: []}]},
+            {title: 'b', childlen: []},
+            {title: 'c', childlen: [{title: '1', childlen: []}]},
+            {title: 'd', childlen: [{title: '1', childlen: []},{title: '2', childlen: []}]},
+          ]
+        }
       ],
       titleText: 'Modal title',
-      isEdit: false
+      isEdit: false,
+      activedData: {}
     }
   },
   created () {
     console.log(this.$store.getters.getDataTest)
-    this.test()
+    this.getTreeList()
   },
   mounted() {
     $('.ui.dropdown').dropdown();
@@ -230,6 +231,18 @@ export default {
     ...mapActions([
       'setModalData'
     ]),
+    beforeClose (select) {
+      console.log(select)
+    },
+    activeTreeView () {
+      this.$modal.show(TreeModal, {
+        title: 'TreeeView',
+        data:this.treeviewData,
+        modal: 'treeviewmodal'
+      },{
+        height: '50%'
+      })
+    },
     activeSelected (index) {
       console.log(index)
       this.selected[index] = !this.selected[index]
@@ -305,7 +318,16 @@ export default {
         this.selected.push(this.testData[itemInfo.idx])
         
       }
-    }
+    },
+    getTreeList () {
+      // const request = JSON.stringify(this.requestData)
+      MemberApi.getTree().then(result => {
+        console.log(result.data)
+        this.treeviewData = result.data.trOrgnList
+      }).catch(error => {
+        console.log(error)
+      })
+    },
   }
 }
 </script>
@@ -404,7 +426,7 @@ export default {
   // display: none;
   position: absolute;
   top:0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, .8);

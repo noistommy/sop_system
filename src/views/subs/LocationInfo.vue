@@ -61,7 +61,9 @@
                       .ld.center
                         //- input(type="text", value="")
                         div.ui.toggle.checkbox()
-                          input(
+                          input(v-model="locationFloor.locationFloorData[props.idx].alarmPermYn",
+                            true-value="Y",
+                            false-value="N",
                             type="checkbox",
                             :checked="props.item.alarmPermYn=='Y'",
                             :disabled="alarmYn == false")
@@ -125,7 +127,6 @@ export default {
   methods: {
     getLocationList () {
       LocationApi.getList().then(result => {
-        console.log(result)
         this.locationInfo.locationInfoData = result.data.buldManageList
         this.locationInfo.selected[0]=this.locationInfo.locationInfoData[0]
         this.getDetail()
@@ -138,7 +139,6 @@ export default {
         buldId: this.locationInfo.selected[0].buldId
       })
       LocationApi.getItem(requestData).then(result => {
-        console.log(result)
         this.locationFloor.locationFloorData = result.data.buldFloorInfoList
         this.locationDetail = result.data.buldManageInfo
       }).catch(error => {
@@ -147,12 +147,9 @@ export default {
     },
     updateDetail () {
       const requestObj = Object.assign({buldManageInfo: this.locationDetail}, { buldFloorInfoList:this.locationFloor.locationFloorData})
-      console.log(requestObj)
-      const requestData = JSON.stringify({
-        buldId: this.locationInfo.selected[0].buldId
-      })
+      const requestData = JSON.stringify(requestObj)
       LocationApi.updateItem(requestData).then(result => {
-        console.log(result)
+        this.getLocationList()
       }).catch(error => {
         console.log(error.response)
       })
@@ -199,7 +196,7 @@ export default {
       padding-bottom: 15px
     }
     .section_2{
-      height: 70%;
+      height: 64%;
       .wrapper {
         height: 100%;
         .lbody {
@@ -207,7 +204,7 @@ export default {
         }
       }
     }
-    .ui.table {
+    .ui.form .ui.table {
       tr {
         td{
           &:nth-child(1) {

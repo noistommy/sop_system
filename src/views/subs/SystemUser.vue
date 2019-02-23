@@ -6,7 +6,7 @@
       div.sub-content
         div.content
           DataTable(
-            v-model="selected"
+            v-model="systemUser.selected"
             :headers="systemUser.headers",
             :items="systemUser.systemUserData",
             :itemKey="systemUser.itemkey"
@@ -33,16 +33,17 @@
         div.footer
           div.btnSet
             div.btn-group.left
-              button.ui.button.large 편집
-              button.ui.button.large 삭제
+              button.ui.button.large(@click="updateUser") 편집
+              button.ui.button.large(@click="deleteItem") 삭제
             div.btn-wrap.right
-              button.ui.button.large.blue 신규등록
+              button.ui.button.large.blue(@click="createUser") 신규등록
 </template>
 
 <script>
 import DataTable from '@/components/DataTable.vue'
 import DataList from '@/components/DataList.vue'
 import SearchComp from '@/components/SearchComp.vue'
+import UserEditor from '@/components/UserEditor.vue'
 import { systemUserHeader } from '@/setting'
 import SystemUser from '@/api/Users'
 
@@ -50,8 +51,8 @@ export default {
   name: 'system-user',
   data () {
     return {
-      selected: [],
       systemUser: {
+        selected: [],
         headers: systemUserHeader.headers,
         systemUserData: [],
         isFooter: true,
@@ -76,20 +77,50 @@ export default {
       SystemUser.getList().then(result => {
         console.log(result)
         this.systemUser.systemUserData=result.data.oprtrInfoList
-        if(this.systemUser.length >= result.data.param.pagePerCnt) {
-          this.systemUser.isPagination = false
-        } else {
-          this.systemUser.pageInfo=result.data.param
-          this.systemUser.pageInfo.totalPage = result.data.totalCount
-        }
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    deleteItem () {
+      const requestData = JSON.stringify({
+        oprtrId:this.systemUser.selected[0].oprtrId
+      })
+      SystemUser.deleteUser(requestData).then(result => {
+        console.log(result)
+        this.getUsersList()
       }).catch(err => {
         console.log(err)
       })
     },
     selectedItem(itemInfo) {
-      this.selected = []
+      this.systemUser.selected = []
       if(!itemInfo.selected) {
-        this.selected.push(this.systemUser.systemUserData[itemInfo.idx])
+        this.systemUser.selected.push(this.systemUser.systemUserData[itemInfo.idx])
+      }
+    },
+    createUser () {
+      this.$modal.show(UserEditor, {
+        type: '등록',
+        data: {}
+      },{
+        width: '700px',
+        height: 'auto'
+      })
+    },
+    updateUser () {
+      if(this.systemUser.selected.length == 0) {
+        this.$modal.show('dialog', {
+          title: '선택오류',
+          text: '선택 된 운영자가 없습니다.'
+        })
+      }else {
+        this.$modal.show(UserEditor, {
+          type: '수정',
+          data: this.systemUser.selected[0]
+        },{
+          width: '700px',
+          height: 'auto'
+        })
       }
     }
   }

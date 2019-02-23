@@ -17,10 +17,10 @@
         tfoot(v-if="isFooter")
             tr
                 th( :colspan="colspan" )
-                    template(v-if="isPagination && page.totalCount > 10")
-                        Pagination( :totalCount="page.totalCount",
-                        :currentPage="pageInfo.currentPageNo",
-                        :recordCountPerPage="page.recordCountPerPage",
+                    template(v-if="isPagination && pageInfo.totalCount > pageInfo.pagePerCnt")
+                        Pagination( :totalCount="pageInfo.totalCount",
+                        :currentPage="pageInfo.currPage",
+                        :recordCountPerPage="pageInfo.pagePerCnt",
                         @currpage="setCurrentPage" )
 
 </template>
@@ -50,10 +50,11 @@ export default {
       selItem: false,
       colspan: 0,
       listNumber: 1,
-      pageInfo: this.page
+      pageInfo: {}
     }
   },
   created () {
+    this.pageInfo = this.page
     if(this.headers){
       this.colspan = this.headers.length
       if (this.isListNumber) {
@@ -63,6 +64,9 @@ export default {
         this.colspan++
       }
     }
+  },
+  updated() {
+    this.pageInfo = this.page
   },
   methods: {
     setCurrentPage (pagenum) {
@@ -77,7 +81,6 @@ export default {
           return isSelected = true
         }
       })
-      
       return isSelected
     }
   }
