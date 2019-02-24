@@ -78,8 +78,8 @@ export default {
   },
   created () {
     // const initDate
-    this.searchData.start = convertDateFormat(new Date(), '')
-    this.searchData.end = convertDateFormat(new Date(), '')
+    // this.searchData.start = convertDateFormat(new Date(), '')
+    // this.searchData.end = convertDateFormat(new Date(), '')
     this.getHistoryList(1)
   },
   methods: {

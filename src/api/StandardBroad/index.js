@@ -16,13 +16,7 @@ export default {
     return HTTP.post(`${TargetURL}.saveStdBrdcstInfo.do`, payload)
   },
   // 표준방송검증
-  checkStandardBroad: () => {
-    return HTTP.post(`${TargetURL}.selectStdBrdcstVrify.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  checkDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.selectStdBrdcstVrify.do`, payload)
   }
 }

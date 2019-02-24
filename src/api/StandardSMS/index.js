@@ -16,13 +16,7 @@ export default {
     return HTTP.post(`${TargetURL}.saveStdSmsInfo.do`, payload)
   },
   // 표준문자검증
-  checkStandardSMS: () => {
-    return HTTP.post(`${TargetURL}.selectStdSmsVrify.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  checkDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.selectStdSmsVrify.do`, payload)
   }
 }

@@ -16,15 +16,33 @@
       div.sub-content
         div.content.row
           div.section.left-section
-            div.treeEdit
-              div Tree Edit
-            div.treeView-wrapper
+            div.treeView-wrapper(:class="{editabled:isEdit}")
               div.treeView.list.level-0
-                    TreeView( v-for="item in treeviewData" :treeItem="item", :isActive="rootActive", :level="1")
+                TreeView(
+                  v-model="selectTeam",
+                  @select="getItemInfo",
+                  v-for="item in treeviewData",
+                  treeItem="item",
+                  :isActive="rootActive",
+                  :level="1",
+                  @search="getList")
+            div.treeEdit
+              div.btnSet
+                button.ui.button.blue(@click="editpanel") 편집
+              div.edit-wrapper
+                div.ui.form.inverted
+                  div.field
+                    label 자위소방대명
+                    input(type="text")
+                  div.field
+                    label 상위자위소방대명
+                    input(type="text")
+              
           div.section.right-section
             div.ui.grid
               div.seven.wide.column
-                h3 자위소방대
+                h3  자위소방대 
+                //- h3 {{selectedTeam.childSlfdfnFbrdNm}}
                 DataTable(
                   :headers="fireBrigade.headers",
                   :items="fireBrigade.fireBrigadeGroup",
@@ -91,10 +109,12 @@ export default {
       },
       treeviewData: [],
       rootActive: true,
+      selectTeam: {},
       searchData: {
         searchCnd: '',
         searchNm: ''
-      }
+      },
+      isEdit: false
     }
   },
   components: {
@@ -103,15 +123,19 @@ export default {
     SearchComp
   },
   created () {
-    this.getList()
     this.getTreeList()
   },
   methods: {
     setNumbering (num) {
       return (this.pageInfo.currentPageNo - 1) * 10 + num
     },
-    getList() {
-      FireBrigadeApi.getAllFireman()
+    getList(targetNum) {
+      if(targetNum == undefined) {targetNum = 1}
+      if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
+      this.searchData.currPage = targetNum
+      this.searchData.childDeptId = this.selectTeam.childDeptId
+      const requestData = JSON.stringify(this.searchData)
+      FireBrigadeApi.getAllFireman(requestData)
       .then(result => {
         console.log(result)
         this.fireBrigade.fireBrigadeGroup = result.slfdfnFbrdEmpInfoAllList
@@ -124,17 +148,38 @@ export default {
       FireBrigadeApi.getTreeList()
       .then(result => {
         console.log(result)
-        this.treeviewData = result.slfdfnFbrdTrList
+        this.treeviewData = result.data.slfdfnFbrdTrList
+        this.selectTeam = result.data.slfdfnFbrdTrList[0]
+        this.getList(1)
       })
       .catch(err => {
         console.log(err)
       })  
     },
+    getItemInfo(item) {
+        this.selectTeam = item
+        this.getList(1)
+    },
+    testdialog () {
+      this.$modal.show('dialog', {
+        title: 'test'
+      })
+    },
+    editpanel () {
+      this.isEdit = !this.isEdit
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.transition (@type: all, @duration: 250ms, @Function: ease-out) {
+  -webkit-transition: @arguments;
+  -moz-transition: @arguments;
+  -ms-transition: @arguments;
+  -o-transition: @arguments;
+  transition: @arguments;
+}
 .FireBrigade {
   .search-comp {
     right: 250px
@@ -144,23 +189,37 @@ export default {
     top:0;
     right:0;
   }
+  .left-section {
+    display: flex;
+    flex-direction: column;
+    .treeView-wrapper {
+      overflow-y: auto;
+      height: 90%;
+      .transition();
+      &.editabled {
+        height: 50%;
+      }
+    }
+    .treeEdit {
+      flex-grow: 1;
+      position: relative;
+      // background-color: rgba(0, 0, 0, .5);
+      color: #fff;
+      .edit-wrapper {
+        position:absolute;
+        top: 80px;
+        width: 100%;
+        padding: 10px;
+        .ui.form input {
+          background-color: rgba(0, 0, 0, 0);
+          color:#fff;
+        }
+      }
+    }
+  }
 }
 .section {
   position:relative;
-}
-.treeView-wrapper {
-  overflow-y: auto;
-  height: 100%;
-  .treeEdit {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, .5);
-    color: #fff;
-    z-index: 999;
-  }
 }
 .btn-wrapper {
   display: flex;

@@ -82,15 +82,22 @@ export default {
       })
     },
     deleteItem () {
-      const requestData = JSON.stringify({
-        oprtrId:this.systemUser.selected[0].oprtrId
-      })
-      SystemUser.deleteUser(requestData).then(result => {
-        console.log(result)
-        this.getUsersList()
-      }).catch(err => {
-        console.log(err)
-      })
+      if(this.systemUser.selected.length == 0) {
+        this.$modal.show('dialog', {
+          title: '선택오류',
+          text: '선택 된 운영자가 없습니다.'
+        })
+      }else {
+        const requestData = JSON.stringify({
+          oprtrId:this.systemUser.selected[0].oprtrId
+        })
+        SystemUser.deleteUser(requestData).then(result => {
+          console.log(result)
+          this.getUsersList()
+        }).catch(err => {
+          console.log(err)
+        })
+      }
     },
     selectedItem(itemInfo) {
       this.systemUser.selected = []

@@ -1,6 +1,6 @@
 <template lang="pug">
   div.modal.user-editor
-    div.modal-header {{title}} {{type == 'new' ? '신규' : '편집'}}
+    div.modal-header {{title}} {{type == 'new' ? '등록' : '편집'}}
     div.modal-content 
       div.content-wrapper
         div.ui.form.tiny
@@ -8,48 +8,35 @@
             tbody
               tr
                 td.center.aligned 
-                  span 코드그룹*
+                  span 사원명*
                 td
                   div.field
                     label
-                    input(type="text", v-model="codeData.cmmnCd")
+                    input(type="text", v-model="partnerData.emplNm")
               tr
                 td.center.aligned 
-                  span 코드그룹명*
+                  span 직급명*
                 td
                   div.field
                     label
-                    input(type="text", v-model="codeData.cmmnCdNm")
-              tr(v-if="item=='code'")
-                td.center.aligned 
-                  span 표시순서*
-                td
-                  div.field
-                    label
-                    input(type="text", v-model="codeData.indictOrdr")
+                    input(type="text", v-model="partnerData.clsfNm")
               tr
                 td.center.aligned 
-                  span 사용여부
+                  span 휴대전화번호*
                 td
-                  div.ui.toggle.checkbox(@click="toggleCheck")
-                    input(type="checkbox",
-                      v-model="codeData.useYn",
-                      true-value="Y",
-                      false-value="N")
-                    label 사용
+                  div.field
+                    label
+                    input(type="text", v-model="partnerData.moblphonNo")
             
     div.btnSet.center
-      template(v-if="item == 'group'")
-        button.ui.button.blue(@click="updateCodeGroup") {{type == 'new' ? '등록' : '편집'}}
-      template(v-else)
-        button.ui.button.blue(@click="updateCode") {{type == 'new' ? '등록' : '편집'}}
+      button.ui.button.blue(@click="updateCode") {{type == 'new' ? '등록' : '편집'}}
       button.ui.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
 
 <script>
-import PublicCodeApi from '@/api/PublicCode'
+import PartnerApi from '@/api/Partner'
 
 export default {
   name: 'code-editor',
@@ -63,19 +50,13 @@ export default {
   },
   data () {
     return {
-      codeData: {}
+      partnerData: {}
     }
   },
   created () {
-    this.codeData = this.data
-  },
-  mounted () {
-    $('.ui.radio.checkbox').checkbox()
+    this.partnerData = this.data
   },
   methods: {
-    toggleCheck () {
-      this.codeData.useYn = this.codeData.useYn == 'Y' ? 'N' : 'Y'
-    },
     updateCodeGroup () {
       const requestData = JSON.stringify(this.codeData)
       PublicCodeApi.updateCodeGroup(requestData).then(result => {
@@ -100,11 +81,6 @@ export default {
       let options = {
         title: '실행확인',
         text: ''
-      }
-      if(this.item == 'group') {
-        options.text = '그룹코드가 '
-      }else {
-        options.text = '코드가 '
       }
       if(this.type == 'new') {
         options.text += '생성되었습니다'

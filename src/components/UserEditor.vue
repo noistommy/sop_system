@@ -115,7 +115,7 @@ export default {
       })
       UsersApi.resetPassword(requestData).then(result => {
         console.log(result)
-        alert('비밀번호가 변경 되었습니다.')
+        alert('비밀번호가 초기화 되었습니다.')
       }).catch(error => {
         console.log(error.response)
       })

@@ -60,11 +60,12 @@ export default {
        selectedDateStart: this.startDate,
        selectedDateEnd: this.endDate,
        selectedDates: this.rangeDate,
-       selectDateCode: "0",
+       selectDateCode: "1",
        limitDay: new Date()
     }
   },
   created () {
+    this.setDateCode()
     this.setDateValue()
   },
   mounted() {
@@ -93,8 +94,8 @@ export default {
       if(this.isRange == 'range') {
         this.value = this.selectedDates
       } else {
-        this.value.start=convertDateFormat(this.selectedDateStart, '')
-        this.value.end=convertDateFormat(this.selectedDateEnd, '')
+        this.value.start = convertDateFormat(this.selectedDateStart, '')
+        this.value.end = convertDateFormat(this.selectedDateEnd, '')
       }
     },
     setDateCode () {

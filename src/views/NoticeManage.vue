@@ -95,13 +95,20 @@ export default {
       })
     },
     deleteNoticeItem() {
-      const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
-      NoticeApi.deleteItem(requestData).then(result => {
-        console.log('success')
-      })
-      .catch(error => {
-        console.log(error)
-      })
+      if(this.selected.length == 0){
+        this.$modal.show('dialog', {
+          title: '선택오류',
+          text: '선택 된 게시물이 없습니다.'
+        })
+      }else {
+        const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
+        NoticeApi.deleteItem(requestData).then(result => {
+          console.log('success')
+        })
+        .catch(error => {
+          console.log(error)
+        })
+      }
     },
     selectedItem(itemInfo) {
       this.selected = []
@@ -111,13 +118,20 @@ export default {
       }
     },
     editItem() {
-      this.$modal.show(InsertNotice, {
-        type: 'edit',
-        title: '수정하기',
-        noticeId: this.selected[0].noticeId
-      },{
-        height: "auto"
-      })
+      if(this.selected.length == 0){
+        this.$modal.show('dialog', {
+          title: '선택오류',
+          text: '선택 된 게시물이 없습니다.'
+        })
+      }else {
+        this.$modal.show(InsertNotice, {
+          type: 'edit',
+          title: '수정하기',
+          noticeId: this.selected[0].noticeId
+        },{
+          height: "auto"
+        })
+      }
     },
     newItem() {
       this.$modal.show(InsertNotice, {

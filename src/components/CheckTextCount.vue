@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       codeByte: 0,
-      checkText: '내용입력'
+      checkText: ''
     };
   },
   created() {
@@ -30,6 +30,7 @@ export default {
   },
   computed: {
     byteCal() {
+      this.codeByte = 0
       for (let idx = 0; idx < this.checkText.length; idx++) {
         const oneChar = escape(this.checkText.charAt(idx));
         if (oneChar.length == 1) {

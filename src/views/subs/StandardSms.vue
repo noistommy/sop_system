@@ -28,6 +28,7 @@
                 </template>
         div.content.section.section-2
           h3.title 표준문자 상세정보
+            button.ui.right.floated.button.mini.blue.basic(@click="checkSmsItem") 문자(SMS)확인
           div.contant-wrapper
             div.section_1
               div.ui.form.tiny
@@ -45,7 +46,7 @@
                       td
                         check-text-count(
                           :formType="'textarea'",
-                          :rownum='5',
+                          :rownum='3',
                           :maxLength='500',
                           v-model="standardSmsDetail.smsContents")
                     tr
@@ -55,10 +56,11 @@
                         div.fields
                           div.field.six.wide
                             label
-                            select.ui.dropdown
+                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd1")
+                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
-                            input(type="text", placeholder='EX.')
+                            input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData1")
                     tr
                       td.center.aligned 
                         span 파라미터2
@@ -66,10 +68,11 @@
                         div.fields
                           div.field.six.wide
                             label
-                            select.ui.dropdown
+                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd2")
+                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
-                            input(type="text", placeholder='EX.')
+                            input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData2")
                     tr
                       td.center.aligned 
                         span 파라미터3
@@ -77,10 +80,11 @@
                         div.fields
                           div.field.six.wide
                             label
-                            select.ui.dropdown
+                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd3")
+                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
-                            input(type="text", placeholder='EX.')
+                            input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData3")
                     tr
                       td.center.aligned 
                         span 파라미터4
@@ -88,10 +92,11 @@
                         div.fields
                           div.field.six.wide
                             label
-                            select.ui.dropdown
+                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd4")
+                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
-                            input(type="text", placeholder='EX.')
+                            input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData4")
                     tr
                       td.center.aligned 
                         span 파라미터5
@@ -99,23 +104,27 @@
                         div.fields
                           div.field.six.wide
                             label
-                            select.ui.dropdown
+                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd5")
+                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
-                            input(type="text", placeholder='EX.')
+                            input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData5")
                     tr
                       td.center.aligned 
                         span 사용여부
                       td
-                        div.ui.toggle.checkbox(@click="toggleCheck")
-                          input(type="checkbox", :checked="alarmYn")
+                        div.ui.toggle.checkbox
+                          input(type="checkbox",
+                          true-value="Y",
+                          false-value="N",
+                          v-model="standardSmsDetail.useYn")
                           label 허용
             div.btnSet
                 div.btn-wrap.right
-                  button.ui.button.large.blue(@click="createSmsItem") 신규등록
+                  button.ui.button.blue(@click="createSmsItem") 신규등록
                 div.btn-group.left
-                  button.ui.button.large.blue(@click="updateSmsItem") 저장
-                  button.ui.button.large 취소
+                  button.ui.button.blue(@click="updateSmsItem") 저장
+                  button.ui.button(@click="getSmsItem") 취소
           
           
       div.sub-footer
@@ -129,6 +138,8 @@ import CheckTextCount from '@/components/CheckTextCount.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { standardSmsHeader } from '@/setting'
 import StandardSmsApi from '@/api/StandardSMS'
+import PublicCodeApi from '@/api/PublicCode'
+import CheckMediaModal from '@/components/CheckMediaModal.vue'
 
 
 export default {
@@ -147,7 +158,8 @@ export default {
       },
       standardSmsDetail: {},
       newSmsDetail: {},
-      searchData: {}
+      searchData: {},
+      paramList: []
     }
   },
   components: {
@@ -158,6 +170,7 @@ export default {
     CheckTextCount
   },
   created () {
+    this.paramList = this.getCodeList('S080')
     this.getSmslist()
   },
   mounted () {
@@ -204,6 +217,23 @@ export default {
         console.log(error)
       })
     },
+    checkSmsItem () {
+      const requestData = JSON.stringify(this.standardSmsDetail)
+      StandardSmsApi.checkDetail(requestData)
+      .then(result => {
+       console.log(result)
+        this.$modal.show(CheckMediaModal,{
+          title: '문자(SMS)확인',
+          data: result.data
+        },{
+          width: '350px',
+          height: 'auto'
+        })
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    },
     createSmsItem () {
       this.standardSmsDetail = {
           smsSn:null,
@@ -235,8 +265,17 @@ export default {
         this.getSmsItem()
       }
     },
-    toggleCheck () {
-      this.standardSmsDetail.useYn = this.standardSmsDetail.useYn == 'Y' ? 'N' : 'Y'
+    getCodeList (code) {
+       const requestData = JSON.stringify({
+         cmmnCd: code
+       })
+       PublicCodeApi.getItem(requestData).then(result => {
+         console.log(result)
+         return result.data.cmmnCdDetailList
+       }).catch(error => {
+         console.log(error.response)
+         this.$modal.show('dialog', codeGenerator(result.data.msgCode, result.data.msgValue))
+       })
     }
   }
 }
@@ -249,6 +288,9 @@ export default {
   }
   .ld,.lh {
     width: 80% !important;
+  }
+  .ui.form td .fields {
+    margin: 0;
   }
   
  

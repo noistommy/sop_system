@@ -15,10 +15,17 @@
           div.section.left-section
             div.treeView-wrapper
               div.treeView.list.level-0
-                    TreeView(v-model="selectTeam", @select="getItemInfo", v-for="item in treeviewData" :treeItem="item", :isActive="rootActive", :level="1", @search="getList")
+                TreeView(
+                  v-model="selectTeam",
+                  @select="getItemInfo",
+                  v-for="item in treeviewData",
+                  treeItem="item",
+                  :isActive="rootActive",
+                  :level="1",
+                  @search="getList")
           div.section.right-section
             h3.table-title {{selectTeam.title}}
-              span.total 총 {{memberGroup.pageInfo.totalCount}}명
+              //- span.total 총 {{memberGroup.pageInfo.totalCount}}명
             DataTable(
               v-model="selected",
               :tableType="memberGroup.type",
@@ -83,8 +90,7 @@ export default {
     }
   },
   created () {
-    this.getTreeList()
-    
+    this.getTreeList() 
   },
   computed: {
   },
@@ -111,7 +117,6 @@ export default {
     getTreeList () {
       // const request = JSON.stringify(this.requestData)
       MemberApi.getTree().then(result => {
-        console.log(`treedata: ${result.data}`)
         this.treeviewData = result.data.trOrgnList
         this.selectTeam = result.data.trOrgnList[0]
         this.getList(1)
@@ -134,16 +139,6 @@ export default {
 .treeView-wrapper {
   overflow-y: auto;
   height: 100%;
-  // .treeEdit {
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   width: 100%;
-  //   height: 100%;
-  //   // background-color: rgba(0, 0, 0, .5);
-  //   background-color: rgba(0, 0, 0, 1);
-  //   color: #fff;
-  //   z-index: 999;
-  // }
+  
 }
 </style>

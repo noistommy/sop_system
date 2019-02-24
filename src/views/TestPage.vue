@@ -424,21 +424,21 @@ export default {
 }
 .treeEdit {
   // display: none;
-  position: absolute;
-  top:0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, .8);
-  color: #efefef;
-  z-index: 999;
-  opacity: 0;
-  padding: 20px;
-  &.editable {
-    // display: block;
-    left: 0;
-    opacity: 1;
-  }
+  // position: absolute;
+  // top:0;
+  // left: 0;
+  // width: 100%;
+  // height: 100%;
+  // background-color: rgba(0, 0, 0, .8);
+  // color: #efefef;
+  // z-index: 999;
+  // opacity: 0;
+  // padding: 20px;
+  // &.editable {
+  //   // display: block;
+  //   left: 0;
+  //   opacity: 1;
+  // }
   .editor {
     color: #fff;
     .title {

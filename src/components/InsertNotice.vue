@@ -6,7 +6,7 @@
         div.date-wrapper 
           div 게시기간  
           template
-            v-date-picker(mode='range', v-model='uploarDate', show-caps)
+            v-date-picker(mode='range', v-model='uploadDate', show-caps)
               div.ui.input(:type='inputState.type', slot-scope='props')
                 input(
                 :value='props.inputValue', 
@@ -48,6 +48,8 @@
 <script>
 import SearchDate from '@/components/SearchDate'
 import NoticeApi from '@/api/Notice'
+import { convertDateFormat } from '@/util'
+ 
 export default {
   name: 'insert-notice',
   components: {
@@ -66,7 +68,7 @@ export default {
         ntceBeginDt: '',
         ntceEndDt: ''
       },
-      uploarDate: {
+      uploadDate: {
         start: new Date(),
         end: new Date(),
       }
@@ -99,9 +101,12 @@ export default {
       })
     },
     setNotice() {
+      this.setData.ntceBeginDt = convertDateFormat(this.uploadDate.start, '')
+      this.setData.ntceEndDt = convertDateFormat(this.uploadDate.end, '')
       const requestData = JSON.stringify(this.setData)
       NoticeApi.setItem(requestData).then(result => {
         console.log(result)
+        this.$emit('close')
       }).catch(error => {
         console.log(error.response)
       })
