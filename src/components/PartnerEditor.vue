@@ -37,6 +37,7 @@
 
 <script>
 import PartnerApi from '@/api/Partner'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'code-editor',
@@ -64,7 +65,10 @@ export default {
         this.$emit('close')
         this.showDailog()
       }).catch(error => {
-        console.log(`${error}`)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateCode () {
@@ -74,7 +78,10 @@ export default {
         this.$emit('close')
         this.showDailog()
       }).catch(error => {
-        console.log(`${error}`)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     showDailog () {

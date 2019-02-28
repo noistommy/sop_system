@@ -5,30 +5,30 @@ import { login, logout } from '../actions'
 const state = {
   // accessToken: null,
   userInfo: {
-    userId: '001',
-    userName: 'naem',
-    userCode: 'S0400100'
+    userId: '',
+    userName: '',
+    userCode: ''
   }
 }
 
 const mutations = {
-  [types.LOGIN] (state) {
-    console.log('Ready to Login')
+  [types.LOGIN] (state, patload) {
+    console.log(patload, 'Ready to Login')
   },
   [types.LOGIN_SUCCESS] (state, payload) {
     state.userInfo.userId = payload.oprtrId
     state.userInfo.userName = payload.oprtrNm
     state.userInfo.userCode = payload.oprtrFgCd
-    // localStorage.accessToken = payload.sessionId
+    localStorage.userInfo = state.userInfo
   },
   [types.LOGIN_FAILED] (state, message) {
     console.log(message)
     state.userInfo = null
-    // delete localStorage.accessToken
+    delete localStorage.userInfo
   },
   [types.LOGOUT] (state) {
     state.userInfo = null
-    delete localStorage.accessToken
+    delete localStorage.userInfo
   }
 }
 

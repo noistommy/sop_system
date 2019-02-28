@@ -52,7 +52,8 @@ export default {
         }else if(result.data.msgCode == 'P') {
           this.$modal.show(ResetPassword, {
             title: '비밀번호변경',
-            text: result.data.msgValue
+            text: result.data.msgValue,
+            userId: this.loginInfo.oprtrId
           }, {
             width: '350px'
           })

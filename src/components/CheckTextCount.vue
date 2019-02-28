@@ -1,6 +1,6 @@
 <template lang="pug">
     div.checkText.field
-        textarea(v-if="formType == 'textarea'", v-model="checkText" :rows="rownum")
+        textarea(v-if="formType == 'textarea'", :rows="rownum", :value="value", @input="isChecked")
         input(v-else, v-model="checkText")
         div.text-counter
             div.check-text 현재 
@@ -13,6 +13,7 @@ export default {
   name: "chack-text-count",
   props: {
     formType: String,
+    textData: String,
     rownum: Number,
     value: String,
     maxLength: Number
@@ -20,17 +21,15 @@ export default {
   data() {
     return {
       codeByte: 0,
-      checkText: ''
+      checkText: this.value
     };
   },
   created() {
   },
-  updated() {
-      this.checkText = this.value
-  },
   computed: {
     byteCal() {
       this.codeByte = 0
+      if(this.checkText == undefined) return 
       for (let idx = 0; idx < this.checkText.length; idx++) {
         const oneChar = escape(this.checkText.charAt(idx));
         if (oneChar.length == 1) {
@@ -52,8 +51,14 @@ export default {
         return this.codeByte;
       }
     }
+  },
+  methods: {
+    isChecked (event) {
+      this.checkText = event.target.value
+      this.$emit('input', this.checkText)
+    },
   }
-};
+}
 </script>
 
 <style lang="less">

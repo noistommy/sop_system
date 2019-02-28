@@ -69,6 +69,7 @@ import SearchComp from '@/components/SearchComp.vue'
 import CodeEditor from '@/components/CodeEditor.vue'
 import { publicCodeHeader, publicCodeDetailHeader } from '@/setting'
 import PublicCodeApi from '@/api/PublicCode'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'public-code',
@@ -117,7 +118,9 @@ export default {
       }).then(() => {
         this.getCodeItem()
       }).catch(error => {
-        console.log(`${error}`)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getCodeItem () {
@@ -129,7 +132,9 @@ export default {
         this.publicCodeDetail.publicCodeDetailData = result.data.cmmnCdDetailInfo
         this.publicCodeDetail.selected[0] = this.publicCodeDetail.publicCodeDetailData[0]
       }).catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateCodeGroup () {
@@ -140,7 +145,9 @@ export default {
         console.log(result)
         this.getCodeList ()
       }).catch(error => {
-        console.log(`${error}`)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateCodeItem () {
@@ -154,7 +161,9 @@ export default {
         console.log(result)
         this.getCodeItem ()
       }).catch(error => {
-        console.log(`${error}`)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     editCode (itemType, editType) {

@@ -4,8 +4,8 @@ const TargetURL = '/n3n.sop.BrdcstManage'
 
 export default {
   // 표준방송목록조회
-  getList: () => {
-    return HTTP.post(`${TargetURL}.selectStdBrdcstList.do`, {})
+  getList: (payload) => {
+    return HTTP.post(`${TargetURL}.selectStdBrdcstList.do`, payload)
   },
   // 표준방송상세정보조회
   getDetail: (payload) => {

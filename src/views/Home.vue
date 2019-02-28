@@ -84,6 +84,7 @@ import DataTable from '@/components/DataTable.vue'
 import PieChart from '@/components/PieChart'
 import { mainSopHistoryHeader, mainSmsHistoryHeader } from '@/setting'
 import MainApi from '@/api/Main'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'home',
@@ -111,7 +112,7 @@ export default {
           labels: ["Red", "Blue"],
           datasets: [{
             labels: 'Test Chart',
-            data: [80, 20],
+            data: [],
             backgroundColor: [],
             borderColor: [],
             borderWidth: 1
@@ -136,8 +137,12 @@ export default {
         console.log(result)
         this.mainSopHistory.sopHistoryData = result.data.sopExecutHistList
         this.mainSmsHistory.smsHistoryData = result.data.smsExecutHistList
+        this.chartData.data.labels = result.data.sensorAlarmStats.label
+        this.chartData.data.datasets[0].data = result.data.sensorAlarmStats.data
       }).catch(error => {
-        console.log(error.response)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     }
   }

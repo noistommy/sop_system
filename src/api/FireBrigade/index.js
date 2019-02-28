@@ -9,8 +9,8 @@ export default {
     return HTTP.post(`${TargetURL}.selectSlfdfnFbrdTrList.do`, {})
   },
   // 소방대상세정보조회
-  getFireBrigadeDetailInfo: () => {
-    return HTTP.post(`${TargetURL}.selectSlfdfnFbrdDetailInfo.do`, {})
+  getDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.selectSlfdfnFbrdDetailInfo.do`, payload)
   },
   // 자위소방대원정보저장
   setFiremanInfo: () => {
@@ -29,7 +29,7 @@ export default {
     return HTTP.post(`${TargetURL}.selectSlfdfnFbrdEmpInfoAllList.do`, {})
   },
   // 자위소방대등록
-  setFireBrigade: () => {
-    return HTTP.post(`${TargetURL}.insertSlfdfnFbrdInfo.do`, {})
+  createItem: (payload) => {
+    return HTTP.post(`${TargetURL}.insertSlfdfnFbrdInfo.do`, payload)
   }
 }

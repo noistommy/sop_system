@@ -6,7 +6,8 @@
         SearchComp(
           v-model="searchData"
           :isDateSearch="false",
-          :isTextSearch="true")
+          :isTextSearch="true",
+          @search="getBroadlist")
       div.sub-content.column
         div.content.section.section-1
             h3.title 표준방송관리
@@ -28,7 +29,7 @@
                 </template>
         div.content.section.section-2
           h3.title 표준방송 상세정보
-            button.ui.right.floated.button.mini.blue.basic(@click="checkbroadItem") 방송문구확인
+            button.ui.right.floated.button.mini.blue.basic(@click="checkBroadItem") 방송문구확인
           div.contant-wrapper
             div.section_1
               div.ui.form.tiny
@@ -45,67 +46,82 @@
                         span 방송내용
                       td
                         check-text-count(
-                          :formType="'textarea'",
+                          :formType="formType",
                           :rownum='3',
                           :maxLength='500',
                           v-model="standardBroadDetail.brdcstContents")
                     tr
                       td.center.aligned 
                         span 파라미터1
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardBroadDetail.cmmnCd1")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd1")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardBroadDetail.inputParam1}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData1")
                     tr
                       td.center.aligned 
                         span 파라미터2
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardBroadDetail.cmmnCd2")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd2")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardBroadDetail.inputParam2}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData2")
                     tr
                       td.center.aligned 
                         span 파라미터3
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardBroadDetail.cmmnCd3")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd3")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardBroadDetail.inputParam3}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData3")
                     tr
                       td.center.aligned 
                         span 파라미터4
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardBroadDetail.cmmnCd4")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd4")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardBroadDetail.inputParam4}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData4")
                     tr
                       td.center.aligned 
                         span 파라미터5
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardBroadDetail.cmmnCd5")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd5")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardBroadDetail.inputParam5}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData5")
@@ -138,6 +154,7 @@ import { standardBroadHeader } from '@/setting'
 import StandardBroadApi from '@/api/StandardBroad'
 import PublicCodeApi from '@/api/PublicCode'
 import CheckMediaModal from '@/components/CheckMediaModal.vue'
+import { codeGenerator } from '@/util'
 
 
 export default {
@@ -156,7 +173,8 @@ export default {
       },
       standardBroadDetail: {},
       searchData: {},
-      paramList: []
+      paramList: [],
+      formType: 'textarea'
     }
   },
   components: {
@@ -166,7 +184,7 @@ export default {
     CheckTextCount
   },
   created () {
-    this.paramList = this.getCodeList('S080')
+    this.getCodeList('S080')
     this.getBroadlist()
   },
   computed: {
@@ -176,14 +194,17 @@ export default {
   },
   methods: {
     getBroadlist () {
-      StandardBroadApi.getList()
+      const requestData = JSON.stringify(this.searchData)
+      StandardBroadApi.getList(requestData)
       .then(result => {
         this.standardBroad.standardBroadData = result.data.stdBrdcstList
         this.standardBroad.selected[0] = this.standardBroad.standardBroadData[0]
         this.getBroadItem()
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getBroadItem () {
@@ -195,7 +216,9 @@ export default {
         this.standardBroadDetail = result.data
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateBroadItem () {
@@ -206,7 +229,9 @@ export default {
         this.getBroadlist()
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     checkBroadItem () {
@@ -223,7 +248,9 @@ export default {
         })
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     createBroadItem () {
@@ -266,10 +293,11 @@ export default {
        })
        PublicCodeApi.getItem(requestData).then(result => {
          console.log(result)
-         return result.data.cmmnCdDetailList
+         this.paramList = result.data.cmmnCdDetailInfo
        }).catch(error => {
-         console.log(error.response)
-         this.$modal.show('dialog', codeGenerator(result.data.msgCode, result.data.msgValue))
+         const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
        })
     }
   }
@@ -281,8 +309,13 @@ export default {
   .content.section.section-1 {
     width: 30% !important;
   }
-  .ui.form td .fields {
-    margin: 0;
+  .ui.form td {
+    .fields {
+      margin: 0;
+    }
+    &.visibleTd {
+      overflow: visible;
+    }
   }
 }
 </style>

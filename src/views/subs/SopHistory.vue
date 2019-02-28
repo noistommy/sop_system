@@ -47,6 +47,7 @@ import SearchDate from '@/components/SearchDate.vue'
 import { sopHistoryTableHeader } from '@/setting'
 import { convertDateFormat } from '@/util'
 import HistoryApi from '@/api/History'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'sophistory',
@@ -77,9 +78,8 @@ export default {
     }
   },
   created () {
-    // const initDate
-    // this.searchData.start = convertDateFormat(new Date(), '')
-    // this.searchData.end = convertDateFormat(new Date(), '')
+    this.initDate()
+    console.log(this.searchData.start)
     this.getHistoryList(1)
   },
   methods: {
@@ -97,8 +97,10 @@ export default {
         result.data.param.totalCount = result.data.totCnt
         this.sopHistory.pageInfo = result.data.param
       })
-      .catch(err => {
+      .catch(error => {
+        const err = error.response
         console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     sopDownload () {
@@ -111,10 +113,20 @@ export default {
       .then(result => {
           console.log(result)
         })
-        .catch(err => {
-          console.log(err)
+        .catch(error => {
+          const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
         })
+      },
+      initDate() {
+        const today = new Date()
+        const d = today.getDate()
+        today.setDate(d-7)
+        this.searchData.start = convertDateFormat(today, '')
+        this.searchData.end = convertDateFormat(new Date(), '')
       }
+
   }
 }
 </script>

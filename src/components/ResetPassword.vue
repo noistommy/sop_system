@@ -27,6 +27,7 @@
 
 <script>
 import UsersApi from '@/api/Users'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'reset-password',
@@ -60,9 +61,14 @@ export default {
       }else {
         UsersApi.resetPassword(requestData).then(result => {
           console.log(result)
+          this.$emit('close')
           location.reload()
         }).catch(error => {
-          console.log(error.response)
+          // this.$emit('close')
+          // const err = error.response
+          // console.log(err)
+          // this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+          alert(error.response.data.msgValue)
         })
       }
     },

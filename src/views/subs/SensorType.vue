@@ -86,6 +86,7 @@ import DataList from '@/components/DataList.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { sensorTypeHeader, sensorByTypeHeader } from '@/setting'
 import SensorApi from '@/api/Sensor'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'sensor-type',
@@ -133,7 +134,9 @@ export default {
         this.getSensorDetail()
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getSensorDetail (targetNum) {
@@ -151,7 +154,9 @@ export default {
         this.sensorByType.pageInfo = result.data.param
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateDetail () {
@@ -162,7 +167,9 @@ export default {
         console.log(result)
         this.getSensorlist()
       }).catch(error => {
-        console.log(error.response)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     selectedItem(itemInfo) {

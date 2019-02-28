@@ -9,5 +9,8 @@ export default {
   },
   logout: () => {
     return HTTP.post(`${TargetURL}.logout.do`, {})
+  },
+  session: () => {
+    return HTTP.post(`${TargetURL}.sessionInfo.do`, {})
   }
 }

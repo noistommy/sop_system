@@ -1,18 +1,19 @@
 <template lang="pug">
     div.datalist
-        div.lhead.ui.list(:class="listType")
-            div.item.lr.listitem
-              div.lh(v-if="isListNumber").center.aligned NO
-              div.lh( v-for="lh of headers", :class="[`${lh.align} aligned`]") {{lh.text}}
-        div.lbody.ui.list(:class="listType")
-          <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :selected="activeItem(item)"></slot>
-        div.ui.form(v-if="isEditor")
-          div.lfoot.ui.list(:class="listType")
-            div.item.lr.listitem
-              div.ld(v-for="lf in headers")
-                div.field
-                  label
-                  input(typw="text", placeholder="lf.text")
+      h3(v-if="isTitle") 제목
+      div.lhead.ui.list(:class="listType")
+          div.item.lr.listitem
+            div.lh(v-if="isListNumber").center.aligned NO
+            div.lh( v-for="lh of headers", :class="[`${lh.align} aligned`]") {{lh.text}}
+      div.lbody.ui.list(:class="listType")
+        <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :selected="activeItem(item)"></slot>
+      div.ui.form(v-if="isEditor")
+        div.lfoot.ui.list(:class="listType")
+          div.item.lr.listitem
+            div.ld(v-for="lf in headers")
+              div.field
+                label
+                input(typw="text", placeholder="lf.text")
 </template>
 
 <script>
@@ -28,7 +29,8 @@ export default {
     isListNumber: Boolean,
     isEditor: Boolean,
     itemKey: String,
-    value: Array
+    value: Array,
+    isTitle: Boolean
   },
   data () {
     return {
@@ -82,10 +84,11 @@ export default {
         display: flex;
         .ld,.lh {
           padding: .9rem 1.2rem;
-          width: 20%;
+          width: 30%;
           flex: 1 1 auto;
           &:last-child {
             border:0;
+            // width: auto;
             flex-grow: 1;
           }
           &.center {text-align: center;}
@@ -116,7 +119,7 @@ export default {
     .lbody.list {
       // .border-radius(0, 5px, 0, 5px);
       overflow-y: auto;
-      height: 93%;
+      height: 95%;
       .listitem.item.lr {
         &:hover {
           background-color: #fff;

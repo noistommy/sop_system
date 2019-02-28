@@ -238,8 +238,10 @@ export default {
       this.$modal.show(TreeModal, {
         title: 'TreeeView',
         data:this.treeviewData,
-        modal: 'treeviewmodal'
+        modal: 'treeviewmodal',
+        type: 'edit'
       },{
+        width: '700px',
         height: '50%'
       })
     },

@@ -6,8 +6,8 @@
       div.content-wrapper
         div.ui.segment
          | {{contentData}}
-      div.btnSet.center
-        button.ui.button(@click="$emit('close')") {{contentYn=='Y'?'정상':'오류'}}
+      div
+        button.ui.floated.right.button(@click="$emit('close')") {{contentYn=='Y'?'정상':'오류'}}
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>

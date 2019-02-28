@@ -11,8 +11,8 @@
           @search="getHistoryList")
         div.divide
       div.sub-content
-        div.chart-wrapper
-          BarChart(:data="chartData.data", :options="chartData.options")
+        div.chart-wrapper()
+          BarChart(v-if="isLoaded", :chart-data="chartData")
         div.content
           DataTable(
             v-model="sensorHistory.selected"
@@ -47,6 +47,7 @@ import { sensorHistoryTableHeader } from '@/setting'
 import BarChart from '@/components/BarChart'
 import { convertDateFormat } from '@/util'
 import HistoryApi from '@/api/History'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'sensorhistory',
@@ -58,7 +59,7 @@ export default {
   data () {
     return {
       searchData: {},
-      selectedDateStart: new Date(2019, 0, 27),
+      selectedDateStart: new Date(),
       selectedDateEnd: new Date(),
       searchType: 'single',
       sensorHistory: {
@@ -71,43 +72,37 @@ export default {
         sopHistoryData: [],
       },
       chartData: {
-        data: {
-          labels: [],
-          datasets: [{
-            label: '',
-            data: [],
-            backgroundColor: [],
-            borderColor: [],
-            borderWidth: 1,
-            pointBackgroundColor: 'white',
-            borderWidth: 1,
-            pointBorderColor: null,
-            backgroundColor: null,
-            hoverBackgroundColor: null,
-            fill: false,
-            lineTension: 0
-          }]
-        },
-        options: {
-          
-          responsive: true,
-          maintainAspectRatio: false
-        }
-      } 
+        labels: [],
+        datasets: [{
+          label: '',
+          data: [],
+          backgroundColor: [],
+          borderColor: [],
+          borderWidth: 1,
+          pointBackgroundColor: 'white',
+          borderWidth: 1,
+          pointBorderColor: null,
+          backgroundColor: null,
+          hoverBackgroundColor: null,
+          fill: false,
+          lineTension: 0
+        }]
+      },
+      isLoaded: false
     }
   },
   created () {
-    // const initDate
-    this.searchData.start = convertDateFormat(new Date(), '')
-    this.searchData.end = convertDateFormat(new Date(), '')
+    this.initDate()
     this.getHistoryList(1)
+  },
+  mounted() {
   },
   methods: {
     getHistoryList (targetNum) {
       if(targetNum == undefined) {targetNum = 1}
       const requestData = JSON.stringify({
-        executEndFromDt: this.searchData.start,
-        executEndToDt: this.searchData.end,
+        prcpFromDt: this.searchData.start,
+        prcpToDt: this.searchData.end,
         currPage: targetNum
       })
       HistoryApi.getSensorList(requestData)
@@ -118,9 +113,13 @@ export default {
         this.sensorHistory.pageInfo = result.data.param
         this.chartData.data.labels = result.data.alarmHistStats.labels
         this.chartData.data.datasets.data = result.data.alarmHistStats.data
+        this.isLoaded = true
+        
       })
-      .catch(err => {
+      .catch(error => {
+        const err = error.response
         console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     sensorDownload () {
@@ -132,9 +131,18 @@ export default {
       .then(result => {
         console.log(result)
       })
-      .catch(err => {
+      .catch(error => {
+        const err = error.response
         console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
+    },
+    initDate() {
+      const today = new Date()
+      const d = today.getDate()
+      today.setDate(d-7)
+      this.searchData.start = convertDateFormat(today, '')
+      this.searchData.end = convertDateFormat(new Date(), '')
     }
   }
 

@@ -19,7 +19,7 @@
                   v-model="selectTeam",
                   @select="getItemInfo",
                   v-for="item in treeviewData",
-                  treeItem="item",
+                  :treeItem="item",
                   :isActive="rootActive",
                   :level="1",
                   @search="getList")
@@ -55,6 +55,7 @@ import SearchComp from '@/components/SearchComp.vue'
 import { memberGroupeHeader } from '@/setting'
 import axios from 'axios'
 import { mapActions, mapGetters } from 'vuex'
+import { codeGenerator } from '@/util'
 
 import MemberApi from '@/api/Member'
 
@@ -111,7 +112,9 @@ export default {
         result.data.param.totalCount = result.data.totCnt
         this.memberGroup.pageInfo = result.data.param
       }).catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getTreeList () {
@@ -121,7 +124,9 @@ export default {
         this.selectTeam = result.data.trOrgnList[0]
         this.getList(1)
       }).catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getItemInfo(item) {

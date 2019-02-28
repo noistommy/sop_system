@@ -68,6 +68,7 @@
 <script>
 import UsersApi from '@/api/Users'
 import PublicCodeApi from '@/api/PublicCode'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'user-editor',
@@ -97,27 +98,40 @@ export default {
       const requestData = JSON.stringify(this.userData)
       UsersApi.createUser(requestData).then(result => {
         console.log(result)
+        this.$emit('close')
+        this.showDailog()
       }).catch(error => {
-        console.log(error.response)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateUser () {
       const requestData = JSON.stringify(this.userData)
       UsersApi.updateUser(requestData).then(result => {
         console.log(result)
+        this.$emit('close')
+        this.showDailog()
       }).catch(error => {
-        console.log(error.response)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     initPassword () {
       const requestData = JSON.stringify({
         oprtrId:this.userData.oprtrId
       })
-      UsersApi.resetPassword(requestData).then(result => {
+      UsersApi.resetPasswordInit(requestData).then(result => {
         console.log(result)
         alert('비밀번호가 초기화 되었습니다.')
       }).catch(error => {
-        console.log(error.response)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getCodeList (code) {
@@ -128,9 +142,23 @@ export default {
          console.log(result)
          return result.data.cmmnCdDetailList
        }).catch(error => {
-         console.log(error.response)
-         this.$modal.show('dialog', codeGenerator(result.data.msgCode, result.data.msgValue))
+         this.$emit('close')
+          const err = error.response
+          console.log(err)
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
        })
+    },
+    showDailog () {
+      let options = {
+        title: '실행확인',
+        text: '운영자가'
+      }
+      if(this.type == '등록') {
+        options.text += '등록되었습니다'
+      }else {
+        options.text += '수정되었습니다'
+      }
+      this.$modal.show('dialog', options)
     }
   }
 }

@@ -3,7 +3,7 @@
     div.sub-wrapper
       div.sub-header
         div.title 자위소방대관리
-        SearchComp(v-model="searchData", :isTextSearch="true", @search="getTreeeList")
+        SearchComp(v-model="searchData", :isTextSearch="true", @search="getTreeList")
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown(v-model="searchData.searchCnd")
               option(value="", default) 분류
@@ -22,66 +22,74 @@
                   v-model="selectTeam",
                   @select="getItemInfo",
                   v-for="item in treeviewData",
-                  treeItem="item",
+                  :treeItem="item",
                   :isActive="rootActive",
                   :level="1",
                   @search="getList")
             div.treeEdit
               div.btnSet
-                button.ui.button.blue(@click="editpanel") 편집
+                button.ui.left.floated.button.mini.inverted(@click="activeTreeView('new')") 등록
+                button.ui.right.floated.button.mini.inverted(@click="activeTreeView('edit')") 편집
               div.edit-wrapper
                 div.ui.form.inverted
                   div.field
                     label 자위소방대명
-                    input(type="text")
+                    input(type="text", v-model="uploadTreeData.childSlfdfnFbrdNm")
                   div.field
                     label 상위자위소방대명
-                    input(type="text")
+                    input(type="text", v-model="uploadTreeData.upperSlfdfnFbrdNm")
               
           div.section.right-section
-            div.ui.grid
-              div.seven.wide.column
-                h3  자위소방대 
-                //- h3 {{selectedTeam.childSlfdfnFbrdNm}}
-                DataTable(
-                  :headers="fireBrigade.headers",
-                  :items="fireBrigade.fireBrigadeGroup",
-                  :isFooter="fireBrigade.isFooter"
-                  :isPagination="fireBrigade.isPagination"
-                  :isListNumber="fireBrigade.isListNumber",
-                  :page="fireBrigade.pageInfo"
-                ).ui.table.celled.selectable
-                  template(slot="items", slot-scope="props")
-                    tr
-                      td.center.aligned {{props.item.emplNm}}
-                      td.center.aligned {{props.item.deptNm}}
-                      td.center.aligned {{props.item.ofcpsCdNm}}
-                      td.center.aligned.ellipse {{props.item.clsfCdNm}}
-              div.two.wide.column
+            div.file-movement
+              div.files_1
+                h3 {{selectTeam.title}}
+                div.data-list-wrap
+                  DataList(
+                    v-model="fireBrigade.selected"
+                    :headers="fireBrigade.headers",
+                    :items="fireBrigade.fireBrigadeGroup",
+                    :itemKey="fireBrigade.itemkey",
+                    :isListNumber="fireBrigade.isListNumber",
+                    :isTitle="fireBrigade.isTitle"
+                  )
+                    template(slot="items", slot-scope="props")
+                      div.item.lr.listitem(:class="{active:props.selected}", @click.stop="selectedleftItems(props)" )
+                        .ld {{props.item.emplNm}}
+                        .ld {{props.item.clsfCdNm}}
+                        .ld {{props.item.ofcpsCdNm}}
+                        .ld {{props.item.deptNm}}
+              div.movement-btn
                 div.btn-wrapper
                   button.ui.icon.button
                     i.arrow.left.icon
                   button.ui.icon.button
                     i.arrow.right.icon
-              div.seven.wide.column
+              div.files_2
                 h3 미배정목록
-                DataTable(
-                  :headers="fireBrigade.headers",
-                  :items="fireBrigade.fireBrigadeGroup",
-                  :isFooter="fireBrigade.isFooter"
-                  :isPagination="fireBrigade.isPagination"
-                  :isListNumber="fireBrigade.isListNumber",
-                  :page="fireBrigade.pageInfo"
-                ).ui.table.celled.selectable
-                  template(slot="items", slot-scope="props")
-                    tr
-                      td.center.aligned {{props.item.emplNm}}
-                      td.center.aligned {{props.item.deptNm}}
-                      td.center.aligned {{props.item.ofcpsCdNm}}
-                      td.center.aligned.ellipse {{props.item.clsfCdNm}}
+                div.data-list-wrap
+                  DataList(
+                    v-model="offFireBrigade.selected"
+                    :headers="offFireBrigade.headers",
+                    :items="offFireBrigade.offFireBrigadeGroup",
+                    :itemKey="offFireBrigade.itemkey",
+                    :isListNumber="offFireBrigade.isListNumber",
+                    :isTitle="offFireBrigade.isTitle"
+                  )
+                    template(slot="items", slot-scope="props")
+                      div.item.lr.listitem(:class="{active:props.selected}", @click.stop="selectedrightItems(props)" )
+                        .ld {{props.item.emplNm}}
+                        .ld {{props.item.clsfCdNm}}
+                        .ld {{props.item.ofcpsCdNm}}
+                        .ld {{props.item.deptNm}}
+            
             div.btnSet
-              button.ui.button.large.blue 파일다운로드
+                div.btn-wrap.right
+                div.btn-group.left
+                  button.ui.button.blue 저장
+                  button.ui.button(@click="getList") 취소
         div.footer
+          //- div.btnSet
+          //-   button.ui.button.right.floated.large.blue 파일다운로드
           
           
 
@@ -89,24 +97,36 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
+import DataList from '@/components/DataList.vue'
 import TreeView from '@/components/TreeView.vue'
 import SearchComp from '@/components/SearchComp.vue'
+import TreeModal from '@/components/TreeModal.vue'
 import { fireBrigadeGroupHeader } from '@/setting'
 import FireBrigadeApi from '@/api/FireBrigade'
 import axios from 'axios'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'firebrigade',
   data () {
     return {
       fireBrigade: {
+        selected: [],
         headers: fireBrigadeGroupHeader.headers,
         fireBrigadeGroup: [],
-        isFooter: true,
-        isPagination: false,
         isListNumber: false,
-        pageInfo: {}
+        isTitle: false,
+        itemkey: 'emplNo'
       },
+      offFireBrigade: {
+        selected: [],
+        headers: fireBrigadeGroupHeader.headers,
+        offFireBrigadeGroup: [],
+        isListNumber: false,
+        isTitle: false,
+        itemkey: 'emplNo'
+      },
+      FireBrigadeDetail: {},
       treeviewData: [],
       rootActive: true,
       selectTeam: {},
@@ -114,11 +134,13 @@ export default {
         searchCnd: '',
         searchNm: ''
       },
-      isEdit: false
+      isEdit: false,
+      uploadTreeData: {}
     }
   },
   components: {
     DataTable,
+    DataList,
     TreeView,
     SearchComp
   },
@@ -129,19 +151,22 @@ export default {
     setNumbering (num) {
       return (this.pageInfo.currentPageNo - 1) * 10 + num
     },
-    getList(targetNum) {
-      if(targetNum == undefined) {targetNum = 1}
+    getList() {
       if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
-      this.searchData.currPage = targetNum
-      this.searchData.childDeptId = this.selectTeam.childDeptId
+      this.searchData.childSlfdfnFbrdId = this.selectTeam.childSlfdfnFbrdId
       const requestData = JSON.stringify(this.searchData)
-      FireBrigadeApi.getAllFireman(requestData)
+      FireBrigadeApi.getDetail(requestData)
       .then(result => {
         console.log(result)
-        this.fireBrigade.fireBrigadeGroup = result.slfdfnFbrdEmpInfoAllList
+        this.initedSelect()
+        this.fireBrigade.fireBrigadeGroup = result.data.slfdfnFbrdEmpInfoList
+        this.offFireBrigade.offFireBrigadeGroup = result.data.fbrdAsignTrgetList
+        this.fireBrigadeDetail = result.data.slfdfnFbrdDetailInfo
       })
-      .catch(err => {
+      .catch(error => {
+        const err = error.response
         console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getTreeList () {
@@ -150,23 +175,59 @@ export default {
         console.log(result)
         this.treeviewData = result.data.slfdfnFbrdTrList
         this.selectTeam = result.data.slfdfnFbrdTrList[0]
-        this.getList(1)
+        this.getList()
       })
-      .catch(err => {
+      .catch(error => {
+        const err = error.response
         console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })  
+    },
+    selectedleftItems(itemInfo) {
+      if(itemInfo.selected) {
+        this.selected.forEach((e, i) => {
+          if(e[this.itemkey] == itemInfo.item[this.itemkey]) {
+            this.fireBrigade.selected.splice(i, 1)
+          }
+        })
+      } else {
+        this.fireBrigade.selected.push(this.fireBrigade.fireBrigadeGroup[itemInfo.idx])
+      }
+    },
+    selectedrightItems(itemInfo) {
+      if(itemInfo.selected) {
+        this.offFireBrigade.selected.forEach((e, i) => {
+          if(e[this.itemkey] == itemInfo.item[this.itemkey]) {
+            this.offFireBrigade.selected.splice(i, 1)
+          }
+        })
+      } else {
+        this.offFireBrigade.selected.push(this.offFireBrigade.offFireBrigadeGroup[itemInfo.idx])
+      }
+      
     },
     getItemInfo(item) {
         this.selectTeam = item
+        this.uploadTreeData = item
         this.getList(1)
-    },
-    testdialog () {
-      this.$modal.show('dialog', {
-        title: 'test'
-      })
     },
     editpanel () {
       this.isEdit = !this.isEdit
+    },
+    initedSelect () {
+      this.fireBrigade.selected= []
+      this.offFireBrigade.selected= []
+    },
+    activeTreeView (editType) {
+      this.$modal.show(TreeModal, {
+        title: '자위소방대',
+        data: this.treeviewData,
+        target: this.selectTeam,
+        type: editType
+      },{
+        width: '700px',
+        height: '50%'
+      })
     }
   }
 }
@@ -189,9 +250,10 @@ export default {
     top:0;
     right:0;
   }
-  .left-section {
+  .section.left-section {
     display: flex;
     flex-direction: column;
+    overflow: hidden !important;
     .treeView-wrapper {
       overflow-y: auto;
       height: 90%;
@@ -220,6 +282,30 @@ export default {
 }
 .section {
   position:relative;
+  .file-movement {
+    width: 100%;
+    height: 90%;
+    display: flex;
+    flex-direction: row;
+    .movement-btn {
+      padding: 0 10px;
+      width: 10%;
+    }
+    .files_2{
+      width: 45%;
+      .data-list-wrap {
+        width: 100%;
+        height: 90%;
+      }
+    }
+    .files_1 {
+      width: 45%;
+      .data-list-wrap {
+        width: 100%;
+        height: 90%;
+      }
+    }
+  }
 }
 .btn-wrapper {
   display: flex;

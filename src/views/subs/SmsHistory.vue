@@ -44,6 +44,7 @@ import SearchDate from '@/components/SearchDate.vue'
 import { smsHistoryTableHeader } from '@/setting'
 import { convertDateFormat } from '@/util'
 import HistoryApi from '@/api/History'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'smshistory',
@@ -73,9 +74,7 @@ export default {
     }
   },
   created () {
-    // const initDate
-    this.searchData.start = convertDateFormat(new Date(), '')
-    this.searchData.end = convertDateFormat(new Date(), '')
+    this.initDate()
     this.getHistoryList(1)
   },
   methods: {
@@ -92,8 +91,10 @@ export default {
         result.data.param.totalCount = result.data.totCnt
         this.smsHistory.pageInfo = result.data.param
       })
-      .catch(err => {
+      .catch(error => {
+        const err = error.response
         console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     smsDownload () { 
@@ -104,11 +105,21 @@ export default {
       HistoryApi.getSMSExcel(requestData).then(result => {
         console.log(result)
       })
-      .catch(err => {
+      .catch(error => {
+        const err = error.response
         console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
+    },
+    initDate() {
+      const today = new Date()
+      const d = today.getDate()
+      today.setDate(d-7)
+      this.searchData.start = convertDateFormat(today, '')
+      this.searchData.end = convertDateFormat(new Date(), '')
     }
   }
+  
 }
 </script>
 

@@ -64,6 +64,7 @@ import SearchComp from '@/components/SearchComp.vue'
 import PartnerEditor from '@/components/PartnerEditor.vue'
 import { partnerGroupeHeader } from '@/setting'
 import PartnerApi from '@/api/Partner'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'partner',
@@ -110,7 +111,9 @@ export default {
         result.data.param.totalCount = result.data.totCnt
         this.partner.pageInfo = result.data.param
       }).catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getPartnerItem () {
@@ -125,7 +128,9 @@ export default {
         result.data.param.totalCount = result.data.totCnt
         this.partner.pageInfo = result.data.param
       }).catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     selectedItem(itemInfo) {

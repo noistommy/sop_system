@@ -62,6 +62,7 @@ import { sopListHeader } from '@/setting'
 import SopManageApi from '@/api/SopManage'
 import { mapGetters, mapActions } from 'vuex'
 import PublicCodeApi from '@/api/PublicCode'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'sop-list',
@@ -93,8 +94,8 @@ export default {
     SearchComp
   },
   created() {
-    this.typeCode = this.getCodeList ('S090')
-    this.stepCode = this.getCodeList ('S100')
+    this.getCodeList('S090')
+    this.getCodeList('S100')
     this.getSopList()
   },
   computed: {
@@ -110,7 +111,9 @@ export default {
         console.log(result.data)
         this.sopList.sopListData = result.data.sopMgmtList
       }).catch(error => {
-        console.log(error.response)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getSopItem () {
@@ -118,7 +121,9 @@ export default {
       SopManageApi.getItem(requestData).then(result => {
         console.log(result.data)
       }).catch(error => {
-        console.log(error.response)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     deleteSop () {
@@ -129,7 +134,9 @@ export default {
         console.log(result.data)
         this.getSopList()
       }).catch(error => {
-        console.log(error.response)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getCodeList (code) {
@@ -137,10 +144,17 @@ export default {
         cmmnCd: code
       })
       PublicCodeApi.getList(requestData).then(result => {
-        console.log(result)
-        return result.data.cmmnCdDetailList
+        console.log(code)
+        if(code === 'S090') {
+          this.typeCode = result.data.cmmnCdDetailList
+        }
+        if(code === 'S100') {
+          this.stepCode = result.data.cmmnCdDetailList
+        }
       }).catch(error => {
-        console.log(error.response)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     selectedItem(itemInfo) {

@@ -23,8 +23,8 @@
                     td 작성자
                     td
                       div.field
-                        label 작성자
-                        input(readonly).readonly
+                        label
+                        input(readonly="", v-model="setData.frstRegNm").readonly
                   tr
                     td 제목
                     td
@@ -49,6 +49,7 @@
 import SearchDate from '@/components/SearchDate'
 import NoticeApi from '@/api/Notice'
 import { convertDateFormat } from '@/util'
+import { codeGenerator } from '@/util'
  
 export default {
   name: 'insert-notice',
@@ -58,16 +59,11 @@ export default {
   props: {
     type: String,
     title: String,
-    noticeId: String
+    notice: Object
   },
   data () {
     return {
-      setData: {
-        noticeTitle: '',
-        noticeContents: '',
-        ntceBeginDt: '',
-        ntceEndDt: ''
-      },
+      setData: this.notice,
       uploadDate: {
         start: new Date(),
         end: new Date(),
@@ -75,7 +71,14 @@ export default {
     }
   },
   created () {
-    this.getNoticeItem()
+    if(this.type=='new') {
+        this.setdata = {
+          noticeTitle: '',
+          noticeContents: '',
+          ntceBeginDt: '',
+          ntceEndDt:''
+        }
+      }
   },
   computed: {
     inputState() {
@@ -92,15 +95,23 @@ export default {
     }
   },
   methods: {
-    getNoticeItem() {
-      const requestData = JSON.stringify({ noticeSn:this.noticeSn })
-      NoticeApi.getItem(requestData).then(result => {
-        this.setData = result.data
-      }).catch(error => {
-        console.log(error.response)
-      })
-    },
+    // getNoticeItem() {
+    //   const requestData = JSON.stringify({ noticeSn:this.noticeSn })
+    //   NoticeApi.getItem(requestData).then(result => {
+    //     this.setData = result.data
+    //   }).catch(error => {
+    //     console.log(error.response)
+    //   })
+    // },
     setNotice() {
+      if(this.type=='new') {
+        this.setdata = {
+          noticeTitle: '',
+          noticeContents: '',
+          ntceBeginDt: '',
+          ntceEndDt:''
+        }
+      }
       this.setData.ntceBeginDt = convertDateFormat(this.uploadDate.start, '')
       this.setData.ntceEndDt = convertDateFormat(this.uploadDate.end, '')
       const requestData = JSON.stringify(this.setData)
@@ -108,7 +119,10 @@ export default {
         console.log(result)
         this.$emit('close')
       }).catch(error => {
-        console.log(error.response)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
 
     }

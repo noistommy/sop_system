@@ -89,7 +89,7 @@ img {
 i {
   margin-top: 3px;
 }
-
+.ui.label,
 .ui.button {
   border-radius: 0 !important;
 }
@@ -152,7 +152,7 @@ i {
     display:flex;
     flex-direction: column;
     .sub-header {
-      height: 50px;
+      min-height: 50px;
       position: relative;
       // display: none;
       .title {

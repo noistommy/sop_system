@@ -14,44 +14,57 @@
           span.alarm-icon
             i.icon.icon-sop-bell
           span.sub-title 재난발생알람
-          span.alarm-count 1
+          span.alarm-count {{excuteList.length + waitingList.length}}
       div.item
         div.header
           span.alarm-icon
             i.icon.icon-sop-run
           span.sub-title 실행중인 SOP
-          span.alarm-count 2
+          span.alarm-count {{excuteList.length}}
         div.sop-list
-          .item
-            router-link(:to="{ name: 'home' }") ITEM 1
-          .item
-            router-link(:to="{ name: 'home' }") ITEM 2
+          .item(v-for="sop in excuteList")
+            div.sop-item(@click="runningSop(sop)") {{sop.dispSopTitle}}
       div.item
         div.header
           span.alarm-icon
             i.icon.icon-sop-wait
           span.sub-title 대기중인 SOP
-          span.alarm-count 1
+          span.alarm-count {{waitingList.length}}
         div.sop-list
-          .item
-            router-link(:to="{ name: 'home' }") ITEM 1
+          .item(v-for="sop in waitingList")
+            div.sop-item(@click="readySop(sop)") {{sop.dispSopTitle}}
       div.item.alram-wrapper
 </template>
 
 <script>
 import ResetPassword from '@/components/ResetPassword'
+import RunBySensorList from '@/components/RunBySensorList'
+import RunSopModal from '@/components/RunSopModal'
 import { mapActions } from 'vuex'
 import About from '@/views/About'
+import SopSlide from'@/api/SopSlide'
+import { setInterval } from 'timers';
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'run-sop-list',
   data () {
     return {
-      activeSide: true
+      activeSide: true,
+      excuteList: [],
+      waitingList: []
     }
   },
   components: {
-    ResetPassword
+    ResetPassword,
+    RunBySensorList,
+    RunSopModal
+  },
+  created () {
+    // setInterval(() => {
+    //   this.getSOPList()
+    // },5000)
+    this.getSOPList()
   },
   methods: {
     ...mapActions([
@@ -66,7 +79,10 @@ export default {
         console.log(result)
         this.$router.push('/login')
       }).catch(error => {
-        console.log(error.response)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     resetPassword () {
@@ -74,6 +90,47 @@ export default {
         title: '비밀번호변경',
       }, {
         width: '350px'
+      })
+    },
+    getSOPList () {
+      SopSlide.getList().then(result => {
+        console.log(result)
+        this.excuteList = result.data.selectExecutSopList
+        this.waitingList = result.data.selectWaitSopList
+      }).catch(error => {
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    runningSop (sopItem) {
+      this.$router.push({ name: 'sop-run', params: {sopId: sopItem.sopId, sopExecutSn: sopItem.sopExecutSn}})
+    },
+    readySop (sopItem) {
+      if(sopItem.sopId == undefined) {
+        this.selectSopBySensor(sopItem)
+      } else {
+        this.selectSop(sopItem)
+      }
+    },
+    selectSop (reqData) {
+      this.$modal.show(RunSopModal, {
+        title: 'SOP실행',
+        data: reqData
+      },{
+        width: '350px',
+        height: 'auto'
+      })
+    },
+    selectSopBySensor (reqData) {
+      this.$modal.show(RunBySensorList, {
+        title: 'SOP선택',
+        text: reqData.dispSopTitle,
+        data: reqData.iwId
+      },{
+        width: '600px',
+        height: '500px'
       })
     }
   }
@@ -105,6 +162,7 @@ export default {
     overflow: hidden;
     position: relative;
     background-color: #595959;
+    min-width:5.5rem;
     width: 5.5rem;
     overflow: hidden;
     padding: 0;
@@ -174,11 +232,15 @@ export default {
           .item {
             .ellips;
             font-size: .9rem;
+            .sop-item {
+              color: #f2f2f2;
+              margin: 10px 0;
+            }
             a {
               margin: 10px 0;
               color: #dfdfdf;
               display: inline-block;
-              }
+            }
             &:hover {
               background-color: #333;
             }
@@ -231,6 +293,7 @@ export default {
     }
     &.active {
       width: 270px;
+      min-width: 270px;
       .transition;
       .run-list .item {
         .header {

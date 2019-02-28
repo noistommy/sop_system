@@ -46,6 +46,7 @@ import SearchComp from '@/components/SearchComp.vue'
 import UserEditor from '@/components/UserEditor.vue'
 import { systemUserHeader } from '@/setting'
 import SystemUser from '@/api/Users'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'system-user',
@@ -77,8 +78,10 @@ export default {
       SystemUser.getList().then(result => {
         console.log(result)
         this.systemUser.systemUserData=result.data.oprtrInfoList
-      }).catch(err => {
+      }).catch(error => {
+        const err = error.response
         console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     deleteItem () {
@@ -94,8 +97,10 @@ export default {
         SystemUser.deleteUser(requestData).then(result => {
           console.log(result)
           this.getUsersList()
-        }).catch(err => {
+        }).catch(error => {
+          const err = error.response
           console.log(err)
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
         })
       }
     },
@@ -112,6 +117,10 @@ export default {
       },{
         width: '700px',
         height: 'auto'
+      },{
+        'before-close': () => {
+          this.getUsersList()
+        }
       })
     },
     updateUser () {
@@ -127,6 +136,10 @@ export default {
         },{
           width: '700px',
           height: 'auto'
+        },{
+          'before-close': () => {
+            this.getUsersList()
+          }
         })
       }
     }

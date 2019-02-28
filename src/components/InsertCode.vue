@@ -38,6 +38,7 @@
 
 <script>
 import PublicCodeApi from '@/api/PublicCode'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'insert-code-group',
@@ -72,7 +73,10 @@ export default {
       PublicCodeApi.updateCodeGroup(requestData).then(result => {
         console.log(result)
       }).catch(error => {
-        console.log(error.response)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateCode () {
@@ -80,7 +84,10 @@ export default {
       PublicCodeApi.updateCodeItem(requestData).then(result => {
         console.log(result)
       }).catch(error => {
-        console.log(error.response)
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     toggleCheck () {

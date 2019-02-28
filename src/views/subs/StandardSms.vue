@@ -6,7 +6,8 @@
         SearchComp(
           v-model="searchData"
           :isDateSearch="false",
-          :isTextSearch="true")
+          :isTextSearch="true"
+          @search="getSmslist")
       div.sub-content.column
         div.content.section.section-1
             h3.title 표준문자관리
@@ -45,67 +46,83 @@
                         span 문자내용
                       td
                         check-text-count(
-                          :formType="'textarea'",
+                          :formType="formType",
                           :rownum='3',
                           :maxLength='500',
-                          v-model="standardSmsDetail.smsContents")
+                          v-model="standardSmsDetail.smsContents",
+                          @input="returnText")
                     tr
                       td.center.aligned 
                         span 파라미터1
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd1")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd1")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardSmsDetail.inputParam1}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData1")
                     tr
                       td.center.aligned 
                         span 파라미터2
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd2")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd2")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardSmsDetail.inputParam2}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData2")
                     tr
                       td.center.aligned 
                         span 파라미터3
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd3")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd3")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardSmsDetail.inputParam3}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData3")
                     tr
                       td.center.aligned 
                         span 파라미터4
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd4")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd4")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardSmsDetail.inputParam4}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData4")
                     tr
                       td.center.aligned 
                         span 파라미터5
-                      td
+                      td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select.ui.dropdown(v-model="standardSmsDetail.cmmnCd5")
-                              option(v-for="pram in pramList" :value="pram.cmmncCd") {{param.cmmnCdNm}}
+                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd5")
+                              input(type='hidden')
+                              i.dropdown.icon
+                              div.default.text {{standardSmsDetail.inputParam5}}
+                              .menu
+                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData5")
@@ -140,6 +157,8 @@ import { standardSmsHeader } from '@/setting'
 import StandardSmsApi from '@/api/StandardSMS'
 import PublicCodeApi from '@/api/PublicCode'
 import CheckMediaModal from '@/components/CheckMediaModal.vue'
+import Multiselect from 'vue-multiselect'
+import { codeGenerator } from '@/util'
 
 
 export default {
@@ -156,10 +175,13 @@ export default {
         itemkey: 'smsSn',
         pageInfo:{}
       },
-      standardSmsDetail: {},
+      standardSmsDetail: {
+      },
       newSmsDetail: {},
       searchData: {},
-      paramList: []
+      paramList: [],
+      formType: 'textarea',
+      textArea:'S0800100'
     }
   },
   components: {
@@ -167,11 +189,15 @@ export default {
     DataList,
     SearchComp,
     DataForm,
-    CheckTextCount
+    CheckTextCount,
+    Multiselect
   },
   created () {
-    this.paramList = this.getCodeList('S080')
+    this.getCodeList('S080')
     this.getSmslist()
+    this.$nextTick(() => {
+      $('.ui.dropdown').dropdown('refresh')
+    })
   },
   mounted () {
     $('.ui.dropdown').dropdown()
@@ -183,15 +209,16 @@ export default {
   },
   methods: {
     getSmslist () {
-      StandardSmsApi.getList()
+      const requestData = JSON.stringify(this.searchData)
+      StandardSmsApi.getList(requestData)
       .then(result => {
         this.standardSms.standardSmsData = result.data.stdSmsList
         this.standardSms.selected[0] = this.standardSms.standardSmsData[0]
-      }).then(()=> {
         this.getSmsItem()
-      })
-      .catch(error => {
-        console.log(error)
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getSmsItem () {
@@ -200,21 +227,26 @@ export default {
       })
       StandardSmsApi.getDetail(requestData)
       .then(result => {
+        console.log(result)
         this.standardSmsDetail = result.data
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateSmsItem () {
       const requestData = JSON.stringify(this.standardSmsDetail)
       StandardSmsApi.updateDetail(requestData)
       .then(result => {
-       console.log(result)
-       this.getSmslist()
+        console.log(result)
+        this.getSmslist()
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     checkSmsItem () {
@@ -231,7 +263,9 @@ export default {
         })
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     createSmsItem () {
@@ -271,15 +305,21 @@ export default {
        })
        PublicCodeApi.getItem(requestData).then(result => {
          console.log(result)
-         return result.data.cmmnCdDetailList
+         this.paramList = result.data.cmmnCdDetailInfo
        }).catch(error => {
-         console.log(error.response)
-         this.$modal.show('dialog', codeGenerator(result.data.msgCode, result.data.msgValue))
+          const err = error.response
+          console.log(err)
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
        })
+    },
+    returnText (text) {
+      this.standardSmsDetail.smsContents = text
     }
   }
 }
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style lang="less" >
 .StandardSms {
@@ -289,10 +329,14 @@ export default {
   .ld,.lh {
     width: 80% !important;
   }
-  .ui.form td .fields {
-    margin: 0;
+  .ui.form td {
+    .fields {
+      margin: 0;
+    }
+    &.visibleTd {
+      overflow: visible;
+    }
   }
-  
  
 }
 </style>

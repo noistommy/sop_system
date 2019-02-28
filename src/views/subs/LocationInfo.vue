@@ -72,7 +72,7 @@
               div.btnSet.right
                 div.buttons
                   button.ui.button.blue(@click="updateDetail") 저장
-                  button.ui.button(@click="reload") 취소
+                  button.ui.button(@click="getDetail") 취소
       div.sub-footer
 </template>
 
@@ -82,6 +82,7 @@ import DataTable from '@/components/DataTable.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import { locationInfoHeader, locationFloorHeader } from '@/setting'
 import LocationApi from '@/api/Location'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'location-info',
@@ -131,7 +132,9 @@ export default {
         this.locationInfo.selected[0]=this.locationInfo.locationInfoData[0]
         this.getDetail()
       }).catch(error => {
-        console.log(`${error}`)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     getDetail () {
@@ -142,7 +145,9 @@ export default {
         this.locationFloor.locationFloorData = result.data.buldFloorInfoList
         this.locationDetail = result.data.buldManageInfo
       }).catch(error => {
-        console.log(error.response)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateDetail () {
@@ -151,7 +156,9 @@ export default {
       LocationApi.updateItem(requestData).then(result => {
         this.getLocationList()
       }).catch(error => {
-        console.log(error.response)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     selectedItem(itemInfo) {
@@ -179,7 +186,7 @@ export default {
       this.locationDetail.alarmPermYn = this.locationDetail.alarmPermYn == 'Y' ? 'N' : 'Y'
     },
     reload () {
-      this.getDetail ()
+      this.getDetail()
     }
   }
 }

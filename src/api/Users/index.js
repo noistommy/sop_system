@@ -30,7 +30,11 @@ export default {
     return HTTP.post(`${TargetURL}.saveOprtrInfo.do`, payload)
   },
   // 운영자비밀번호초기화저장
-  resetPassword: (payload) => {
+  resetPasswordInit: (payload) => {
     return HTTP.post(`${TargetURL}.updatePasswordInit.do`, payload)
+  },
+  // 운영자비밀번호초기화저장
+  resetPassword: (payload) => {
+    return HTTP.post(`${TargetURL}.updatePassword.do`, payload)
   }
 }

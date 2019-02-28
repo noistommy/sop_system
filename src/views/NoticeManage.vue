@@ -43,6 +43,7 @@ import DataTable from '@/components/DataTable.vue'
 import InsertNotice from '@/components/InsertNotice.vue'
 import { noticeTableHeader } from '@/setting'
 import NoticeApi from '@/api/Notice'
+import { codeGenerator } from '@/util'
 
 export default {
   name: 'notice-manage',
@@ -82,7 +83,9 @@ export default {
         console.log('success')
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     updateNoticeItem() {
@@ -91,7 +94,9 @@ export default {
         console.log('success')
       })
       .catch(error => {
-        console.log(error)
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     deleteNoticeItem() {
@@ -104,9 +109,12 @@ export default {
         const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
         NoticeApi.deleteItem(requestData).then(result => {
           console.log('success')
+          this.getNoticeList()
         })
         .catch(error => {
-          console.log(error)
+          const err = error.response
+          console.log(err)
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
         })
       }
     },
@@ -127,9 +135,13 @@ export default {
         this.$modal.show(InsertNotice, {
           type: 'edit',
           title: '수정하기',
-          noticeId: this.selected[0].noticeId
+          notice: this.selected[0]
         },{
           height: "auto"
+        },{
+          'before-close': () => {
+            this.getNoticeList()
+          }
         })
       }
     },
@@ -137,10 +149,14 @@ export default {
       this.$modal.show(InsertNotice, {
         type: 'new',
         title: '작성하기',
-        noticeId: ''
+        notice: {}
       },{
         height: "auto"
-      })
+      },{
+          'before-close': () => {
+            this.getNoticeList()
+          }
+        })
     }
   }
 }
@@ -154,7 +170,11 @@ export default {
   -o-transition: @arguments;
   transition: @arguments;
 }
-
+.historyManage {
+  .content {
+    overflow-y: auto;
+  }
+}
 .extended{
   background-color: rgba(173, 173, 173, 0.01);
   td {
