@@ -1,0 +1,34 @@
+import HTTP from '@/api'
+
+const TargetURL = '/n3n.sop.SopCntcManage'
+
+export default {
+  // SOP 연계관리조회
+  getList: () => {
+    return HTTP.post(`${TargetURL}.selectSopCntcManageInfo.do`, {})
+  },
+  // SOP 선택팝업조회
+  getPopupItem: (payload) => {
+    return HTTP.post(`${TargetURL}.selectSopChoisePopupList.do`, payload)
+  },
+  // SOP 선택팝업실행
+  selectRunSop: (payload) => {
+    return HTTP.post(`${TargetURL}.updateSensorAlarmExecuteSopId.do`, payload)
+  },
+  // SOP 오작동 처리
+  setErrorSop: (payload) => {
+    return HTTP.post(`${TargetURL}.updateSensorAlarmExecuteSopId.do`, payload)
+  },
+  // SOP 오작동 처리
+  runSopInfo: (payload) => {
+    return HTTP.post(`${TargetURL}.selectLegacySopExecut.do`, payload)
+  },
+  // SOP 생성
+  createItem: (payload) => {
+    return HTTP.post(`${TargetURL}.saveSopManageInfo.do`, payload)
+  },
+  // SOP 삭제
+  deleteItem: (payload) => {
+    return HTTP.post(`${TargetURL}.deleteSopManageInfo.do`, payload)
+  }
+}
