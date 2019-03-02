@@ -1,27 +1,21 @@
 <template lang="pug">
   div.SopEdit.sub-container
-    v-dialog
     div.sub-wrapper
       div.baseInfo
         div.base-info.info-1
-          select.ui.dropdown(v-model="req.msfrtnKndCd")
+          select.ui.dropdown(v-model="sopNewData.msfrtnKndCd")
             option(value="") 재난종류
             option(v-for="code in typeCode", value="code.cmmnCd") {{code.cmmnCdNm}}
         div.base-info.info-2
-          select.ui.dropdown(v-model="req.msfrtnKndCd")
+          select.ui.dropdown(v-model="sopNewData.crisisGnfdStepCd")
             option(value="") 위기발령단계
             option(v-for="code in typeCode", value="code.cmmnCd") {{code.cmmnCdNm}}
         div.base-info.info-3
-          div.ui.dropdown.multiple.selection
-            input(type="hidden")
-            i.dropdown.icon
-            div.default.text 건물/층
-            div.menu
-              div.item item1
-              div.header item1
+          div.ui.input(@click="selectLocation")
+            input(type="text", placeholder="건물/층 선택")
         div.base-info.info-4
           div.ui.input.fluid
-            input(type="text", placeholder="재난절차제목입력", @click="test")
+            input(type="text", placeholder="재난절차제목입력", v-model="sopNewData.sopTitle")
         div.base-info.info-5
           button.ui.button.blue(@click=saveSop) 재난절차저장
       div.sub-content
@@ -60,23 +54,23 @@
                     div.step-header
                       div.ui.input.fluid.small.labeled
                         label.ui.label {{index+1}}
-                        input(type="text", placeholder="제목을 입력하세요", v-model="step.sopTitle")
+                        input(type="text", placeholder="제목을 입력하세요", v-model="step.stepTitle")
                     div.step-content
                       div.action
                         template(v-for="(action, index) in step.actionItem")
                           component(
                             v-model="step.actionItem[index]",
                             :is='action.type',
-                            :idx="index"
+                            :idx="index",
+                            @delete="deleteAction(step, index)"
                             )
                     div.step-editor(v-if="step.stepSn == activeStep")
                       div.btnSet
                         div.btn-group.left
-                          button.ui.button.mini(@click="actionDelete(step)") 삭제
                         div.btn-wrap.right
-                          button.ui.icon.button.mini
+                          button.ui.icon.button.mini(@click="moveIndex('down', index)")
                             i.icon.angle.down
-                          button.ui.icon.button.mini
+                          button.ui.icon.button.mini(@click="moveIndex('up', index)")
                             i.icon.angle.up
         div.footer
 </template>
@@ -86,6 +80,7 @@ import PublicCodeApi from '@/api/PublicCode'
 import ActionSms from '@/components/ActionSms.vue'
 import ActionBroad from '@/components/ActionBroad.vue'
 import ActionOrder from '@/components/ActionOrder.vue'
+import SelectLocation from '@/components/SelectLocation.vue'
 import { codeGenerator } from '@/util'
 
 export default {
@@ -127,8 +122,8 @@ export default {
       selectedStep: [],
       selectActionData: [
       ],
-      deleteList: []
-      
+      deleteList: [],
+      serialkey: 1
     }
   },
   components: {
@@ -164,41 +159,53 @@ export default {
         // this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
+    selectLocation () {
+      this.$modal.show(SelectLocation,{
+        title: '건물/층 선택'
+      },{
+        height: 'auto'
+      })
+    },
     saveSop () {
       this.$modal.show('dialog',{
         title: '저장확인',
         text: '저장하시겠습니까?'
       })
     },
-    test () {
-      // alert('click')
-      // this.actions = 'InsertCode'
-
-    },
     setActive (step) {
-      console.log(step)
       this.selectedStep = step
       this.activeStep = step.stepSn
       this.deleteList = []
-      // this.gotoStep(step.id)
     },
     createStep () {
       const newstep = {
         stepNo: '',
-        stepSn: this.sopNewData.sopStepList.length + 1,
+        stepSn: this.serialkey + 1,
         stepTitle: '',
         actionItem: []
       }
       this.sopNewData.sopStepList.push(newstep)
+      this.serialkey++
     },
     copyStep () {
       const copyStep = {
-        stepSn: '',
-        actionItem: this.selectedStep.actionItem
-      } 
-      copyStep.stepSn = this.sopNewData.sopStepList.length + 1
+        stepNo: '',
+        stepSn: this.serialkey + 1,
+        stepTitle: '',
+        actionItem: []
+      }
+      copyStep.stepNo = this.selectedStep.stepNo
+      copyStep.stepTitle = this.selectedStep.stepTitle
+      this.selectedStep.actionItem.forEach((item,i) => {
+        copyStep.actionItem.push(item)
+      })
       console.log(copyStep)
+      // copyStep.actionItem = this.selectedStep.actionItem
+      // const step = this.selectedStep
+      // const copyStep = Object.assign({}, step)
+      copyStep.stepSn = this.serialkey + 1
       this.sopNewData.sopStepList.push(copyStep)
+      this.serialkey++
     },
     deleteStep () {
       if(this.sopNewData.sopStepList.length == 1) return 
@@ -249,18 +256,33 @@ export default {
       }
       this.sopNewData.sopStepList.forEach((step, i) => {
         if(step.stepSn == this.selectedStep.stepSn) {
+          console.log(step)
           this.sopNewData.sopStepList[i].actionItem.push(actionItem)
-          return
         }
       })
     },
     actionDelete (selectedStep) {
+      const items = []
       this.selectedStep.actionItem.forEach((e,i) => {
-        console.log(e.stepSn)
-        if(e.ischeck) {
-          this.selectedStep.actionItem.splice(i,1)
+        
+        if(!e.ischeck) {
+          items.push(e)
         }
       })
+      console.log(items)
+      this.selectedStep.actionItem = items
+    },
+    deleteAction (step, index) {
+      this.selectedStep.actionItem.splice(index, 1)
+    },
+    moveIndex(type, index) {
+      const moveStep = this.sopNewData.sopStepList.splice(index, 1)
+      console.log(moveStep)
+      if(type == 'up') {
+        this.sopNewData.sopStepList.splice(index-1, 0, moveStep[0])
+      } else {
+        this.sopNewData.sopStepList.splice(index+1, 0, moveStep[0])
+      }
     }
   }
 }
@@ -357,9 +379,10 @@ export default {
       }
     }
     .editor-view {
+      width:60%;
       height: 100%;
       border: 1px solid rgba(0, 0, 0, 0.2);
-      flex-grow: 1;
+      // flex-grow: 1;
       display: flex;
       flex-direction: column;
       .edit-header {

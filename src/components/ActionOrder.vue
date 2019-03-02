@@ -1,33 +1,22 @@
 <template lang="pug">
   div.order-action
     div.ui.form.tiny
-      table.ui.table.celled.structured.very.compact
+      table.ui.table.celled.structured.very.compact.yellow
         thead
           tr
             th.center.aligned 
-              div.ui.radio.checkbox( @change="checkAction")
-                input(type="checkbox", v-model="actionCheck")
-                label 지시사항
+              div.type 지시사항
             th.right.aligned.wide.ten
             th.center.aligned 
               div.ui.radio.checkbox 
                 input(type="checkbox")
                 label 자동실행
-        tbody
-          tr
-            td  
-              div 부서 및 수신자
-            td(colspan="2") 
-              div.ui.dropdown.multiple.selection.fluid
-                input(type="hidden")
-                i.dropdown.icon
-                div.default.text 
-                div.menu
-                  div.item item1
-                  div.header item
-              
+            th.center.aligned 
+              button.ui.button.icon.basic.mini(@click="$emit('delete')")
+                i.icon.close
+        tbody 
           tr 
-            td(colspan="3") 
+            td(colspan="4") 
               div.field
                 CheckTextCount(
                   :formType="formType",
@@ -89,8 +78,13 @@ export default {
         }
       }
     }
-    .ui.table td {
-      overflow: visible;
+    .ui.table {
+      th:nth-child(1) {
+        width: 15%
+      }
+      td {
+        overflow: visible;
+      }
     }
   }
 </style>

@@ -157,7 +157,6 @@ import { standardSmsHeader } from '@/setting'
 import StandardSmsApi from '@/api/StandardSMS'
 import PublicCodeApi from '@/api/PublicCode'
 import CheckMediaModal from '@/components/CheckMediaModal.vue'
-import Multiselect from 'vue-multiselect'
 import { codeGenerator } from '@/util'
 
 
@@ -190,7 +189,6 @@ export default {
     SearchComp,
     DataForm,
     CheckTextCount,
-    Multiselect
   },
   created () {
     this.getCodeList('S080')
@@ -319,7 +317,6 @@ export default {
 }
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 
 <style lang="less" >
 .StandardSms {

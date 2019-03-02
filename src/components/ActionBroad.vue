@@ -1,13 +1,11 @@
 <template lang="pug">
   div.broad-action
     div.ui.form.tiny
-      table.ui.table.celled.structured.very.compact
+      table.ui.table.celled.structured.very.compact.green
         thead
           tr
             th.center.aligned 
-              div.ui.radio.checkbox( @change="checkAction")
-                input(type="checkbox", v-model="actionCheck")
-                label 방송
+              div.type 방송
             th.right.aligned.wide.ten
               button.ui.button.basic.mini 선택
               button.ui.button.basic.mini 방송문구확인
@@ -15,9 +13,12 @@
               div.ui.radio.checkbox 
                 input(type="checkbox")
                 label 자동실행
+            th.center.aligned 
+              button.ui.button.icon.basic.mini(@click="$emit('delete')")
+                i.icon.close
         tbody
           tr 
-            td(colspan="3") 
+            td(colspan="4") 
               div.field
                 CheckTextCount(
                   :formType="formType",
@@ -27,7 +28,7 @@
                   @input="returnText")
 
           tr 
-            td(colspan="3") 
+            td(colspan="4") 
               div.parameters
                 .parameter
                   div.fields.inline
@@ -105,7 +106,8 @@ export default {
     return {
       actionCheck: false,
       formType: 'textarea',
-      textareaData: ''
+      textareaData: '',
+      broadData: this.value
     }
   },
   components: {
@@ -119,9 +121,6 @@ export default {
   methods: {
     returnText (text) {
       this.textareaData = text
-    },
-    checkAction () {
-      this.$emit('actData', { orderId: this.idx, state:this.actionCheck })
     }
   }
 }
@@ -143,8 +142,13 @@ export default {
         }
       }
     }
-    .ui.table td {
-      overflow: visible;
+    .ui.table {
+      th:nth-child(1) {
+        width: 15%
+      }
+      td {
+        overflow: visible;
+      }
     }
   }
 </style>
