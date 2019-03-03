@@ -12,8 +12,8 @@
             div.node-wrapper
                 div.node(
                   v-for="(node, index) in sopList.stepList",
-                  :class="{active:node.stepSn == activeStep}",
-                  @click="setActive(node)",
+                  :class="{active:index == activeCount}",
+                  @click="setActive(node, index)",
                   :id="`step_${index}`"
                   )
                   div.order {{index+1}}
@@ -22,8 +22,13 @@
           div.running-view
             div.running-wrapper
               div.step-header
-                h3 {{activeCount+1}}. {{activeStep.stepTitle}}
-              div.step-content
+                h3 임무목록
+              div.step-wrapper
+                div.step-title
+                  h3 {{activeCount+1}}. {{activeStep.stepTitle}}
+                div.step-content
+                  template(v-for="(action, index) in activeStep.actionItem")
+                    component(:is="action.type")
             div.running-control
               div.btnSet
                 div.btn-group.left
@@ -44,6 +49,9 @@
 </template>
 
 <script>
+import ActionSms from '@/components/ActionSmsRun'
+import ActionBroad from '@/components/ActionBroadRun'
+import ActionOrder from '@/components/ActionOrderRun'
 
 export default {
   name: 'sop-run',
@@ -52,9 +60,28 @@ export default {
       sopList: {
         sopTitle: '재난절차제목',
         stepList: [
-          {stepTitle: '첫번째단계'},
-          {stepTitle: '두번째단계'},
-          {stepTitle: '세번째단계'},
+          {
+            stepTitle: '첫번째단계',
+            actionItem: [
+              {type: 'ActionSms'},
+              {type: 'ActionBroad'}
+            ]
+          },
+          {
+            stepTitle: '두번째단계',
+            actionItem: [
+              {type: 'ActionOrder'},
+              {type: 'ActionBroad'}
+            ]
+          },
+          {
+            stepTitle: '세번째단계',
+            actionItem: [
+              {type: 'ActionOrder'},
+              {type: 'ActionSms'},
+              {type: 'ActionBroad'}
+            ]
+          },
           {stepTitle: '네번째단계'}
         ]
       },
@@ -62,11 +89,20 @@ export default {
       activeCount: 0
     }
   },
+  components: {
+    ActionSms,
+    ActionBroad,
+    ActionOrder
+  },
   created () {
     console.log(this.$route.params)
     this.moveActiveStep ('')
   },
   methods: {
+    setActive (step, i) {
+      this.activeStep = step
+      this.activeCount = i
+    },
     moveActiveStep (type) {
       if(type == 'prev') {
         this.activeCount--
@@ -180,10 +216,20 @@ export default {
         .step-header {
           height: 6%;
         }
-        .step-content {
+        .step-wrapper {
           height: 94%;
           border: 1px solid rgba(0, 0, 0, 0.2);
           background-color: #fff;
+          padding: 15px;
+          .step-title {
+            padding-bottom: 15px;
+          }
+          .step-content {
+            height: 90%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+          }
         }
       }
       .step-control {
