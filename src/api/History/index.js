@@ -26,5 +26,13 @@ export default {
   // 센서 탐지 이력 리스트
   getSensorExcel: (payload) => {
     return HTTP.post(`${TargetURL}.selectSensorDetctHistListExcel.do`, payload)
+  },
+  // SOP 실행 종료
+  updateSopEnd: (payload) => {
+    return HTTP.post(`${TargetURL}.updateSopEnd.do`, payload)
+  },
+  // SOP 제어권 전달
+  controlOutSop: (payload) => {
+    return HTTP.post(`${TargetURL}.updateSopExecutOprtr.do`, payload)
   }
 }
