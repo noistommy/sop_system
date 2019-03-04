@@ -32,7 +32,7 @@
             div.running-control
               div.btnSet
                 div.btn-group.left
-                  button.ui.button.orange SOP종료
+                  button.ui.button.teal SOP종료
                   button.ui.button.teal 제어권전달
                 div.btn-wrap.right
                   button.ui.labeled.icon.button.blue(
@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import SopManageApi from '@/api/SopManage'
 import ActionSms from '@/components/ActionSmsRun'
 import ActionBroad from '@/components/ActionBroadRun'
 import ActionOrder from '@/components/ActionOrderRun'
@@ -57,6 +58,9 @@ export default {
   name: 'sop-run',
   data () {
     return {
+      sopId: '',
+      sopExecutSn:'',
+      stepNo: 0,
       sopList: {
         sopTitle: '재난절차제목',
         stepList: [
@@ -86,7 +90,8 @@ export default {
         ]
       },
       activeStep: {},
-      activeCount: 0
+      activeCount: 0,
+      endMessage: ''
     }
   },
   components: {
@@ -96,9 +101,55 @@ export default {
   },
   created () {
     console.log(this.$route.params)
+    this.sopId = this.$route.params.sopId
+    this.sopExecutSn = this.$route.params.sopExecutSn
     this.moveActiveStep ('')
+    this.getStepList()
   },
   methods: {
+    getStepList () {
+      const requestData = JSON.stringify({
+        sopId: this.sopId,
+        sopExecutSn: this.sopExecutSn,
+        stepNo: 0
+      })
+      SopManageApi.runStepList(requestData).then(result => {
+        console.log(result.data)
+      }).catch(error => {
+        const err = error.response
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+
+    },
+    closeSop () {
+      const requestData = JSON.stringify({
+        sopId: this.sopId,
+        sopExecutSn: this.sopExecutSn,
+        endResn: this.endMessage
+      })
+      SopManageApi.closeSopList(requestData).then(result => {
+        console.log(result.data)
+        this.$router.push('/')
+      }).catch(error => {
+        const err = error.response
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+
+    },
+    passOperator () {
+      const requestData = JSON.stringify({
+        sopId: this.sopId,
+        sopExecutSn: this.sopExecutSn
+      })
+      SopManageApi.passOperation(requestData).then(result => {
+        console.log(result.data)
+        this.$router.push('/')
+      }).catch(error => {
+        const err = error.response
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+
+    },
     setActive (step, i) {
       this.activeStep = step
       this.activeCount = i

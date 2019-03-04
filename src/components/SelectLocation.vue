@@ -1,118 +1,117 @@
 <template lang="pug">
   div.modal
     div.modal-header {{title}}
-    div.modal-content.treeEditor
+    div.modal-content
+      //- div.selected-list
+      //-   div.ui.segment
+      //-     div.selected-wrapper
+      //-       div.select-item(v-for="selitem in selectedList") 
+      //-         div.floor-tag
+      //-           | {{selitem.buldFloor}} 
+      //-           i.icon.close
       div.multi-select-editor
         div.multi-select-wrapper
-          div.ui.list 
-            div.item 전체
-            div.item(v-for="local in locationData") {{local.displayNm}}
-              div.floors
-                div.ui.horizontal.list.celled
-                  div.item(v-for="floor in local.buldFloor") {{floor.floorNm}}
+          template(v-for="(local, index) in locationData")
+            div.ui.attached.header(@click="activeAdd(local)")
+              span {{local.buldNm}}
+              
+            div.ui.attached.segment(:class="{active:local.buldId == activeLocation}")
+              div.ui.horizontal.list
+                div.item
+                  div.ui.label(:class="{blue:local.allchecked}", @click="selectAllFloor(local)") 전체
+                div.item(
+                  v-for="(floor, index) in local.children",
+                  @click="toggleCheck(local, floor)")
+                  div.ui.label(:class="{select:floor.checked}") {{floor.buldFloor}}
+    div.btnSet.center
+      button.ui.button.blue(@click="sendSetList('parameter')") 확인
+      button.ui.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
 
 <script>
-import FireBrigadeApi from '@/api/FireBrigade'
-import TreeView from '@/components/TreeView'
+import LocationApi from '@/api/Location'
 import { codeGenerator } from '@/util'
 
 export default {
-  name: 'treeview-modal',
+  name: 'location-select-modal',
   components: {
-    TreeView
   },
   props: {
     title: String,
-    text: String,
-    data: Array,
     value: Object,
     isActive: Boolean
   },
   data () {
     return {
-      locationData: [
-        {
-          buldId:	0,
-          buldNm:	'BUILDING1',
-          displayNm: 'BUILDING1',
-          buldFloor:	[
-            {floorNm: '1F'},
-            {floorNm: '2F'},
-            {floorNm: '3F'},
-            {floorNm: '4F'}
-          ]
-          
-        },
-        {
-          buldId:	1,
-          buldNm:	'BUILDING2',
-          displayNm: 'BUILDING2',
-          buldFloor:	[
-            {floorNm: '1F'},
-            {floorNm: '2F'}
-          ]
-          
-        },
-        {
-          buldId:	2,
-          buldNm:	'BUILDING3',
-          displayNm: 'BUILDING3',
-          buldFloor:	[
-            {floorNm: '1F'},
-            {floorNm: '2F'},
-            {floorNm: '3F'},
-            {floorNm: '4F'},
-            {floorNm: '1F'},
-            {floorNm: '2F'},
-            {floorNm: '3F'},
-            {floorNm: '4F'}
-          ]
-          
-        },
-      ],
-      selectTeam: {},
-      activeItem: true
+      locationData: [],
+      selectedList: [],
+      sopBuldMapngList: [],
+      activeLocation: ''
+
     }
   },
   created () {
-    this.getTreeList()
+    this.getLocationList()
+  },
+  mounted () {
+    $('.ui.checkbox').checkbox()
   },
   methods: {
-    getTreeList () {
-      FireBrigadeApi.getTreeList()
-      .then(result => {
-        console.log(result)
-        this.treeviewData = result.data.slfdfnFbrdTrList
+    getLocationList () {
+      LocationApi.locationList().then(result => {
+        this.locationData = result.data.sopBuldFloorList
+        this.locationData.forEach((el, i) => {
+          this.$set(el, 'allchecked', false)
+          el.children.forEach((e, j) => {
+            this.$set(e, 'checked', false)
+          })
+        })
+
       })
-      .catch(error => {
-        this.$emit('close')
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })  
     },
-    createTreeItem () {
-      const requestData = JSON.stringify(this.createTeam)
-      FireBrigadeApi.createItem(requestData)
-      .then(result => {
-        console.log(result)
+    activeAdd(localItem) {
+      this.activeLocation = localItem.buldId
+    },
+    selectAllFloor(list) {
+      list.allchecked = !list.allchecked
+      list.children.forEach(e => {
+        e.checked = list.allchecked
       })
-      .catch(error => {
-        this.$emit('close')
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })  
     },
-    getItemInfo(item) {
-      if(this.type == 'new') {
-        this.createTeam.upperSlfdfnFbrdNm = item.childSlfdfnFbrdNm
-      }else {
-        this.editTeam.upperSlfdfnFbrdNm = item.childSlfdfnFbrdNm
+    toggleCheck (list, item) {
+      let isAllCheck = false
+      list.allchecked = false
+      item.checked = !item.checked
+      list.children.forEach(e => {
+        if(e.checked) {
+          isAllCheck = true
+        } else {
+          isAllCheck = false
+        }
+      })
+      if(isAllCheck) {
+        list.allchecked = true
       }
+    },
+    sendSetList () {
+      const localData ={
+        buldId:'',
+        buldFloor: ''
+      }
+      this.locationData.forEach(child => {
+        child.children.forEach(e => {
+          if(e.checked) {
+            localData.buldId = e.upperBuldId
+            localData.buldFloor = e.buldFloor
+            this.sopBuldMapngList.push(localData)
+          }
+        })
+      })
+
+      this.$emit('location', this.sopBuldMapngList)
+      this.$emit('close')
     }
   } 
 }
@@ -134,39 +133,35 @@ export default {
     .modal-content {
       flex-grow: 1;
       padding: 15px;
-      &.treeEditor {
+      display: flex;
+      flex-direction: column;
+      .multi-select-editor {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        width: 100%;
+        height: 600px;
         overflow-y: auto;
-        background-color: #454545;
-        .treeView-footer {
-          padding-top: 20px;
+        overflow-x: hidden;
+        .ui.attached.header {
+          background-color: rgba(0, 0, 0, 0.02);
         }
-      }
-      .tree-editor {
-        display: flex;
-        background-color: #454545;
-        height: 100%;
-        .treeView-wrapper {
-          width: 50%;
-        }
-        .editor-wrapper {
-          position: relative;
-          flex-grow: 1;
-          padding: 10px;
-          color: #fff;
-          .content{
-            padding: 10px;
-
-            border: 1px solid rgba(139, 139, 139, 0.493);
+        .item {
+          .ui.label {
+            width: 60px;
+            text-align: center;
+            &.select {
+              border: 1px solid #2185d0 !important;
+              color: #2185d0!important;
+              background-color: #fff;
+            }
           }
-          .ui.form input {
-            background-color: rgba(0, 0, 0, 0.2);
-            color:#fff;
-        }
+          &:nth-child(1) .ui.label {
+            margin-left: 1rem;
+          }
+          
         }
       }
     }
     .treeView-footer {
-      background-color: #454545;
       height: 15%;
       padding: 10px;
 

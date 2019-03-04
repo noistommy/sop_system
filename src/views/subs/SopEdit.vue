@@ -1,15 +1,19 @@
 <template lang="pug">
   div.SopEdit.sub-container
+    modals-container(
+      name="locationmodal",
+      @location="setLocationList"
+      )
     div.sub-wrapper
       div.baseInfo
         div.base-info.info-1
           select.ui.dropdown(v-model="sopNewData.msfrtnKndCd")
             option(value="") 재난종류
-            option(v-for="code in typeCode", value="code.cmmnCd") {{code.cmmnCdNm}}
+            option(v-for="code in typeCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
         div.base-info.info-2
           select.ui.dropdown(v-model="sopNewData.crisisGnfdStepCd")
             option(value="") 위기발령단계
-            option(v-for="code in typeCode", value="code.cmmnCd") {{code.cmmnCdNm}}
+            option(v-for="code in stepCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
         div.base-info.info-3
           div.ui.input(@click="selectLocation")
             input(type="text", placeholder="건물/층 선택")
@@ -17,7 +21,7 @@
           div.ui.input.fluid
             input(type="text", placeholder="재난절차제목입력", v-model="sopNewData.sopTitle")
         div.base-info.info-5
-          button.ui.button.blue(@click=saveSop) 재난절차저장
+          button.ui.button.blue(@click="createSop") 재난절차저장
       div.sub-content
         div.content
           div.editor-wrapper
@@ -77,6 +81,7 @@
 
 <script>
 import PublicCodeApi from '@/api/PublicCode'
+import SopManageApi from '@/api/SopManage'
 import ActionSms from '@/components/ActionSms.vue'
 import ActionBroad from '@/components/ActionBroad.vue'
 import ActionOrder from '@/components/ActionOrder.vue'
@@ -93,12 +98,7 @@ export default {
         crisisGnfdStepCd: '',
         sopTitle: '',
         sopMapngCd: '',
-        sopBuldMapngList: [
-          {
-            buldId: '',
-            buldFloor: '',
-          }
-        ],
+        sopBuldMapngList: [],
         sopStepList: [
           {
             stepNo: '',
@@ -146,7 +146,7 @@ export default {
         cmmnCd: code
       })
       PublicCodeApi.getList(requestData).then(result => {
-        console.log(code)
+        console.log(result)
         if(code === 'S090') {
           this.typeCode = result.data.cmmnCdDetailList
         }
@@ -159,12 +159,26 @@ export default {
         // this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
+    createSop () {
+      const requestData = JSON.stringify(this.sopNewData)
+      SopManageApi.createItem(requestData).then(result => {
+        console.log(result.data)
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
     selectLocation () {
       this.$modal.show(SelectLocation,{
+        modal:'locationmodal',
         title: '건물/층 선택'
       },{
-        height: 'auto'
+        height: '80%'
       })
+    },
+    setLocationList(local) {
+      this.sopNewData.sopBuldMapngList = local
     },
     saveSop () {
       this.$modal.show('dialog',{
@@ -337,7 +351,6 @@ export default {
           margin: 10px;
           height: 50px;
           min-height: 50px;
-          z-index: 100;
           > div {
             display: inline-block;
             padding: .8em;
