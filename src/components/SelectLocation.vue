@@ -96,15 +96,14 @@ export default {
       }
     },
     sendSetList () {
-      const localData ={
-        buldId:'',
-        buldFloor: ''
-      }
       this.locationData.forEach(child => {
         child.children.forEach(e => {
           if(e.checked) {
-            localData.buldId = e.upperBuldId
-            localData.buldFloor = e.buldFloor
+            let localData = {
+              buldId: e.upperBuldId,
+              buldFloor: e.buldFloor
+            }
+            console.log(e.buldFloor)
             this.sopBuldMapngList.push(localData)
           }
         })

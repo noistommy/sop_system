@@ -75,8 +75,8 @@
                             label 허용
                 div.btnSet.right
                     div.buttons
-                      button.ui.button.blue 저장
-                      button.ui.button 취소
+                      button.ui.button.blue(@click="updateDetail") 저장
+                      button.ui.button(@click="getSensorDetail(sensorByType.pageInfo.currPage)") 취소
       div.sub-footer
 </template>
 
@@ -108,7 +108,8 @@ export default {
         isPagination: true,
         isListNumber: false,
         pageInfo: {} 
-      }
+      },
+      selectIndex: 0
     }
   },
   components: {
@@ -130,7 +131,7 @@ export default {
       .then(result => {
         console.log(result)
         this.sensorType.sensorTypeData = result.data.eqpmnFgManageList
-        this.sensorType.selected[0]=result.data.eqpmnFgManageList[0]
+        this.sensorType.selected[0]=result.data.eqpmnFgManageList[ this.selectIndex]
         this.getSensorDetail()
       })
       .catch(error => {
@@ -165,7 +166,8 @@ export default {
       const requestData = JSON.stringify(requestObj)
       SensorApi.updateItem(requestData).then(result => {
         console.log(result)
-        this.getSensorlist()
+        this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
+        this.getSensorlist(this.sensorByType.pageInfo.currPage)
       }).catch(error => {
         const err = error.response
         console.log(err)
@@ -173,6 +175,7 @@ export default {
       })
     },
     selectedItem(itemInfo) {
+      this.selectIndex = itemInfo.idx
       this.sensorType.selected = []
       if (!itemInfo.selected) {
         this.sensorType.selected.push(this.sensorType.sensorTypeData[itemInfo.idx])

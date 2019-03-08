@@ -1,12 +1,17 @@
+
 const codeGenerator = (code, text) => {
   const dialog = {
     title: '',
     text: '',
-    botton: [{
+    bottons: [{
       title: '확인'
     }]
   }
   switch (code) {
+    case 'Y':
+      dialog.title = 'Success'
+      dialog.text = text
+      break
     case 'B':
       dialog.title = 'vBizException'
       dialog.text = text
@@ -20,13 +25,13 @@ const codeGenerator = (code, text) => {
       dialog.text = text
       break
     case 'L':
-      dialog.title = 'Logout'
+      dialog.title = 'close Session'
       dialog.text = text
-      dialog.button = [{
+      dialog.buttons = [{
         title: '확인',
-        default: true,
         handler: () => {
-          this.$router.push('/login')
+          delete localStorage.userInfo
+          window.location.replace('/')
         }
       }]
       break

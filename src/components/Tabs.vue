@@ -2,11 +2,13 @@
     <div class="tabsWrapper">
         <div class="tabMenu">
             <ul class="menuList">
-                <li class="tabItem" v-for="(tab, index) of menuList.tabList"
+              <template v-for="(tab, index) of menuList.tabList">
+                <li class="tabItem" 
                     :key="index"
                     :class="{ active: tab.pathName === activeTab }">
                     <router-link :to="{ name: tab.pathName }">{{ tab.name }}</router-link>
                 </li>
+              </template>
             </ul>
         </div>
         <div class="tabContent">

@@ -9,7 +9,7 @@ const state = {
 
 const mutations = {
   [types.GET_CODE_LIST] (state, payload) {
-    state.codeList = payload.data.cmmnCdDetailList
+    state.codeList = payload.data.cmmnCdGroupList
   },
   [types.GET_CODE_ITEM] (state, payload) {
     state.codeItem = payload

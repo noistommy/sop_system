@@ -17,8 +17,8 @@ export default {
     return HTTP.post(`${TargetURL}.saveSlfdfnFgtMemberInfo.do`, {})
   },
   // 자위소방대정보저장
-  setFireBrigadeInfo: () => {
-    return HTTP.post(`${TargetURL}.saveSlfdfnFbrdInfo.do`, {})
+  setFireBrigadeInfo: (payload) => {
+    return HTTP.post(`${TargetURL}.saveSlfdfnFbrdInfo.do`, payload)
   },
   // 상위소방대목록조회
   getUpperFireBrigade: () => {
@@ -31,5 +31,17 @@ export default {
   // 자위소방대등록
   createItem: (payload) => {
     return HTTP.post(`${TargetURL}.insertSlfdfnFbrdInfo.do`, payload)
+  },
+  // 파일업로드
+  fileUpload: (payload) => {
+    return HTTP.post(`${TargetURL}.uploadSlfdfnFbrdExcelFile.do`, payload)
+  },
+  // 업로드샘플
+  fileSampleUpload: (payload) => {
+    return HTTP.post(`${TargetURL}.selectSlfdfnFbrdExcelDownLoad.do`, payload)
+  },
+  // 파일다운로드
+  fileDownload: (payload) => {
+    return HTTP.post(`${TargetURL}.selectSlfdfnFbrdDetailExcelInfo.do`, payload)
   }
 }

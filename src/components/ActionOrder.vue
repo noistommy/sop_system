@@ -9,7 +9,7 @@
             th.right.aligned.wide.ten
             th.center.aligned 
               div.ui.radio.checkbox 
-                input(type="checkbox")
+                input(type="checkbox", v-model="orderData.autoYn", true-value="Y", false-value="N")
                 label 자동실행
             th.center.aligned 
               button.ui.button.icon.basic.mini(@click="$emit('delete')")
@@ -40,7 +40,8 @@ export default {
     return {
       actionCheck: false,
       formType: 'textarea',
-      textareaData: ''
+      textareaData: '',
+      orderData: this.value
     }
   },
   components: {
@@ -53,7 +54,7 @@ export default {
   },
   methods: {
     returnText (text) {
-      this.textareaData = text
+      this.orderData.drctContents = text
     },
     checkAction () {
       this.$emit('actData', { orderId: this.idx, state:this.actionCheck })

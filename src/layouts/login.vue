@@ -46,9 +46,9 @@ export default {
       const requestData = JSON.stringify(this.loginInfo)
       this.login(requestData).then((result) => {
         console.log(result)
-        if(result == 'undefined') return 
+        if(result == undefined) return 
         if(result.data.msgCode == 'Y') {
-          this.$router.replace('/')
+          this.$router.push('/')
         }else if(result.data.msgCode == 'P') {
           this.$modal.show(ResetPassword, {
             title: '비밀번호변경',

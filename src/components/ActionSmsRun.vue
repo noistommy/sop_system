@@ -12,7 +12,7 @@
                 label
             td.center.aligned  완료
             td.center.aligned 
-              button.ui.button.basic.mini 실행
+              button.ui.button.basic.mini(:class="{blue:state}", @click="stepRunning") {{state ? '완료' : '실행'}}
             td.center.aligned  시간
             td.center.aligned  11:11
           tr 
@@ -40,15 +40,22 @@ export default {
     return {
       actionCheck: false,
       formType: 'textarea',
-      textareaData: '',
-      smsData: this.value,
-
+      textareaData: this.value.smsContents,
+      actionData: this.value,
+      state: false
     }
   },
   components: {
     CheckTextCount,
   },
   created () {
+    if(this.actionData.autoYn == null) {
+      this.actionData.autoYn = 'N'
+    } else if(this.actionData.autoYn == 'Y') {
+      this.stepRunning()
+    } else{
+      console.log('start')
+    }
   },
   mounted () {
     $('ui.checkbox').checkbox()
@@ -56,15 +63,16 @@ export default {
   methods: {
     returnText (text) {
       this.textareaData = text
+      
     },
-    selectStandard () {
-      // this.$modal.show(StandardSms, {
-      //   title: '표준문자 선택'
-      // },
-      // {
-      //   width: '60%',
-      //   height:'auto'
-      // })
+    stepRunning () {
+      if(this.state) {
+        this.state = false
+      } else {
+        this.state = true
+        this.$emit('runstep', this.actionData)
+      }
+      
     }
   }
 }

@@ -29,7 +29,8 @@
                     input(type="text", v-model="partnerData.moblphonNo")
             
     div.btnSet.center
-      button.ui.button.blue(@click="updateCode") {{type == 'new' ? '등록' : '편집'}}
+      button.ui.button.blue(@click="createPartner", v-if="type == 'new'") 등록
+      button.ui.button.blue(@click="updatePartner", v-else) 수정
       button.ui.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
         div.close X
@@ -40,7 +41,7 @@ import PartnerApi from '@/api/Partner'
 import { codeGenerator } from '@/util'
 
 export default {
-  name: 'code-editor',
+  name: 'partner-editor',
   components: {
   },
   props: {
@@ -51,36 +52,40 @@ export default {
   },
   data () {
     return {
-      partnerData: {}
+      partnerData: {},
     }
   },
   created () {
     this.partnerData = this.data
   },
   methods: {
-    updateCodeGroup () {
-      const requestData = JSON.stringify(this.codeData)
-      PublicCodeApi.updateCodeGroup(requestData).then(result => {
+    createPartner() {
+      const requestData = JSON.stringify(this.newPartner)
+      PartnerApi.createEmployee(requestData)
+      .then(result => {
         console.log(result)
         this.$emit('close')
-        this.showDailog()
-      }).catch(error => {
-        this.$emit('close')
+        this.showDailog ()
+      })
+      .catch(error => {
         const err = error.response
         console.log(err)
+        this.$emit('close')
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
-    updateCode () {
-      const requestData = JSON.stringify(this.codeData)
-      PublicCodeApi.updateCodeItem(requestData).then(result => {
+    updatePartner() {
+      const requestData = JSON.stringify(this.newPartner)
+      PartnerApi.updateEmployee(requestData)
+      .then(result => {
         console.log(result)
         this.$emit('close')
-        this.showDailog()
-      }).catch(error => {
-        this.$emit('close')
+        this.showDailog ()
+      })
+      .catch(error => {
         const err = error.response
         console.log(err)
+        this.$emit('close')
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },

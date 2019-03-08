@@ -11,11 +11,13 @@
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown(v-model="req.msfrtnKndCd")
               option(value="") 재난종류
+              option(value="00") 전체
               option(v-for="code in typeCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
 
           template(slot="condition2", slot-scope="props")
             select.ui.dropdown(v-model="req.crisisGnfdStepCd")
               option(value="") 위기발령단계
+              option(value="00") 전체
               option(v-for="code in stepCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
       div.sub-content
         div.content
@@ -45,12 +47,12 @@
         div.footer
           div.btnSet
             div.btn-group.left
-              template(v-if="getUser.userCode == 'S0400100'")
-                button.ui.button.large() 편집
+              template(v-if="opratorCode == 'S0400100'")
+                button.ui.button.large(@click="editSop") 편집
                 button.ui.button.large(@click="deleteSop") 삭제
               button.ui.button.large.green(@click="selectMode") SOP실행
             div.btn-wrap.right
-              template(v-if="getUser.userCode == 'S0400100'")
+              template(v-if="opratorCode == 'S0400100'")
               button.ui.button.large.blue(@click="$router.push({name: 'sop-edit'})") 재난절차생성
 
 </template>
@@ -97,18 +99,18 @@ export default {
     SelectSopMode
   },
   created() {
+    this.opratorCode = localStorage.userInfo
     this.getCodeList('S090')
     this.getCodeList('S100')
     this.getSopList()
   },
   computed: {
-    ...mapGetters([
-      'getUser'
-    ])
   },
   methods: {
     getSopList () {
-      this.req.sopTitle = this.searchData.searchTexts
+      if(this.req.msfrtnKndCd == "00") {this.req.msfrtnKndCd = ""}
+      if(this.req.crisisGnfdStepCd == "") {this.req.crisisGnfdStepCd = ""}
+      this.req.sopTitle = this.searchData.searchNm
       const requestData = JSON.stringify(this.req)
       SopManageApi.getList(requestData).then(result => {
         console.log(result.data)
@@ -152,10 +154,10 @@ export default {
       PublicCodeApi.getList(requestData).then(result => {
         console.log(code)
         if(code === 'S090') {
-          this.typeCode = result.data.cmmnCdDetailList
+          this.typeCode = result.data.cmmnCdGroupList
         }
         if(code === 'S100') {
-          this.stepCode = result.data.cmmnCdDetailList
+          this.stepCode = result.data.cmmnCdGroupList
         }
       }).catch(error => {
         const err = error.response
@@ -179,6 +181,12 @@ export default {
         },{
           height: 'auto'
         })
+      }
+    },
+    editSop () {
+      this.selectCheck()
+      if(this.isSelected) {
+        this.$router.push({ name: 'sop-edit', params: {sopId: this.sopList.selected[0].sopId, sopMapngCd: this.sopList.selected[0].sopMapngCd}})
       }
     },
     selectCheck () {

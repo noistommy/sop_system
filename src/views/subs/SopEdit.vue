@@ -2,16 +2,18 @@
   div.SopEdit.sub-container
     modals-container(
       name="locationmodal",
-      @location="setLocationList"
+      @location="setLocationList",
+      @select="insertData"
       )
     div.sub-wrapper
-      div.baseInfo
+      div.baseInfo.ui.form
         div.base-info.info-1
-          select.ui.dropdown(v-model="sopNewData.msfrtnKndCd")
+          label
+          select(v-model="sopNewData.msfrtnKndCd")
             option(value="") 재난종류
             option(v-for="code in typeCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
         div.base-info.info-2
-          select.ui.dropdown(v-model="sopNewData.crisisGnfdStepCd")
+          select(v-model="sopNewData.crisisGnfdStepCd")
             option(value="") 위기발령단계
             option(v-for="code in stepCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
         div.base-info.info-3
@@ -29,12 +31,12 @@
               div.node-wrapper
                 div.node(
                   v-for="(node, index) in sopNewData.sopStepList",
-                  :class="{active:node.stepSn == activeStep}",
+                  :class="{active:node.stepNo == activeStep}",
                   @click="setActive(node)",
                   :id="`step_${index}`"
                   )
                   div.order {{index+1}}
-                  div.step-content {{node.sopTitle}}
+                  div.step-content {{node.stepTitle}}
             div.editor-view
               div.edit-header
                 div.ui.buttons
@@ -51,7 +53,7 @@
                 div.steps-wrapper
                   div.step(
                     v-for="(step, index) in sopNewData.sopStepList",
-                    :class="{active:step.stepSn == activeStep}",
+                    :class="{active:step.stepNo == activeStep}",
                     @click="setActive(step)",
                     :id="`step_${step.stepSn}`"
                     )
@@ -66,6 +68,8 @@
                             v-model="step.actionItem[index]",
                             :is='action.type',
                             :idx="index",
+                            :paramCode="paramCode",
+                            :isUpdate = "isupdate"
                             @delete="deleteAction(step, index)"
                             )
                     div.step-editor(v-if="step.stepSn == activeStep")
@@ -115,15 +119,17 @@ export default {
       },
       typeCode: [],
       stepCode: [],
+      paramCode: [],
       actions: '',
       formType: 'textarea',
       textareaData: '',
-      activeStep: '0',
+      activeStep: '1',
       selectedStep: [],
       selectActionData: [
       ],
       deleteList: [],
-      serialkey: 1
+      newStepNo: 1,
+      isupdate: true
     }
   },
   components: {
@@ -132,13 +138,22 @@ export default {
     ActionOrder
   },
   created () {
+    this.sopNewData.sopId = this.$route.params.sopId
+    this.sopNewData.sopMapngCd = this.$route.params.sopMapngCd
     this.getCodeList('S090')
     this.getCodeList('S100')
+    this.getCodeList('S080')
     this.setActive(this.sopNewData.sopStepList[0])
+    if(this.sopNewData.sopId) {
+      this.getSopItem()
+    }
   },
   mounted () {
     $('.ui.dropdown').dropdown()
     $('.ui.checkbox').checkbox()
+  },
+  updated () {
+    console.log('update')
   },
   methods: {
     getCodeList (code) {
@@ -148,21 +163,38 @@ export default {
       PublicCodeApi.getList(requestData).then(result => {
         console.log(result)
         if(code === 'S090') {
-          this.typeCode = result.data.cmmnCdDetailList
+          this.typeCode = result.data.cmmnCdGroupList
         }
         if(code === 'S100') {
-          this.stepCode = result.data.cmmnCdDetailList
+          this.stepCode = result.data.cmmnCdGroupList
+        }
+        if(code === 'S080') {
+          this.paramCode = result.data.cmmnCdGroupList
         }
       }).catch(error => {
         const err = error.response
         console.log(err)
-        // this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    getSopItem () {
+      const requestData = JSON.stringify({
+        sopId: this.sopNewData.sopId
+      })
+      SopManageApi.getItem(requestData).then(result => {
+        console.log(result.data)
+        this.sopNewData = result.data
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     createSop () {
       const requestData = JSON.stringify(this.sopNewData)
       SopManageApi.createItem(requestData).then(result => {
         console.log(result.data)
+        this.$router.push({name:'sop-list'})
       }).catch(error => {
         const err = error.response
         console.log(err)
@@ -177,6 +209,7 @@ export default {
         height: '80%'
       })
     },
+    
     setLocationList(local) {
       this.sopNewData.sopBuldMapngList = local
     },
@@ -188,23 +221,23 @@ export default {
     },
     setActive (step) {
       this.selectedStep = step
-      this.activeStep = step.stepSn
+      this.activeStep = step.stepNo
       this.deleteList = []
     },
     createStep () {
       const newstep = {
-        stepNo: '',
-        stepSn: this.serialkey + 1,
+        stepNo: this.newStepNo + 1,
+        stepSn: '',
         stepTitle: '',
         actionItem: []
       }
       this.sopNewData.sopStepList.push(newstep)
-      this.serialkey++
+      this.newStepNo++
     },
     copyStep () {
       const copyStep = {
-        stepNo: '',
-        stepSn: this.serialkey + 1,
+        stepNo: this.newStepNo + 1,
+        stepSn: '',
         stepTitle: '',
         actionItem: []
       }
@@ -217,9 +250,9 @@ export default {
       // copyStep.actionItem = this.selectedStep.actionItem
       // const step = this.selectedStep
       // const copyStep = Object.assign({}, step)
-      copyStep.stepSn = this.serialkey + 1
+      copyStep.stepNo = this.newStepNo + 1
       this.sopNewData.sopStepList.push(copyStep)
-      this.serialkey++
+      this.newStepNo++
     },
     deleteStep () {
       if(this.sopNewData.sopStepList.length == 1) return 
@@ -297,6 +330,20 @@ export default {
       } else {
         this.sopNewData.sopStepList.splice(index+1, 0, moveStep[0])
       }
+    },
+    insertData (insert) {
+      console.log(insert)
+       this.sopNewData.sopStepList.forEach((step, i) => {
+         if(insert.stepNo == step.stepNo) {
+           step.actionItem.forEach((act, j) => {
+             if(insert.stepSn == act.stepSn) {
+              //  this.sopNewData.sopStepList[i].actionItem[j] = Object.assign({}, this.sopNewData.sopStepList[i].actionItem[j], insert.action)
+              Object.assign(act, insert.action)
+              this.isupdate = true
+             }
+           })
+         }
+       })
     }
   }
 }

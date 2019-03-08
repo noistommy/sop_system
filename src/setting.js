@@ -2,9 +2,11 @@
 const sopMenuList = {
   defaultTab: 'sop-list',
   tabList: [
-    { name: '재난관리조회', pathName: 'sop-list', default: true, icon: '' },
-    { name: '재난관리생성', pathName: 'sop-edit', default: false, icon: '' },
-    { name: '재난관리실행', pathName: 'sop-run', default: false, icon: '' }
+    { name: '재난관리조회', pathName: 'sop-list', default: true, icon: '', type: 'list' },
+    { name: '재난관리생성', pathName: 'sop-edit', default: false, icon: '', type: 'new' },
+    // { name: '재난관리편집', pathName: 'sop-edit', default: false, icon: '', type: 'edit' },
+    { name: '재난관리실행', pathName: 'sop-run', default: false, icon: '', type: 'run' }
+    // { name: '모니터링', pathName: 'sop-run', default: false, icon: '', type: 'monitor' }
   ]
 }
 
@@ -224,6 +226,17 @@ const sopListHeader = {
   ]
 }
 
+// 재난절차목록
+
+const sopRunHistoryHeader = {
+  headers: [
+    { text: '실행일자', align: 'center', value: 'regDt', size: '' },
+    { text: '단계', align: 'center', value: 'stepSn', size: '' },
+    { text: '종류', align: 'center', value: 'itemKndNm', size: '' },
+    { text: '임무내용', align: 'center', value: 'contents', size: 'six' }
+  ]
+}
+
 export {
   sopMenuList,
   memberMenuList,
@@ -247,5 +260,6 @@ export {
   systemUserHeader,
   mainSopHistoryHeader,
   mainSmsHistoryHeader,
-  sopListHeader
+  sopListHeader,
+  sopRunHistoryHeader
 }

@@ -3,7 +3,9 @@
     div.sub-wrapper
       div.sub-header
         div.title 자위소방대관리
-        SearchComp(v-model="searchData", :isTextSearch="true", @search="getTreeList")
+        SearchComp(v-model="searchData",
+        :isTextSearch="true",
+        @search="searchList")
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown(v-model="searchData.searchCnd")
               option(value="", default) 분류
@@ -11,8 +13,8 @@
               option(value="01") 팀명
               option(value="02") 이름
         div.btnUpload
-          button.ui.button.blue 파일업로드
-          button.ui.button.blue 업로드샘플
+          button.ui.button.green(@click="uploadFile") 파일업로드
+          button.ui.button.green(@click="uploadSampleFile") 업로드샘플
       div.sub-content
         div.content.row
           div.section.left-section
@@ -27,18 +29,11 @@
                   :level="1",
                   @search="getList")
             div.treeEdit
-              div.btnSet
-                button.ui.left.floated.button.mini.inverted(@click="activeTreeView('new')") 등록
-                button.ui.right.floated.button.mini.inverted(@click="activeTreeView('edit')") 편집
-              div.edit-wrapper
-                div.ui.form.inverted
-                  div.field
-                    label 자위소방대명
-                    input(type="text", v-model="uploadTreeData.childSlfdfnFbrdNm")
-                  div.field
-                    label 상위자위소방대명
-                    input(type="text", v-model="uploadTreeData.upperSlfdfnFbrdNm")
-              
+            div.btnSet
+              div.btn-group.left
+                button.ui.button.mini(@click="activeTreeView('new')") 등록
+              div.btn-wrap.right
+                button.ui.button.mini(@click="activeTreeView('edit')") 편집
           div.section.right-section
             div.file-movement
               div.files_1
@@ -60,9 +55,9 @@
                         .ld {{props.item.deptNm}}
               div.movement-btn
                 div.btn-wrapper
-                  button.ui.icon.button
+                  button.ui.icon.button(@click="editArray('left')")
                     i.arrow.left.icon
-                  button.ui.icon.button
+                  button.ui.icon.button(@click="editArray('right')")
                     i.arrow.right.icon
               div.files_2
                 h3 미배정목록
@@ -85,11 +80,13 @@
             div.btnSet
                 div.btn-wrap.right
                 div.btn-group.left
-                  button.ui.button.blue 저장
+                  button.ui.button.blue(@click="updateItems") 저장
                   button.ui.button(@click="getList") 취소
         div.footer
-          //- div.btnSet
-          //-   button.ui.button.right.floated.large.blue 파일다운로드
+          div.btnSet
+            div.btn-group.left
+            div.btn-wrap.right
+              button.ui.button.right.floated.large.blue(@click="downloadFile") 파일다운로드
           
           
 
@@ -169,6 +166,9 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
+    searchList () {
+      this.getList()
+    },
     getTreeList () {
       FireBrigadeApi.getTreeList()
       .then(result => {
@@ -183,10 +183,23 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })  
     },
+    updateItems () {
+      const requestData = JSON.stringify({
+        slfdfnFbrdEmpInfoList: this.fireBrigade.fireBrigadeGroup
+      })
+      FireBrigadeApi.setFireBrigadeInfo(requestData).then(result => {
+        console.log(result)
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+
+    },
     selectedleftItems(itemInfo) {
       if(itemInfo.selected) {
         this.selected.forEach((e, i) => {
-          if(e[this.itemkey] == itemInfo.item[this.itemkey]) {
+          if(e[this.fireBrigade.itemkey] == itemInfo.item[this.fireBrigade.itemkey]) {
             this.fireBrigade.selected.splice(i, 1)
           }
         })
@@ -197,7 +210,7 @@ export default {
     selectedrightItems(itemInfo) {
       if(itemInfo.selected) {
         this.offFireBrigade.selected.forEach((e, i) => {
-          if(e[this.itemkey] == itemInfo.item[this.itemkey]) {
+          if(e[this.fireBrigade.itemkey] == itemInfo.item[this.fireBrigade.itemkey]) {
             this.offFireBrigade.selected.splice(i, 1)
           }
         })
@@ -225,9 +238,62 @@ export default {
         target: this.selectTeam,
         type: editType
       },{
-        width: '700px',
+        width: '70%',
         height: '50%'
       })
+    },
+    uploadFile () {
+      FireBrigadeApi.fileUpload().then(result => {
+        console.log(result)
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    uploadSampleFile () {
+      FireBrigadeApi.fileSampleUpload().then(result => {
+        console.log(result)
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    downloadFile () {
+      FireBrigadeApi.fileDownload().then(result => {
+        console.log(result)
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    editArray (type) {
+      console.log(type)
+      if(type == 'left') {
+        this.fireBrigade.fireBrigadeGroup = this.fireBrigade.fireBrigadeGroup.concat(this.offFireBrigade.selected)
+
+        this.offFireBrigade.selected.forEach((e) => {
+          this.offFireBrigade.offFireBrigadeGroup.forEach((el, i) => {
+            if(el[this.fireBrigade.itemkey] == e[this.fireBrigade.itemkey]) {
+              this.offFireBrigade.offFireBrigadeGroup.splice(i, 1)
+            }
+          })
+        })
+        this.offFireBrigade.selected = []
+      } else {
+        this.offFireBrigade.offFireBrigadeGroup = this.offFireBrigade.offFireBrigadeGroup.concat(this.fireBrigade.selected)
+        this.fireBrigade.selected.forEach((e) => {
+          this.fireBrigade.fireBrigadeGroup.forEach((el, i) => {
+            if(el[this.fireBrigade.itemkey] == e[this.fireBrigade.itemkey]) {
+              console.log(this.fireBrigade.itemkey)
+              this.fireBrigade.fireBrigadeGroup.splice(i, 1)
+            }
+          })
+        })
+        this.fireBrigade.selected = []
+      }
     }
   }
 }

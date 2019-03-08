@@ -56,12 +56,10 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd1")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardBroadDetail.inputParam1}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="1", v-model="standardBroadDetail.cmmnCd1", @change="insertValueName")
+                              option(disabled, value="")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData1")
@@ -71,12 +69,10 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd2")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardBroadDetail.inputParam2}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="2", v-model="standardBroadDetail.cmmnCd2", @change="insertValueName")
+                              option(disabled, value="")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData2")
@@ -86,12 +82,10 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd3")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardBroadDetail.inputParam3}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="3", v-model="standardBroadDetail.cmmnCd3", @change="insertValueName")
+                              option(disabled, value="")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData3")
@@ -101,12 +95,10 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd4")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardBroadDetail.inputParam4}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="4", v-model="standardBroadDetail.cmmnCd4", @change="insertValueName")
+                              option(disabled, value="")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData4")
@@ -116,12 +108,10 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardBroadDetail.cmmnCd5")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardBroadDetail.inputParam5}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="5", v-model="standardBroadDetail.cmmnCd5", @change="insertValueName")
+                              option(disabled, value="")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData5")
@@ -155,7 +145,6 @@ import StandardBroadApi from '@/api/StandardBroad'
 import PublicCodeApi from '@/api/PublicCode'
 import CheckMediaModal from '@/components/CheckMediaModal.vue'
 import { codeGenerator } from '@/util'
-
 
 export default {
   name: 'standard-broad',
@@ -226,6 +215,7 @@ export default {
       StandardBroadApi.updateDetail(requestData)
       .then(result => {
         console.log(result)
+        this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
         this.getBroadlist()
       })
       .catch(error => {
@@ -299,6 +289,14 @@ export default {
         console.log(err)
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
        })
+    },
+    insertValueName (event) {
+      console.log(event)
+      this.paramList.forEach(e => {
+        if(e.cmmnCd == event.target.value) {
+          this.standardBroadDetail[`inputParam${event.target.id}`] = e.cmmnCdNm
+        }
+      })
     }
   }
 }

@@ -5,7 +5,7 @@
 
       template(v-if="isTextSearch")
         div.ui.left.icon.input
-          input(v-model="searchText", @blur="setText")
+          input(v-model="value.searchNm")
           i.icon.search
       button(@click="searchList").ui.button 검색
 
@@ -18,25 +18,18 @@ export default {
   components: {
   },
   props: {
-    startDate: Date,
-    endDate: Date,
-    rangeDate: Object,
-    isRange:  String,
     isTextSearch: Boolean,
     isDateSearch: Boolean,
-    value: {
-    }
+    value: Object,
+    
   },
   data () {
     return {
-       selectedDateStart: this.startDate,
-       selectedDateEnd: this.endDate,
-       selectedDates: this.rangeDate,
-       searchText: ""
+       searchData: this.value
     }
   },
   created () {
-   
+
   },
   mounted() {
     $('.ui.dropdown').dropdown();
@@ -58,9 +51,10 @@ export default {
   methods: {
     searchList() {
       this.$emit('search')
+      this.searchData.searchNm = ''
     },
     setText () {
-      this.value.searchText = this.searchText
+      this.value.searchNm = this.searchText
     }
   }
 }

@@ -19,13 +19,15 @@
               div.ui.form.inverted
                 div.field
                   label 상위자위소방대명
-                  input(type="text", placeholder="상위소방대 선택", readonly="", v-model="createTeam.upperSlfdfnFbrdNm").readonly
+                  input(type="text", placeholder="상위소방대 선택", readonly="", v-model="selectTeam.childSlfdfnFbrdNm").readonly
                 div.field
                   label 자위소방대명
-                  input(type="text", placeholder="소방대명 입력", v-model="createTeam.childSlfdfnFbrdNm")
+                  input(type="text", placeholder="소방대명 입력", v-model="createTeam.slfdfnFbrdNm")
             div.btnSet
-              button.ui.inverted.button.mini 등록
-              button.ui.inverted.button.mini(@click="$emit('close')") 취소
+              div.btn-group.left
+                button.ui.button.green(@click="createTreeItem") 등록
+              div.btn-wrap.right
+                button.ui.button(@click="$emit('close')") 취소
           template(v-else)
             h3 편집
             div.content
@@ -43,12 +45,10 @@
                   label 상위자위소방대명
                   input(type="text", v-model="editTeam.upperSlfdfnFbrdNm", readonly="").readonly
             div.btnSet
-              button.ui.inverted.button.mini 저장
-              button.ui.inverted.button.mini(@click="$emit('close')") 취소
-              
-    //- div.treeView-footer
-    //-   button.ui.button.basic.olive {{selectTeam.childDeptNm}} 선택
-    //-   div.selectedName 
+              div.btn-group.left
+                button.ui.button.blue 저장
+              div.btn-wrap.right
+                button.ui.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
@@ -76,6 +76,8 @@ export default {
     return {
       treeviewData: this.data,
       createTeam: {
+        slfdfnFbrdNm: '',
+        upperSlfdfnFbrdId: ''
       },
       selectTeam: {},
       editTeam: this.target,
@@ -114,9 +116,9 @@ export default {
     },
     getItemInfo(item) {
       if(this.type == 'new') {
-        this.createTeam.upperSlfdfnFbrdNm = item.childSlfdfnFbrdNm
+        this.createTeam.upperSlfdfnFbrdId = item.childSlfdfnFbrdId
       }else {
-        this.editTeam.upperSlfdfnFbrdNm = item.childSlfdfnFbrdNm
+        this.editTeam.childSlfdfnFbrdNm = item.childSlfdfnFbrdNm
       }
     }
   } 
@@ -151,7 +153,7 @@ export default {
         background-color: #454545;
         height: 100%;
         .treeView-wrapper {
-          width: 50%;
+          width: 100%;
         }
         .editor-wrapper {
           position: relative;

@@ -60,8 +60,8 @@ export default {
       
     },
     runSelectSop () {
-      if( this.selected[0] != undefined) {
-        this.$router.push({ name: 'sop-run', params: this.selected[0]})
+      if( this.runSopData != undefined) {
+        this.$router.push({ name: 'sop-run', params: this.runSopData})
         this.$emit('close')
       }else {
         alert('SOP를 선택하세요')

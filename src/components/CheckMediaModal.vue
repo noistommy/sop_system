@@ -3,11 +3,10 @@
     div.modal-header {{title}}
     div.modal-content 
       //- div.discription {{text}}
-      div.content-wrapper
-        div.ui.segment
-         | {{contentData}}
-      div
-        button.ui.floated.right.button(@click="$emit('close')") {{contentYn=='Y'?'정상':'오류'}}
+      div.content-text {{contentData}}
+      div.state-message {{message}}
+      div.foot-btn
+        button.ui.floated.right.button(@click="$emit('close')", :class="contentYn=='Y'?'green':'orange'") {{contentYn=='Y'?'정상':'오류'}}
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
@@ -16,7 +15,7 @@
 import UsersApi from '@/api/Users'
 
 export default {
-  name: 'reset-password',
+  name: 'check-media-modal',
   components: {
   },
   props: {
@@ -27,7 +26,8 @@ export default {
   data () {
     return {
       contentData: this.data.vrifyContents,
-      contentYn:this.data.vrifyYn
+      contentYn:this.data.vrifyYn,
+      message:this.data.vrifyMessage
     }
   },
   created () {
@@ -58,8 +58,16 @@ export default {
     .modal-content {
         flex-grow: 1;
         padding: 15px;
-        .content-wrapper {
+        .content-text {
           padding: 15px;
+          background-color: #f9f9f9;
+        }
+        .state-message {
+          padding: 15px;
+        }
+        .foot-btn {
+          display: flex;
+          justify-content: center;
         }
     }
     .modal-close {
@@ -99,6 +107,9 @@ export default {
       justify-content: center;
       .ui.button {
         border-radius: 0 !important;
+      }
+      .noposition {
+        position: none;
       }
     }
     .ui.form {

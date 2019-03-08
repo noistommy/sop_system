@@ -5,7 +5,7 @@ const TargetURL = '/n3n.sop.CmmnCd'
 export default {
   // 공통코드목록조회
   getList: (payload) => {
-    return HTTP.post(`${TargetURL}.selectCmmnCdDetailList.do`, payload)
+    return HTTP.post(`${TargetURL}.selectCmmnCdGroupInfo.do`, payload)
   },
   // 공통코드상세정보조회
   getItem: (payload) => {

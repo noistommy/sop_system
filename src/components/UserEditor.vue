@@ -89,6 +89,11 @@ export default {
     this.userData = this.data
     this.spotInfo = this.getCodeList('S020')
     this.positionInfo = this.getCodeList('S030')
+    /*
+    if( this.userData.oprtrId !== ""){
+
+    }
+    */
   },
   mounted () {
     $('.ui.radio.checkbox').checkbox()
@@ -140,7 +145,7 @@ export default {
        })
        PublicCodeApi.getItem(requestData).then(result => {
          console.log(result)
-         return result.data.cmmnCdDetailList
+         return result.data.cmmnCdGroupList
        }).catch(error => {
          this.$emit('close')
           const err = error.response

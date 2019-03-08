@@ -1,15 +1,30 @@
 <template lang="pug">
-    div.treeitem(v-on:dblclick.stop="setActive")
+    div.treeitem
         div.treecontent
-            div.treeheader(:class="{active:selectedItem}", @click.stop="getClick(treeItem)")
-                i.icon.caret(:class="activeItem ? 'down' : 'right'", v-if="treeItem.children != ''", @click.stop="setActive")
-                i.icon(v-else)
-                span {{treeItem.title}} 
-                span.badge(v-if="treeItem.children != ''") {{childCount}}
-            <template>
-                div.list(:class="[{active:activeItem}, `level-${level}`]", v-if="treeItem.children != ''" )
-                    tree-view(v-model="selectTeam", @select="getItemInfo", v-for="item in treeItem.children", :treeItem="item", :level="childLevel", :isActive=" branchActive")
-            </template>
+            div.treeheader(:style="isActiveItem" @click.stop="getClick(treeItem)")
+                template(v-if="childCount > 0")
+                    i.icon.caret(:class="activeItem ? 'down' : 'right'", @click.stop="setActive")
+                    span {{treeItem.title}} 
+                    span.badge(v-if="childCount > 0") {{childCount}}
+                template(v-else-if="treeItem.title")
+                    div {{treeItem.title}} 
+                template(v-else)
+                    div.item-wrapper
+                        div {{treeItem.clsfCdNm}} 
+                        div {{treeItem.childDeptNm}} 
+                        div {{treeItem.emplNm}} 
+                        //- div.ui.checkbox
+                        //-     input(type="checkbox")
+                        //-     label
+                    //- div {{treeItem.moblphonNo}} 
+            template(v-if="childCount > 0")
+                div.list(:class="[{active:activeItem}, `level-${level}`]", v-if="childCount > 0" )
+                    tree-view(v-model="selectTeam",
+                    @select="getItemInfo",
+                    v-for="item in treeItem.children",
+                    :treeItem="item",
+                    :level="childLevel",
+                    :isActive=" branchActive")
 </template>
 
 <script>
@@ -22,7 +37,9 @@ export default {
     isRoot: Boolean,
     isActive: Boolean,
     level: Number,
-    value: Object
+    value: Object,
+    selectYn :Boolean,
+    isSelect: Boolean
   },
   data() {
       return {
@@ -31,29 +48,49 @@ export default {
         branchActive: true,
         activeItem: this.isActive,
         selectedItem: false,
-        selectTeam: {}
+        selectTeam: {},
+        activeStyle : {
+            backgroundColor:'#80b7be',
+            color: '#525252',
+            fontWeight: 'bold'
+        },
+        selectedYn: this.selectYn,
+        allselect:this.isSelect
       }
   },
   components: {
     'tree-view': TreeView
   },
   created () {
+
+  },
+  mounted () {
   },
   computed: {
       childCount () {
-        if(this.treeItem.children.length == undefined) return 
+        if(this.treeItem.children == undefined) return 
         return this.treeItem.children.length 
+      },
+
+      isActiveItem () {
+          return this.selectedYn || this.allselect ? this.activeStyle : {}
       }
   },
   methods: {
       setActive() {
-          return this.activeItem = !this.activeItem
+          this.activeItem = !this.activeItem
+      },
+      setSelect() {
+          this.selectedItem = !this.selectedItem
       },
       selectHover(event) {
       },
       getClick(selItem) {
-        // this.selectedItem = true
         this.$emit('select', selItem)
+        this.selectedYn = !this.selectedYn
+        if(this.allselect) {
+            this.allselect = false
+        }
       },
       getItemInfo(item) {
         this.$emit('select', item)
@@ -86,7 +123,7 @@ export default {
                 padding: 0.5em 1.2em;
                 color:#ddd;
                 &:hover {
-                    background-color: #525252;
+                    background-color: #818080;
                     // color: rgb(223, 201, 77);
                     color: #fff;
                     font-weight: bold;
@@ -157,6 +194,21 @@ export default {
             position:relative;
             padding: 0.5em 1.2em;
             color:#ddd;
+            &:hover {
+                background-color: #818080;
+                // color: rgb(223, 201, 77);
+                color: #fff;
+                font-weight: bold;
+            }
+            .item-wrapper {
+                display: flex;
+                > div {
+                    &:first-child {
+                        width: 30%;
+                    }
+                    // display: inline-block;
+                }
+            }
         }
     }
 }

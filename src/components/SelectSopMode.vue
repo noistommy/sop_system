@@ -19,19 +19,11 @@
                 td
                   div.fields
                     div.field.wide.nine
-                      div.ui.fluid.selection.dropdown(v-model="modeData.buldId")
-                        input(type='hidden')
-                        i.dropdown.icon
-                        div.default.text {{modeData.buldId}}
-                        .menu
-                          .item(v-for="build in buildingList", :data-value="build.buldId", @click="getFloorList(build.buldId)") {{build.buldNm}}
+                      select.ui.fluid.selection.dropdown(v-model="selectBuilding")
+                        option(v-for="build in buildingList", :value="build.buldId") {{build.buldNm}}
                     div.field.wide.six
-                      div.ui.selection.dropdown(v-model="modeData.buldFloor")
-                        input(type='hidden')
-                        i.dropdown.icon
-                        div.default.text {{modeData.buldFloor}}
-                        .menu
-                          .item(v-for="floor in floorInfo.floorList", :data-value="floor.buldFloor") {{floor.buldFloor}}
+                      select.ui.selection.dropdown(v-model="modeData.buldFloor")
+                        option(v-for="floor in floorInfo.floorList", :value="floor.buldFloor") {{floor.buldFloor}}
               tr
                 td.center.aligned 
                   span 시간
@@ -90,7 +82,8 @@ export default {
         buildInfo: '',
         floorList: []
       },
-      formData: 'textarea'
+      formData: 'textarea',
+      selectBuilding: ''
     }
   },
   created () {
@@ -101,6 +94,12 @@ export default {
   },
   mounted () {
     $('.ui.dropdown').dropdown()
+  },
+  watch: {
+    selectBuilding () {
+      console.log('watch')
+      this.getFloorList(this.selectBuilding)
+    }
   },
   methods: {
     activeMode (mode) {
@@ -119,7 +118,7 @@ export default {
       })
       LocationApi.getItem(requestData).then(result => {
         console.log(result.data)
-        this.floorInfo.buildInfo = result.data.buldManageInfo.buldId
+        this.modeData.buldId = result.data.buldManageInfo.buldId
         this.floorInfo.floorList = result.data.buldFloorInfoList
       })
     },
@@ -128,6 +127,12 @@ export default {
       SopManageApi.runStepListByOper(requestData).then(result => {
         console.log(result.data)
         this.$router.push({ name: 'sop-run', params: {sopId: result.data.sopId, sopExecutSn: result.data.sopExecutSn}})
+        this.$emit('close')
+      }).catch(error => {
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     returnText (text) {

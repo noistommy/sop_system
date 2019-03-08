@@ -57,12 +57,10 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd1")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardSmsDetail.inputParam1}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="1", v-model="standardSmsDetail.cmmnCd1", @change="insertValueName")
+                              option(disabled, value="")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData1")
@@ -72,12 +70,9 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd2")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardSmsDetail.inputParam2}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="2",v-model="standardSmsDetail.cmmnCd2", @change="insertValueName")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData2")
@@ -87,12 +82,9 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd3")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardSmsDetail.inputParam3}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="3",v-model="standardSmsDetail.cmmnCd3", @change="insertValueName")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData3")
@@ -102,12 +94,9 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd4")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardSmsDetail.inputParam4}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="4",v-model="standardSmsDetail.cmmnCd4", @change="insertValueName")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData4")
@@ -117,12 +106,9 @@
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            div.ui.selection.dropdown(v-model="standardSmsDetail.cmmnCd5")
-                              input(type='hidden')
-                              i.dropdown.icon
-                              div.default.text {{standardSmsDetail.inputParam5}}
-                              .menu
-                                .item(v-for="param in paramList", :data-value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            label
+                            select(:id="5",v-model="standardSmsDetail.cmmnCd5", @change="insertValueName")
+                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
                             input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData5")
@@ -158,6 +144,7 @@ import StandardSmsApi from '@/api/StandardSMS'
 import PublicCodeApi from '@/api/PublicCode'
 import CheckMediaModal from '@/components/CheckMediaModal.vue'
 import { codeGenerator } from '@/util'
+import { setTimeout } from 'timers';
 
 
 export default {
@@ -193,12 +180,12 @@ export default {
   created () {
     this.getCodeList('S080')
     this.getSmslist()
-    this.$nextTick(() => {
-      $('.ui.dropdown').dropdown('refresh')
-    })
   },
   mounted () {
-    $('.ui.dropdown').dropdown()
+    $('.ui.dropdown').dropdown('restore defaults')
+  },
+  updated () {
+   
   },
   computed: {
     alarmYn () {
@@ -226,7 +213,9 @@ export default {
       StandardSmsApi.getDetail(requestData)
       .then(result => {
         console.log(result)
+        $('.ui.dropdown').dropdown('restore defaults')
         this.standardSmsDetail = result.data
+
       })
       .catch(error => {
         const err = error.response
@@ -240,6 +229,7 @@ export default {
       .then(result => {
         console.log(result)
         this.getSmslist()
+        this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
       })
       .catch(error => {
         const err = error.response
@@ -268,7 +258,7 @@ export default {
     },
     createSmsItem () {
       this.standardSmsDetail = {
-          smsSn:null,
+          smsSn:0,
           smsTitle:'',
           smsContents:'',
           useYn:"N",
@@ -312,6 +302,26 @@ export default {
     },
     returnText (text) {
       this.standardSmsDetail.smsContents = text
+    },
+    insertValueName (event) {
+      this.paramList.forEach(e => {
+        if(e.cmmnCd == event.target.value) {
+          this.standardSmsDetail[`inputParam${event.target.id}`] = e.cmmnCdNm
+          this.standardSmsDetail[`userData${event.target.id}`] = e.userData1
+          if (this.standardSmsDetail.smsContents.indexOf(e.cmmnCdNm) < 0) {
+            this.standardSmsDetail.smsContents = `${this.standardSmsDetail.smsContents}\r\n${e.cmmnCdNm}`
+          }
+        }
+      })
+    },
+    showDialog(title) {
+      this.$modal.show('dialog', {
+        title: 'Success',
+        text: title,
+      })
+      setTimeout(() => {
+        this.$modal.hide('dialog')
+      }, 1000)
     }
   }
 }

@@ -26,7 +26,7 @@
             <template slot="items" slot-scope="props">
               tr
                 td(v-if="sopHistory.isListNumber").center.aligned {{(sopHistory.pageInfo.currPage - 1) * 10 + props.idx + 1}}
-                td.center.aligned {{props.item.executBeginDt}}
+                td.center.aligned {{props.item.executDt}}
                 td.center.aligned {{props.item.msfrtnKndCdNm}}
                 td.center.aligned {{props.item.crisisGnfdStepCdNm}}
                 td.ellipse {{props.item.sopTitle}}

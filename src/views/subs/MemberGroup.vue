@@ -3,7 +3,9 @@
     div.sub-wrapper
       div.sub-header
         div.title 조직도 관리
-        SearchComp(v-model="searchData", :isTextSearch="true", @search="getList")
+        SearchComp(v-model="searchData", 
+        :isTextSearch="true",
+        @search="searchList")
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown(v-model="searchData.searchCnd")
               option(value="", default) 분류
@@ -116,6 +118,12 @@ export default {
         console.log(err)
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
+    },
+    searchList () {
+      if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
+      this.searchData.childDeptId = ""
+      console.log(this.searchData)
+      this.getList(1)
     },
     getTreeList () {
       // const request = JSON.stringify(this.requestData)

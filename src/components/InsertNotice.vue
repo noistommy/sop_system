@@ -118,6 +118,7 @@ export default {
       NoticeApi.setItem(requestData).then(result => {
         console.log(result)
         this.$emit('close')
+        this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
       }).catch(error => {
         this.$emit('close')
         const err = error.response

@@ -3,6 +3,12 @@
     div.sub-wrapper
       div.sub-header
         div.title 공지사항
+        SearchDate(
+          v-model="searchData",
+          :startDate="selectedDateStart", 
+          :endDate="selectedDateEnd",   
+          :isRange="searchType",
+          @search="searchNoticeList")
       div.sub-content
         div.content
           DataTable(
@@ -14,6 +20,7 @@
             :isPagination="isPagination",
             :page="pageInfo"
             :isListNumber="isListNumber",
+            @search="getNoticeList"
           ).ui.table.celled
             <template slot="items" slot-scope="props">
               tr(:active="props.selected", @click="selectedItem(props)" )
@@ -40,15 +47,18 @@
 
 <script>
 import DataTable from '@/components/DataTable.vue'
+import SearchDate from '@/components/SearchDate.vue'
 import InsertNotice from '@/components/InsertNotice.vue'
 import { noticeTableHeader } from '@/setting'
 import NoticeApi from '@/api/Notice'
 import { codeGenerator } from '@/util'
+import { convertDateFormat } from '@/util'
 
 export default {
   name: 'notice-manage',
   components: {
-    DataTable
+    DataTable,
+    SearchDate
   },
   data () {
     return {
@@ -60,15 +70,30 @@ export default {
       isListNumber: true,
       pageInfo: {},
       itemkey: 'noticeSn',
-      isExtended: true
+      isExtended: true,
+      selectedDateStart: new Date(),
+      selectedDateEnd: new Date(),
+      searchType: 'single',
+      searchData: {
+        start: '',
+        end: ''
+      },
     }
   },
   created () {
-    this.getNoticeList()
+    this.initDate()
+    this.getNoticeList(1)
   },
   methods: {
-    getNoticeList() {
-      NoticeApi.getList().then(result => {
+    getNoticeList(targetNum) {
+      console.log(targetNum)
+      if(targetNum == undefined) {targetNum = 1}
+        const requestData = JSON.stringify({
+        ntceBeginDt: this.searchData.start,
+        ntceEndDt: this.searchData.end,
+        currPage: targetNum
+      })
+      NoticeApi.getList(requestData).then(result => {
         this.sopNoticData = result.data.noticeList
         result.data.param.totalCount = result.data.totCnt
         this.pageInfo = result.data.param
@@ -76,6 +101,9 @@ export default {
       .catch(error => {
         console.log(error)
       })
+    },
+    searchNoticeList() {
+      this.getNoticeList(this.pageInfo.currPage)
     },
     createNoticeItem() {
       const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
@@ -109,6 +137,7 @@ export default {
         const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
         NoticeApi.deleteItem(requestData).then(result => {
           console.log('success')
+          this.$modal.show('dialog', codeGenerator('Y', '게시물을 삭제합니다'))
           this.getNoticeList()
         })
         .catch(error => {
@@ -157,6 +186,13 @@ export default {
             this.getNoticeList()
           }
         })
+    },
+    initDate() {
+      const today = new Date()
+      const d = today.getDate()
+      today.setDate(d-7)
+      this.searchData.start = convertDateFormat(today, '')
+      this.searchData.end = convertDateFormat(new Date(), '')
     }
   }
 }

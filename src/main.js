@@ -30,18 +30,14 @@ Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
 
+
 new Vue({
   router,
   store,
   render: h => h(App)
 }).$mount('#app')
 
-router.beforeEach((to, from, next) => {
-  console.log('beforeEach')
-  AuthApi.session().then(result => {
-    console.log(result)
-  }).catch(error => {
-    console.log(error)
-  })
-  return next()
-})
+// router.beforeEach((to, from, next) => {
+//   if (localStorage.userInfo) return next()
+//   next('/login')
+// })

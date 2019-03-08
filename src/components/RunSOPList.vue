@@ -61,9 +61,9 @@ export default {
     RunSopModal
   },
   created () {
-    // setInterval(() => {
-    //   this.getSOPList()
-    // },5000)
+    setInterval(() => {
+      this.getSOPList()
+    },5000)
     this.getSOPList()
   },
   methods: {

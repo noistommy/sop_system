@@ -94,7 +94,8 @@ export default {
         isListNumber: false,
         pageInfo: {} 
       },
-      searchData: {}
+      searchData: {},
+      selectIndex: 0
     }
   },
   components: {
@@ -113,8 +114,8 @@ export default {
       })
       PublicCodeApi.getList(requestData).then(result => {
         console.log(result)
-        this.publicCode.publicCodeData = result.data.cmmnCdDetailList
-        this.publicCode.selected[0]=this.publicCode.publicCodeData[0]
+        this.publicCode.publicCodeData = result.data.cmmnCdGroupList
+        this.publicCode.selected[0]=this.publicCode.publicCodeData[this.selectIndex]
       }).then(() => {
         this.getCodeItem()
       }).catch(error => {
@@ -173,7 +174,7 @@ export default {
         item: itemType,
         data: {
           cmmnCd: '',
-          cnnmCdNm: '',
+          cmmnCdNm: '',
           indictOrdr: 0,
           useYn: 'N'
         }
@@ -187,12 +188,13 @@ export default {
         }
       }
       console.log(editdata)
-      this.$modal.show(CodeEditor, editdata, { height: 'auto', draggable: true})
+      this.$modal.show(CodeEditor, editdata, { height: 'auto', draggable: true},{'before-close': () => {this.getCodeList()}})
     },
     createCodeItem () {
       console.log('click')
     },
     selectedGroup(itemInfo) {
+      this.selectIndex = itemInfo.idx
       this.publicCode.selected = []
       if (!itemInfo.selected) {
         this.publicCode.selected.push(this.publicCode.publicCodeData[itemInfo.idx])

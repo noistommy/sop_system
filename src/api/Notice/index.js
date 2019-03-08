@@ -4,8 +4,8 @@ const TargetURL = '/n3n.sop.Notice'
 
 export default {
   // 공지사항목록조회
-  getList: () => {
-    return HTTP.post(`${TargetURL}.selectNoticeList.do`, {})
+  getList: (payload) => {
+    return HTTP.post(`${TargetURL}.selectNoticeList.do`, payload)
   },
   // 공지사항상세조회
   getItem: (payload) => {

@@ -107,7 +107,8 @@ export default {
         isListNumber: false,
         itemkey: 'buldFloor'
       },
-      checkedList: []
+      checkedList: [],
+      selectIndex: 0,
     }
   },
   components: {
@@ -129,7 +130,7 @@ export default {
     getLocationList () {
       LocationApi.getList().then(result => {
         this.locationInfo.locationInfoData = result.data.buldManageList
-        this.locationInfo.selected[0]=this.locationInfo.locationInfoData[0]
+        this.locationInfo.selected[0]=this.locationInfo.locationInfoData[this.selectIndex]
         this.getDetail()
       }).catch(error => {
         const err = error.response
@@ -154,6 +155,7 @@ export default {
       const requestObj = Object.assign({buldManageInfo: this.locationDetail}, { buldFloorInfoList:this.locationFloor.locationFloorData})
       const requestData = JSON.stringify(requestObj)
       LocationApi.updateItem(requestData).then(result => {
+        this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
         this.getLocationList()
       }).catch(error => {
         const err = error.response
@@ -165,7 +167,8 @@ export default {
       this.locationInfo.selected = []
       if (!itemInfo.selected) {
         this.locationInfo.selected.push(this.locationInfo.locationInfoData[itemInfo.idx])
-        this.getDetail()
+        this.selectIndex = itemInfo.idx
+        this.getLocationList()
       }
     },
     toggleItems(itemInfo) {

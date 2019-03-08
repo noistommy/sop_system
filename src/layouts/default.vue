@@ -98,6 +98,23 @@ i {
   .readonly {
     border: 0 !important;
   }
+  select {
+    cursor: pointer;
+    word-wrap: break-word;
+    line-height: 1em;
+    white-space: normal;
+    outline: 0;
+    min-width: 14em;
+    min-height: 2.71428571em;
+    background: #fff;
+    display: inline-block;
+    padding: .5em 2.1em .5em 1em;
+    color: rgba(0,0,0,.87);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border: 1px solid rgba(34,36,38,.15);
+    border-radius: .28571429rem;
+  }
 }
 
 // base css

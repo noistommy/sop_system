@@ -27,7 +27,7 @@
                       td {{props.item.sopTitle}}
                       td {{props.item.buldNm}}
                   </template>
-              router-link(:to="{ name: 'test-page'}" ).ui.button NOTICE
+              //- router-link(:to="{ name: 'test-page'}" ).ui.button NOTICE
         div.six.wide.column
           div.main-wrapper
             div.btn-link

@@ -121,6 +121,7 @@ import About from '@/views/About.vue'
 import axios from 'axios'
 import MemberApi from '@/api/Member'
 import TreeModal from '@/components/TreeModal'
+import { codeGenerator } from '@/util'
 
 import TestApi from '@/api/Test'
 
@@ -193,6 +194,7 @@ export default {
   created () {
     console.log(this.$store.getters.getDataTest)
     this.getTreeList()
+    
   },
   mounted() {
     $('.ui.dropdown').dropdown();
@@ -251,6 +253,7 @@ export default {
       console.log(this.selected[index])
     },
     test () {
+      this.$modal.show('dialog', codeGenerator('L', ''))
       axios.get('https://jsonplaceholder.typicode.com/users', {
       })
         .then(res => {
@@ -290,8 +293,7 @@ export default {
             title: '확인',
             default: true,
             handler: () => {
-              alert('check')
-              this.$modal.hide('dialog')
+                console.log(this.$router.push('/'))
               }
           },
           {

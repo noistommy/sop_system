@@ -23,11 +23,11 @@ export default {
   },
   // 운영자정보등록
   createUser: (payload) => {
-    return HTTP.post(`${TargetURL}.saveOprtrInfo.do`, payload)
+    return HTTP.post(`${TargetURL}.insertOprtrInfo.do`, payload)
   },
   // 운영자정보수정
   updateUser: (payload) => {
-    return HTTP.post(`${TargetURL}.saveOprtrInfo.do`, payload)
+    return HTTP.post(`${TargetURL}.updateOprtrInfo.do`, payload)
   },
   // 운영자비밀번호초기화저장
   resetPasswordInit: (payload) => {

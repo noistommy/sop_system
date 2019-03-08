@@ -3,12 +3,13 @@
     div.sub-wrapper
       div.sub-header
         div.title 협력업체관리
-        SearchComp(v-model="searchData", :isTextSearch="true")
+        SearchComp(v-model="searchData", :isTextSearch="true", @search="searchList")
           template(slot="condition1", slot-scope="props")
             select.ui.dropdown(v-model="searchData.searchCnd")
               option(value="", default) 분류
               option(value="00") 전체
               option(value="01") 팀명
+              option(value="02") 이름
       div.sub-content
         div.content.row
           div.section.left-section
@@ -22,23 +23,18 @@
                   :level="1",
                   @search="getPartnerItem")
             div.treeEdit
-              div.btnSet
-                button.ui.button.blue(@click="editpanel") 편집
-              div.edit-wrapper
-                div.ui.form.inverted
-                  div.field
-                    label 협력업체명명
-                    input(type="text")
-                  div.field
-                    label 상위협력업체명명
-                    input(type="text")
+            div.btnSet
+              div.btn-group.left
+                button.ui.button.mini(@click="activeTreeView('new')") 등록
+              div.btn-wrap.right
+                button.ui.button.mini(@click="activeTreeView('edit')") 편집
           div.section.right-section
             h3 {{selectTeam.ccpyNm}}
             DataTable(
               v-model="partner.selected",
               :headers="partner.headers",
               :items="partner.partnerData",
-              :itemKey="itemkey",
+              :itemKey="partner.itemkey",
               :isFooter="partner.isFooter"
               :isPagination="partner.isPagination"
               :isListNumber="partner.isListNumber",
@@ -52,8 +48,8 @@
                   td.center.aligned.ellipse {{props.item.clsfCdNm}}
               </template>
             div.btnSet
-              button.ui.button.large.blue(@click="updatePartner('new')") 신규등록
-              button.ui.button.large.blue(@click="updatePartner('edit')") 편집
+              button.ui.button.large.blue(@click="createPartner()") 신규등록
+              button.ui.button.large.blue(@click="updatePartner()") 편집
         div.footer
 </template>
 
@@ -62,6 +58,7 @@ import DataTable from '@/components/DataTable.vue'
 import TreeView from '@/components/TreeView.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import PartnerEditor from '@/components/PartnerEditor.vue'
+import TreeModalPartner from '@/components/TreeModalPartner.vue'
 import { partnerGroupeHeader } from '@/setting'
 import PartnerApi from '@/api/Partner'
 import { codeGenerator } from '@/util'
@@ -102,19 +99,32 @@ export default {
     this.getPartnerList()
   },
   methods: {
+    initSearch () {
+      this.searchData = {
+        searchCnd: '',
+        searchNm: '',
+        currPage: 1
+      }
+    },
     getPartnerList () {
+      if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
       const requestData = JSON.stringify(this.searchData)
+      console.log(this.searchData)
       PartnerApi.getAllList(requestData).then(result => {
         console.log(result)
         this.treeviewData = result.data.ccpyTrList
         this.partner.partnerData = result.data.ccpyEmpList
         result.data.param.totalCount = result.data.totCnt
         this.partner.pageInfo = result.data.param
+        this.initSearch()
       }).catch(error => {
         const err = error.response
         console.log(err)
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
+    },
+    searchList () {
+      this.getPartnerList()
     },
     getPartnerItem () {
       const requestData = JSON.stringify({
@@ -139,10 +149,10 @@ export default {
         this.partner.selected.push(this.partner.partnerData[itemInfo.idx])
       }
     },
-    updatePartner (editType) {
+    createPartner () {
       let partnerdata = {
         title: '협력업체사원',
-        type: editType,
+        type: 'new',
         data: {
           ccpyId: '',
           emplNm: '',
@@ -150,11 +160,39 @@ export default {
           moblphonNo: ''
         }
       }
-      
-      if(editType == 'edit') {
-        partnerdata.data = this.partner.selected[0]
-      }
       this.$modal.show(PartnerEditor, partnerdata, { height: 'auto', draggable: true})
+    },
+    updatePartner () {
+      let partnerdata = {
+        title: '협력업체사원',
+        type: 'edit',
+        data: {
+          ccpyId: '',
+          emplNm: '',
+          clsfNm: '',
+          moblphonNo: ''
+        }
+      }
+      if(this.partner.selected[0] == undefined || this.partner.selected[0] == []) {
+        this.$modal.show('dialog',{
+          title: '선택오류',
+          text: '선택된 데이터가 없습니다'
+        }) 
+      } else {
+        partnerdata.data = this.partner.selected[0]
+        this.$modal.show(PartnerEditor, partnerdata, { height: 'auto', draggable: true})
+      }
+    },
+    activeTreeView (editType) {
+      this.$modal.show(TreeModalPartner, {
+        title: '협력업체',
+        data: this.treeviewData,
+        target: this.selectTeam,
+        type: editType
+      },{
+        width: '700px',
+        height: '50%'
+      })
     },
     editpanel () {
       this.isEdit = !this.isEdit
