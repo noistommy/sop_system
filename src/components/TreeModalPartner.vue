@@ -1,0 +1,220 @@
+<template lang="pug">
+  div.modal
+    div.modal-header {{title}} {{type == 'new' ? '등록' : '편집'}}
+    div.modal-content.treeEditor
+      div.tree-editor
+        div.treeView-wrapper
+          div.treeView.list.level-0
+            TreeView(
+              v-model= "selectTeam",
+              @select="getItemInfo",
+              v-for="item in treeviewData",
+              :treeItem="item",
+              :isActive="activeItem"
+              :level="1")
+        div.editor-wrapper
+          template(v-if="type == 'new'")
+            h3 생성
+            div.content
+              div.ui.form.inverted
+                div.field
+                  label 상위협력업체명
+                  input(type="text", placeholder="상위협력업체명 선택", readonly="", v-model="selectTeam.upperCcpyId").readonly
+                div.field
+                  label 협력업체명
+                  input(type="text", placeholder="협력업체명 입력", v-model="createTeam.ccpyNm")
+                div.field
+                  label 대표전화번호
+                  input(type="text", placeholder="대표전화번호 입력", v-model="createTeam.reprsntTelno")
+                div.field
+                  div.ui.checkbox
+                    input(type="checkbox", true-value="Y", false-value="N", v-model="createTeam.useYn")
+                    label 사용여부
+                   
+            div.btnSet
+              div.btn-group.left
+                button.ui.button.green(@click="createTreeItem") 등록
+              div.btn-wrap.right
+                button.ui.button(@click="$emit('close')") 취소
+          template(v-else)
+            h3 편집
+            div.content
+              div.ui.form.inverted.tiny
+                div.field
+                  label 상위협력업체명
+                  input(type="text", placeholder="상위협력업체명 선택", readonly="", v-model="selectTeam.upperCcpyId").readonly
+                div.field
+                  label 협력업체명
+                  input(type="text", placeholder="협력업체명 입력", v-model="selectTeam.ccpyNm")
+                div.field
+                  label 대표전화번호
+                  input(type="text", placeholder="대표전화번호 입력", v-model="selectTeam.reprsntTelno")
+                div.field
+                  div.ui.checkbox
+                    input(type="checkbox", true-value="Y", false-value="N", v-model="selectTeam.useYn")
+                    label 허용
+            div.btnSet
+              div.btn-group.left
+                button.ui.button.blue(@click="createTreeItem") 저장
+              div.btn-wrap.right
+                button.ui.button(@click="$emit('close')") 취소
+              
+    //- div.treeView-footer
+    //-   button.ui.button.basic.olive {{selectTeam.childDeptNm}} 선택
+    //-   div.selectedName 
+    div.modal-close(@click="$emit('close')")
+        div.close X
+</template>
+
+<script>
+import PartnerApi from '@/api/Partner'
+import TreeView from '@/components/TreeView'
+import { codeGenerator } from '@/util'
+
+export default {
+  name: 'treeview-modal',
+  components: {
+    TreeView
+  },
+  props: {
+    type: String,
+    title: String,
+    text: String,
+    data: Array,
+    target: Object,
+    value: Object,
+    isActive: Boolean
+  },
+  data () {
+    return {
+      treeviewData: this.data,
+      createTeam: {
+        ccpyNm: '',
+        reprsntTelno: '',
+        useYn: 'N',
+        upperCcpyId: ''
+      },
+      selectTeam: {},
+      editTeam: this.target,
+      activeItem: true
+    }
+  },
+  created () {
+    this.getTreeList()
+  },
+  mounted () {
+    $('.ui.checkbox').checkbox()
+  },
+  methods: {
+    getTreeList () {
+      PartnerApi.getTreeList()
+      .then(result => {
+        console.log(result)
+        this.treeviewData = result.data.ccpyTrList
+      })
+      .catch(error => {
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })  
+    },
+    createTreeItem () {
+      const requestData = JSON.stringify(this.createTeam)
+      PartnerApi.createPartnerInfo(requestData)
+      .then(result => {
+        console.log(result)
+      })
+      .catch(error => {
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })  
+    },
+    getItemInfo(item) {
+      if(this.type == 'new') {
+        this.createTeam.upperCcpyId = item.upperCcpyId
+      }else {
+        this.editTeam.ccpyId = item.ccpyId
+      }
+    }
+  } 
+}
+</script>
+
+<style lang="less">
+.modal {
+    background-color: #fff;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    .modal-header {
+        background-color: #5d5e68;
+        color: #fff;
+        padding: .8em 1.2em;
+        font-weight: 700;
+    }
+    .modal-content {
+      flex-grow: 1;
+      padding: 15px;
+      &.treeEditor {
+        overflow-y: auto;
+        background-color: #454545;
+        .treeView-footer {
+          padding-top: 20px;
+        }
+      }
+      .tree-editor {
+        display: flex;
+        background-color: #454545;
+        height: 100%;
+        .treeView-wrapper {
+          width: 50%;
+        }
+        .editor-wrapper {
+          position: relative;
+          flex-grow: 1;
+          padding: 10px;
+          color: #fff;
+          .content{
+            padding: 10px;
+
+            border: 1px solid rgba(139, 139, 139, 0.493);
+          }
+          .ui.form input {
+            background-color: rgba(0, 0, 0, 0.2);
+            color:#fff;
+        }
+        }
+      }
+    }
+    .treeView-footer {
+      background-color: #454545;
+      height: 15%;
+      padding: 10px;
+
+    }
+    .modal-close {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        padding: 2px 4px;
+        border-radius: 3px;
+        color: #fff;
+        // background-color: #fff;
+        font-size: 1rem;
+        i {
+          margin:0;
+        }
+        &:hover {
+          background-color: #fff;
+          color: #5d5e68;
+        }
+    }
+    &.small {width: 300px;}
+    &.large {width: 600px;}
+    &.full {width: 90%;}
+}
+</style>
