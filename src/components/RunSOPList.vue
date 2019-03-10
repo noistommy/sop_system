@@ -61,10 +61,11 @@ export default {
     RunSopModal
   },
   created () {
-    setInterval(() => {
-      this.getSOPList()
-    },5000)
     this.getSOPList()
+    // setInterval(() => {
+    //   this.getSOPList()
+    // },5000)
+    
   },
   methods: {
     ...mapActions([

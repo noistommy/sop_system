@@ -160,16 +160,16 @@ export default {
       const requestData = JSON.stringify({
         cmmnCd: code
       })
-      PublicCodeApi.getList(requestData).then(result => {
+      PublicCodeApi.getItem(requestData).then(result => {
         console.log(result)
         if(code === 'S090') {
-          this.typeCode = result.data.cmmnCdGroupList
+          this.typeCode = result.data.cmmnCdDetailInfo
         }
         if(code === 'S100') {
-          this.stepCode = result.data.cmmnCdGroupList
+          this.stepCode = result.data.cmmnCdDetailInfo
         }
         if(code === 'S080') {
-          this.paramCode = result.data.cmmnCdGroupList
+          this.paramCode = result.data.cmmnCdDetailInfo
         }
       }).catch(error => {
         const err = error.response
