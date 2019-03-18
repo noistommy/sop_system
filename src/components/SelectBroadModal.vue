@@ -16,6 +16,7 @@
                 :isPagination="standardBroad.isPagination",
                 :page="standardBroad.pageInfo"
                 :isListNumber="standardBroad.isListNumber",
+                @search="getBroadlist"
               ).ui.table.celled.selectable
                 <template slot="items" slot-scope="props">
                   tr(:active="props.selected", @click="selectedItem(props)" )
@@ -33,79 +34,89 @@
                       td.center.aligned
                         span 방송제목
                       td
-                        input(type="text", v-model="standardBroadDetail.brdcstTitle")
-                        label
+                        div.text-title {{standardBroadDetail.brdcstTitle}}
                     tr
                       td.center.aligned 
                         span 방송내용
                       td
-                        check-text-count(
-                          :formType="formType",
-                          :rownum='3',
-                          :maxLength='500',
-                          v-model="standardBroadDetail.brdcstContents",
-                          @input="returnText")
-                    tr
+                        div.text-contents {{standardBroadDetail.brdcstContents}}
+                        //- check-text-count(
+                        //-   :formType="formType",
+                        //-   :rownum='3',
+                        //-   :maxLength='500',
+                        //-   v-model="standardBroadDetail.brdcstContents",
+                        //-   @input="returnText")
+                    tr(v-if="standardBroadDetail.inputParam1")
                       td.center.aligned 
                         span 파라미터1
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select(:id="1", v-model="standardBroadDetail.cmmnCd1", @change="insertValueName")
-                              option(disabled, value="")
-                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            div.pram-name [{{standardBroadDetail.inputParam1}}]
+                            //- label
+                            //- select(:id="1", v-model="standardBroadDetail.cmmnCd1", @change="insertValueName")
+                            //-   option(disabled, value="")
+                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
-                            label
-                            input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData1")
-                    tr
+                            span {{standardBroadDetail.userData1}}
+                            //- label
+                            //- input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData1")
+                    tr(v-if="standardBroadDetail.inputParam2")
                       td.center.aligned 
                         span 파라미터2
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select(:id="2",v-model="standardBroadDetail.cmmnCd2", @change="insertValueName")
-                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            div.pram-name [{{standardBroadDetail.inputParam2}}]
+                            //- label
+                            //- select(:id="2",v-model="standardBroadDetail.cmmnCd2", @change="insertValueName")
+                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
-                            label
-                            input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData2")
-                    tr
+                            span {{standardBroadDetail.userData2}}
+                            //- label
+                            //- input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData2")
+                    tr(v-if="standardBroadDetail.inputParam3")
                       td.center.aligned 
                         span 파라미터3
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select(:id="3",v-model="standardBroadDetail.cmmnCd3", @change="insertValueName")
-                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            div.pram-name [{{standardBroadDetail.inputParam3}}]
+                            //- label
+                            //- select(:id="3",v-model="standardBroadDetail.cmmnCd3", @change="insertValueName")
+                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
-                            label
-                            input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData3")
-                    tr
+                            span {{standardBroadDetail.userData3}}
+                            //- label
+                            //- input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData3")
+                    tr(v-if="standardBroadDetail.inputParam4")
                       td.center.aligned 
                         span 파라미터4
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select(:id="4",v-model="standardBroadDetail.cmmnCd4", @change="insertValueName")
-                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            div.pram-name [{{standardBroadDetail.inputParam4}}]
+                            //- label
+                            //- select(:id="4",v-model="standardBroadDetail.cmmnCd4", @change="insertValueName")
+                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
-                            label
-                            input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData4")
-                    tr
+                            span {{standardBroadDetail.userData4}}
+                            //- label
+                            //- input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData4")
+                    tr(v-if="standardBroadDetail.inputParam5")
                       td.center.aligned 
                         span 파라미터5
                       td.visibleTd
                         div.fields
                           div.field.six.wide
-                            label
-                            select(:id="5",v-model="standardBroadDetail.cmmnCd5", @change="insertValueName")
-                              option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            div.pram-name [{{standardBroadDetail.inputParam5}}]
+                            //- label
+                            //- select(:id="5",v-model="standardBroadDetail.cmmnCd5", @change="insertValueName")
+                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
-                            label
-                            input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData5")
+                            span {{standardBroadDetail.userData5}}
+                            //- label
+                            //- input(type="text", placeholder='EX.', v-model="standardBroadDetail.userData5")
                     tr
                       td.center.aligned 
                         span 사용여부
@@ -144,7 +155,10 @@ export default {
   name: 'standard-broad-modal',
   props: {
     title: String,
-    data: Object
+    data: Object,
+    stepNo: Number || String,
+    stepSn: Number || String,
+    type: String
   },
   data () {
     return {
@@ -176,7 +190,7 @@ export default {
   },
   created () {
     this.getCodeList('S080')
-    this.getBroadlist()
+    this.getBroadlist(1)
   },
   mounted () {
     $('.ui.dropdown').dropdown('restore defaults')
@@ -190,9 +204,13 @@ export default {
     }
   },
   methods: {
-    getBroadlist () {
+    getBroadlist (targetNum) {
+      this.searchData.currPage = targetNum
+      this.searchData.useYn = 'Y'
       const requestData = JSON.stringify(this.searchData)
       StandardBroadApi.getList(requestData)
+      result.data.param.totalCount = result.data.totCnt
+      this.standardSms.pageInfo = result.data.param
       .then(result => {
         console.log('broad', result.data)
         this.standardBroad.standardBroadData = result.data.stdBrdcstList
@@ -256,6 +274,11 @@ export default {
       })
     },
     getSelectData () {
+      const selectData = {
+        stepNo: this.stepNo,
+        stepSn: this.stepSn,
+        action: this.standardBroadDetail
+      }
       this.$emit('select', this.standardBroadDetail)
       this.$emit('close')
     }
@@ -277,6 +300,11 @@ export default {
       // background-color: #fff;
     }
   }
+  .content.section.section-2 {
+    table tr td:nth-child(2) {
+      width: 70%;
+    }
+  }
   .ld,.lh {
     width: 80% !important;
   }
@@ -286,6 +314,21 @@ export default {
     }
     &.visibleTd {
       overflow: visible;
+    }
+  }
+  .text-contents {
+    height: 5rem;
+    background-color: #f9f9f9;
+    padding: 5px;
+  }
+  td {
+    .code-name {padding: 5px;}
+    .pram-name {padding: 5px;}
+    span {
+      display: inline-block;
+      width: 100%;
+      background-color: #f9f9f9;
+      padding: 5px;
     }
   }
  

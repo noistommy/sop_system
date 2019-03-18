@@ -16,6 +16,7 @@
                 :isPagination="standardSms.isPagination",
                 :page="standardSms.pageInfo"
                 :isListNumber="standardSms.isListNumber",
+                 @search="getSmslist"
               ).ui.table.celled.selectable
                 <template slot="items" slot-scope="props">
                   tr(:active="props.selected", @click="selectedItem(props)" )
@@ -34,101 +35,72 @@
                         span 문자제목
                       td
                         div.text-title {{standardSmsDetail.smsTitle}}
-                        //- input(type="text", v-model="standardSmsDetail.smsTitle")
-                        //- label
                     tr
-                      td.center.aligned 
+                      td.center.aligned
                         span 문자내용
                       td
                         div.text-contents {{standardSmsDetail.smsContents}}
-                        //- check-text-count(
-                        //-   :formType="formType",
-                        //-   :rownum='3',
-                        //-   :maxLength='500',
-                        //-   v-model="standardSmsDetail.smsContents",
-                        //-   @input="returnText")
-                    tr
+                    tr(v-if="standardSmsDetail.inputParam1")
                       td.center.aligned 
                         span 파라미터1
                       td.visibleTd
                         div.fields
                           div.field.six.wide
                             div.pram-name [{{standardSmsDetail.inputParam1}}]
-                            //- label
-                            //- select(:id="1", v-model="standardSmsDetail.cmmnCd1", @change="insertValueName")
-                            //-   option(disabled, value="")
-                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            
                           div.field.ten.wide
                             span {{standardSmsDetail.userData1}}
-                            //- label
-                            //- input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData1")
-                    tr
+                            
+                    tr(v-if="standardSmsDetail.inputParam2")
                       td.center.aligned 
                         span 파라미터2
                       td.visibleTd
                         div.fields
                           div.field.six.wide
                             div.code-name [{{standardSmsDetail.inputParam2}}]
-                          //-   label
-                          //-   select(:id="2",v-model="standardSmsDetail.cmmnCd2", @change="insertValueName")
-                          //-     option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                          
                           div.field.ten.wide
                             span {{standardSmsDetail.userData2}}
-                            //- label
-                            //- input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData2")
-                    tr
+                           
+                    tr(v-if="standardSmsDetail.inputParam3")
                       td.center.aligned 
                         span 파라미터3
                       td.visibleTd
                         div.fields
                           div.field.six.wide
                             div.code-name [{{standardSmsDetail.inputParam3}}]
-                            //- label
-                            //- select(:id="3",v-model="standardSmsDetail.cmmnCd3", @change="insertValueName")
-                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                           
                           div.field.ten.wide
                             span {{standardSmsDetail.userData3}}
-                            //- label
-                            //- input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData3")
-                    tr
+                           
+                    tr(v-if="standardSmsDetail.inputParam4")
                       td.center.aligned 
                         span 파라미터4
                       td.visibleTd
                         div.fields
                           div.field.six.wide
                             div.code-name [{{standardSmsDetail.inputParam4}}]
-                            //- label
-                            //- select(:id="4",v-model="standardSmsDetail.cmmnCd4", @change="insertValueName")
-                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            
                           div.field.ten.wide
                             span {{standardSmsDetail.userData4}}
-                            //- label
-                            //- input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData4")
-                    tr
+                            
+                    tr(v-if="standardSmsDetail.inputParam5")
                       td.center.aligned 
                         span 파라미터5
                       td.visibleTd
                         div.fields
                           div.field.six.wide
                             div.code-name [{{standardSmsDetail.inputParam5}}]
-                            //- label
-                            //- select(:id="5",v-model="standardSmsDetail.cmmnCd5", @change="insertValueName")
-                            //-   option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
+                            
                           div.field.ten.wide
                             span {{standardSmsDetail.userData5}}
-                            //- label
-                            //- input(type="text", placeholder='EX.', v-model="standardSmsDetail.userData5")
+                           
                     tr
                       td.center.aligned 
                         span 사용여부
                       td
                         div {{standardSmsDetail.useYn == 'Y' ? '사용' : '사용안함'}}
-                        //- div.ui.toggle.checkbox
-                        //-   input(type="checkbox",
-                        //-   true-value="Y",
-                        //-   false-value="N",
-                        //-   v-model="standardSmsDetail.useYn")
-                        //-   label 허용
+                        
             div.btnSet
                 div.btn-wrap.right
                 div.btn-group.left
@@ -158,8 +130,8 @@ export default {
   props: {
     title: String,
     data: Object,
-    stepNo: Number,
-    stepSn: Number,
+    stepNo: Number || String,
+    stepSn: Number || String,
     type: String
   },
   data () {
@@ -192,7 +164,7 @@ export default {
   },
   created () {
     this.getCodeList('S080')
-    this.getSmslist()
+    this.getSmslist(1)
   },
   mounted () {
     $('.ui.dropdown').dropdown('restore defaults')
@@ -211,12 +183,16 @@ export default {
     }
   },
   methods: {
-    getSmslist () {
+    getSmslist (targetNum) {
+      this.searchData.currPage = targetNum
+      this.searchData.useYn = 'Y'
       const requestData = JSON.stringify(this.searchData)
       StandardSmsApi.getList(requestData)
       .then(result => {
         this.standardSms.standardSmsData = result.data.stdSmsList
         this.standardSms.selected[0] = this.standardSms.standardSmsData[0]
+        result.data.param.totalCount = result.data.totCnt
+        this.standardSms.pageInfo = result.data.param
         this.getSmsItem()
       }).catch(error => {
         const err = error.response
@@ -280,7 +256,7 @@ export default {
         stepSn: this.stepSn,
         action: this.standardSmsDetail
       }
-      this.$emit('select', selectData)
+      this.$emit('select', this.standardSmsDetail)
       this.$emit('close')
     }
   }
@@ -288,18 +264,25 @@ export default {
 </script>
 
 
-<style lang="less">
+<style lang="less" scoped>
 .StandardSmsModal {
   .section {
     .contant-wrapper {
       height: 93%;
+      .ui.table tr:nth-child(1) td:nth-child(odd) {
+        background: #f9f9f9;
+      }
     }
   }
   .content.section.section-1 {
     width: 30% !important;
-    .ui.table td {
-      // background-color: #fff;
-      
+    .ui.table tr:nth-child(1) td:nth-child(odd) {
+        background: none;
+      }
+  }
+  .content.section.section-2 {
+    table tr td:nth-child(2) {
+      width: 70%;
     }
   }
   .ld,.lh {
@@ -307,7 +290,7 @@ export default {
   }
   .ui.form {
     tr td:nth-child(1) {
-      width: 20%;
+      max-width: 20%;
     }
     td {
       .fields {
@@ -325,6 +308,7 @@ export default {
   }
   td {
     .code-name {padding: 5px;}
+    .pram-name {padding: 5px;}
     span {
       display: inline-block;
       width: 100%;

@@ -109,23 +109,15 @@ export default {
         executEndToDt: this.searchData.end,
         currPage: targetNum
       })
-      HistoryApi.getSOPExcel(requestData)
-      .then(result => {
-          console.log(result)
-        })
-        .catch(error => {
-          const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-        })
-      },
-      initDate() {
-        const today = new Date()
-        const d = today.getDate()
-        today.setDate(d-7)
-        this.searchData.start = convertDateFormat(today, '')
-        this.searchData.end = convertDateFormat(new Date(), '')
-      }
+      HistoryApi.sopHistoryDownload(requestData)
+    },
+    initDate() {
+      const today = new Date()
+      const d = today.getDate()
+      today.setDate(d-7)
+      this.searchData.start = convertDateFormat(today, '')
+      this.searchData.end = convertDateFormat(new Date(), '')
+    }
 
   }
 }

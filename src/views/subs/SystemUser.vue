@@ -1,5 +1,6 @@
 <template lang="pug">
   div.SystemUser.sub-container
+    modals-container
     div.sub-wrapper
       div.sub-header
         div.title 운영자 관리
@@ -112,11 +113,12 @@ export default {
     },
     createUser () {
       this.$modal.show(UserEditor, {
-        type: '등록',
+        type: 'new',
         data: {}
       },{
         width: '700px',
-        height: 'auto'
+        height: 'auto',
+        clickToClose: false
       },{
         'before-close': () => {
           this.getUsersList()
@@ -131,11 +133,12 @@ export default {
         })
       }else {
         this.$modal.show(UserEditor, {
-          type: '수정',
+          type: 'edit',
           data: this.systemUser.selected[0]
         },{
           width: '700px',
-          height: 'auto'
+          height: 'auto',
+          clickToClose: false
         },{
           'before-close': () => {
             this.getUsersList()

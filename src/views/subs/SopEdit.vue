@@ -1,7 +1,6 @@
 <template lang="pug">
   div.SopEdit.sub-container
     modals-container(
-      name="locationmodal",
       @location="setLocationList",
       @select="insertData"
       )
@@ -10,15 +9,15 @@
         div.base-info.info-1
           label
           select(v-model="sopNewData.msfrtnKndCd")
-            option(value="") 재난종류
+            option(disabled, value="") 재난종류
             option(v-for="code in typeCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
         div.base-info.info-2
           select(v-model="sopNewData.crisisGnfdStepCd")
-            option(value="") 위기발령단계
+            option(disabled, value="") 위기발령단계
             option(v-for="code in stepCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
         div.base-info.info-3
           div.ui.input(@click="selectLocation")
-            input(type="text", placeholder="건물/층 선택")
+            input(type="button", placeholder="건물/층 선택" v-model="buldTitle") 
         div.base-info.info-4
           div.ui.input.fluid
             input(type="text", placeholder="재난절차제목입력", v-model="sopNewData.sopTitle")
@@ -32,11 +31,11 @@
                 div.node(
                   v-for="(node, index) in sopNewData.sopStepList",
                   :class="{active:node.stepNo == activeStep}",
-                  @click="setActive(node)",
+                  @click="setNodeActive(node)",
                   :id="`step_${index}`"
                   )
                   div.order {{index+1}}
-                  div.step-content {{node.stepTitle}}
+                  div.step-content.ellipse(:data-content="node.stepTitle") {{node.stepTitle}}
             div.editor-view
               div.edit-header
                 div.ui.buttons
@@ -55,7 +54,7 @@
                     v-for="(step, index) in sopNewData.sopStepList",
                     :class="{active:step.stepNo == activeStep}",
                     @click="setActive(step)",
-                    :id="`step_${step.stepSn}`"
+                    :id="`step_${step.stepNo}`"
                     )
                     div.step-header
                       div.ui.input.fluid.small.labeled
@@ -72,7 +71,7 @@
                             :isUpdate = "isupdate"
                             @delete="deleteAction(step, index)"
                             )
-                    div.step-editor(v-if="step.stepSn == activeStep")
+                    div.step-editor(v-if="step.stepNo == activeStep")
                       div.btnSet
                         div.btn-group.left
                         div.btn-wrap.right
@@ -88,6 +87,7 @@ import PublicCodeApi from '@/api/PublicCode'
 import SopManageApi from '@/api/SopManage'
 import ActionSms from '@/components/ActionSms.vue'
 import ActionBroad from '@/components/ActionBroad.vue'
+import ActionBroadOnOff from '@/components/ActionBroadOnOff.vue'
 import ActionOrder from '@/components/ActionOrder.vue'
 import SelectLocation from '@/components/SelectLocation.vue'
 import { codeGenerator } from '@/util'
@@ -105,7 +105,7 @@ export default {
         sopBuldMapngList: [],
         sopStepList: [
           {
-            stepNo: '',
+            stepNo: 1,
             stepSn: 1,
             stepTitle: '',
             actionItem: []
@@ -113,7 +113,7 @@ export default {
         ]
       },
       req: {
-        msfrtnKndCd: "",
+        msfrtnKndCd: '',
         crisisGnfdStepCd: "",
         sopTitle: ""
       },
@@ -129,13 +129,15 @@ export default {
       ],
       deleteList: [],
       newStepNo: 1,
-      isupdate: true
+      isupdate: true,
+      buldTitle: '건물/ 층 선택'
     }
   },
   components: {
     ActionSms,
     ActionBroad,
-    ActionOrder
+    ActionOrder,
+    ActionBroadOnOff
   },
   created () {
     this.sopNewData.sopId = this.$route.params.sopId
@@ -151,25 +153,30 @@ export default {
   mounted () {
     $('.ui.dropdown').dropdown()
     $('.ui.checkbox').checkbox()
+    $('.step-content').popup({
+      position:'bottom left'
+    })
   },
   updated () {
-    console.log('update')
+    $('.step-content').popup({
+      position:'bottom left'
+    })
   },
   methods: {
     getCodeList (code) {
       const requestData = JSON.stringify({
         cmmnCd: code
       })
-      PublicCodeApi.getList(requestData).then(result => {
+      PublicCodeApi.getItem(requestData).then(result => {
         console.log(result)
         if(code === 'S090') {
-          this.typeCode = result.data.cmmnCdGroupList
+          this.typeCode = result.data.cmmnCdDetailInfo
         }
         if(code === 'S100') {
-          this.stepCode = result.data.cmmnCdGroupList
+          this.stepCode = result.data.cmmnCdDetailInfo
         }
         if(code === 'S080') {
-          this.paramCode = result.data.cmmnCdGroupList
+          this.paramCode = result.data.cmmnCdDetailInfo
         }
       }).catch(error => {
         const err = error.response
@@ -184,6 +191,7 @@ export default {
       SopManageApi.getItem(requestData).then(result => {
         console.log(result.data)
         this.sopNewData = result.data
+        this.newStepNo = this.sopNewData.sopStepList.length + 1
       }).catch(error => {
         const err = error.response
         console.log(err)
@@ -194,6 +202,10 @@ export default {
       const requestData = JSON.stringify(this.sopNewData)
       SopManageApi.createItem(requestData).then(result => {
         console.log(result.data)
+        this.$modal.show('dialog', {
+          title: '실행확인',
+          text: '저장되었습니다'
+        })
         this.$router.push({name:'sop-list'})
       }).catch(error => {
         const err = error.response
@@ -203,14 +215,21 @@ export default {
     },
     selectLocation () {
       this.$modal.show(SelectLocation,{
-        modal:'locationmodal',
-        title: '건물/층 선택'
+        title: '건물/층 선택',
+        data: this.sopNewData.sopBuldMapngList
       },{
-        height: '80%'
+        height: '80%',
+        clickToClose: false
       })
     },
     
     setLocationList(local) {
+      console.log(local)
+      if(local.length > 1) {
+        this.buldTitle = `${local[0].buldNm} ${local[0].buldFloor} 외 ${local.length-1}건`
+      }else {
+        this.buldTitle = `${local[0].buldNm} ${local[0].buldFloor}`
+      }
       this.sopNewData.sopBuldMapngList = local
     },
     saveSop () {
@@ -224,20 +243,28 @@ export default {
       this.activeStep = step.stepNo
       this.deleteList = []
     },
+    setNodeActive (step) {
+      this.selectedStep = step
+      this.activeStep = step.stepNo
+      this.$nextTick(() => {
+        this.focusStep(step)
+      })
+    },
     createStep () {
-      const newstep = {
-        stepNo: this.newStepNo + 1,
-        stepSn: '',
+      this.newStepNo++
+      const newStep = {
+        stepNo: this.newStepNo,
+        stepSn: this.newStepNo,
         stepTitle: '',
         actionItem: []
       }
-      this.sopNewData.sopStepList.push(newstep)
-      this.newStepNo++
+      this.sopNewData.sopStepList.push(newStep)
+      this.setNodeActive(newStep)
     },
     copyStep () {
       const copyStep = {
         stepNo: this.newStepNo + 1,
-        stepSn: '',
+        stepSn: this.newStepNo + 1,
         stepTitle: '',
         actionItem: []
       }
@@ -253,11 +280,12 @@ export default {
       copyStep.stepNo = this.newStepNo + 1
       this.sopNewData.sopStepList.push(copyStep)
       this.newStepNo++
+      this.setNodeActive(copyStep)
     },
     deleteStep () {
       if(this.sopNewData.sopStepList.length == 1) return 
       this.sopNewData.sopStepList.forEach((step, i) => {
-        if(step.stepSn == this.selectedStep.stepSn) {
+        if(step.stepNo == this.selectedStep.stepNo) {
           this.sopNewData.sopStepList.splice(i, 1)
           return
         }
@@ -267,15 +295,16 @@ export default {
       const actionItem = {
         type: '',
         itemKnd: '',
-        stepNo: '',
-        stepSn: '',
-        autoYn: '',
+        stepNo: 0,
+        stepSn: 0,
+        autoYn: 'N',
         ischeck: false
       }
       if(actionType == 'sms') {
         actionItem.type = 'ActionSms'
         actionItem.itemKnd = 'S0500100'
         Object.assign(actionItem,{
+          sopStepChrgEmpList:[],
           smsContents: '',
           inputParam1: '',
           inputParam2: '',
@@ -296,17 +325,30 @@ export default {
           inputParam5: '',
         })
       }
+      if(actionType == 'broadon') {
+        actionItem.type = 'ActionBroadOnOff'
+        actionItem.itemKnd = 'S0500200'
+      }
       if(actionType == 'order') {
         actionItem.type = 'ActionOrder'
         actionItem.itemKnd = 'S0500300'
-        Object.assign(actionItem,{smsContents: ''})
+        Object.assign(actionItem,{drctContents: ''})
       }
+      Object.assign(actionItem, this.addItemObject('cmmnCd'))
       this.sopNewData.sopStepList.forEach((step, i) => {
-        if(step.stepSn == this.selectedStep.stepSn) {
+        if(step.stepNo == this.selectedStep.stepNo) {
           console.log(step)
           this.sopNewData.sopStepList[i].actionItem.push(actionItem)
         }
       })
+    },
+    addItemObject (name) {
+      const addItems = {}
+      for(let value of [1,2,3,4,5]) {
+        let keyname = `${name}${value}`
+        addItems[keyname] = ''
+      }
+      return addItems
     },
     actionDelete (selectedStep) {
       const items = []
@@ -336,7 +378,7 @@ export default {
        this.sopNewData.sopStepList.forEach((step, i) => {
          if(insert.stepNo == step.stepNo) {
            step.actionItem.forEach((act, j) => {
-             if(insert.stepSn == act.stepSn) {
+             if(insert.stepNo == act.stepNo) {
               //  this.sopNewData.sopStepList[i].actionItem[j] = Object.assign({}, this.sopNewData.sopStepList[i].actionItem[j], insert.action)
               Object.assign(act, insert.action)
               this.isupdate = true
@@ -344,12 +386,29 @@ export default {
            })
          }
        })
+    },
+    showDailog () {
+      let options = {
+        title: '실행확인',
+        text: '운영자가'
+      }
+      if(this.type == 'new') {
+        options.text += '등록되었습니다'
+      }else {
+        options.text += '수정되었습니다'
+      }
+      this.$modal.show('dialog', options)
+    },
+    focusStep (step) {
+      const focusId = `step_${step.stepNo}`
+      $(`#${focusId} .step-header input`).focus()
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+
 .SopEdit {
   .sub-content {
     .content {
@@ -390,7 +449,7 @@ export default {
         .node {
           display: inline-block;
           background-color: #fff;
-          width: 40%;
+          width: 50%;
           border: 5px solid rgba(0, 0, 0, 0.3);
           // border-style: inset;
           border-radius: 30px;
@@ -417,7 +476,14 @@ export default {
           }
           .step-content {
             margin-left: 45px;
+            width: 80%;
           }
+          .step-content.ellipse {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
           &::before {
             content: "";
             position: absolute;

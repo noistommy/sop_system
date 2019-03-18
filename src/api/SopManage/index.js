@@ -20,6 +20,10 @@ export default {
   deleteItem: (payload) => {
     return HTTP.post(`${TargetURL}.deleteSopManageInfo.do`, payload)
   },
+  // SOP 삭제
+  selectBuilding: (payload) => {
+    return HTTP.post(`${TargetURL}.selectSopBuldMapngList.do`, payload)
+  },
   // SOP 정보
   getSopInfo: (payload) => {
     return HTTP.post(`${TargetURL1}.selectSopExecutManagerInfo.do`, payload)
@@ -56,8 +60,4 @@ export default {
   getRecieverList: (payload) => {
     return HTTP.post(`/n3n.sop.OrgnztInfo.selectDeptEmpInfoPopupList.do`, payload)
   }
-  // // sop 수신자 조회
-  // getRecieverList: (payload) => {
-  //   return HTTP.post(`/n3n.sop.SopDeptEmpl.selectSopCreatDeptRcverList.do`, payload)
-  // }
 }

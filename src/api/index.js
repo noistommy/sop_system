@@ -1,10 +1,10 @@
 import axios from 'axios'
+import BASE_URL from '@/api/config'
 
 const apiConfig = axios.create({
-  baseURL: 'http://172.16.10.202:18080',
-  // baseURL: '',
+  baseURL: BASE_URL,
   headers: {
-    'Accept': 'application/json',
+    // 'Accept': 'application/json',
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localStorage.accessToken}`
   }

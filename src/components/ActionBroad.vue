@@ -1,8 +1,8 @@
 <template lang="pug">
   div.broad-action
-    //- modals-container(
-    //-   @select="insertData"
-    //- )
+    modals-container(
+      @select="insertData"
+    )
     div.ui.form.tiny
       table.ui.table.celled.structured.very.compact.green
         thead
@@ -11,7 +11,7 @@
               div.type 방송
             th.right.aligned.wide.ten
               button.ui.button.basic.mini(@click="selectStandard") 선택
-              button.ui.button.basic.mini 방송문구확인
+              button.ui.button.basic.mini(@click="checkBroadItem") 방송문구확인
             th.center.aligned 
               div.ui.radio.checkbox 
                 input(type="checkbox", v-model="broadData.autoYn", true-value="Y", false-value="N")
@@ -26,8 +26,8 @@
                 CheckTextCount(
                   :formType="formType",
                   :rownum='3',
-                  :maxLength='500',
-                  v-model="textareaData",
+                  :maxLength='200',
+                  v-model="broadData.brdcstContents",
                   @input="returnText")
 
           tr 
@@ -37,57 +37,59 @@
                   div.fields.inline
                     div.field
                       label 파라미터 1
-                      select(@change="setCode1", v-model="paramData1.code")
-                        option(value="") 파라미터1
+                      select(@change="setCode1", v-model="broadData.cmmnCd1")
+                        option(value="") 선택
                         option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData1.data")
+                        input(v-model="broadData.userData1")
                 .parameter
                   div.fields.inline
                     div.field
                       label 파라미터 2
-                      select(@change="setCode2", v-model="paramData2.code")
-                        option(value="") 파라미터2
+                      select(@change="setCode2", v-model="broadData.cmmnCd2")
+                        option(value="") 선택
                         option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData2.data")
+                        input(v-model="broadData.userData2")
                 .parameter
                   div.fields.inline
                     div.field
                       label 파라미터 3
-                      select(@change="setCode3", v-model="paramData3.code")
-                        option(value="") 파라미터3
+                      select(@change="setCode3", v-model="broadData.cmmnCd3")
+                        option(value="") 선택
                         option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData3.data")
+                        input(v-model="broadData.userData3")
                 .parameter
                   div.fields.inline
                     div.field
                       label 파라미터 4
-                      select(@change="setCode4", v-model="paramData4.code")
-                        option(value="") 파라미터4
+                      select(@change="setCode4", v-model="broadData.cmmnCd4")
+                        option(value="") 선택
                         option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData4.data")
+                        input(v-model="broadData.userData4")
                 .parameter
                   div.fields.inline
                     div.field
                       label 파라미터 5
-                      select(@change="setCode5", v-model="paramData5.code")
-                        option(value="") 파라미터5
+                      select(@change="setCode5", v-model="broadData.cmmnCd5")
+                        option(value="") 선택
                         option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData5.data")
+                        input(v-model="broadData.userData5")
 </template>
 
 <script>
+import StandardBroadApi from '@/api/StandardBroad'
 import CheckTextCount from '@/components/CheckTextCount.vue'
 import SelectBroadModal from '@/components/SelectBroadModal.vue'
+import CheckMediaModal from '@/components/CheckMediaModal.vue'
 export default {
   name: 'action-broad',
   props: {
@@ -117,12 +119,6 @@ export default {
   mounted () {
     $('.ui.checkbox').checkbox()
   },
-  watch : {
-    smsData () {
-      console.log('update')
-      this.insertData(this.smsData)
-    }
-  },
   methods: {
     returnText (text) {
       this.broadData.brdcstContents = text
@@ -130,32 +126,22 @@ export default {
     selectStandard () {
       this.$modal.show(SelectBroadModal, {
         title: '표준방송 선택',
-        data: {}
+        type: 'ActionBroad',
+        stepNo: this.broadData.stepNo,
+        stepSn: this.broadData.stepSn,
       },
       {
+        id: this.idx,
         width: '80%',
-        height:'auto'
+        height:'85%',
+        clickToClose: false
       })
     },
     insertData (obj) {
       console.log(obj)
-      this.textareaData = obj.brdcstContents
-      this.paramData1.code = obj.cmmnCd1
-      this.paramData1.name = obj.inputParam1
-      this.paramData1.data = obj.userData1
-      this.paramData2.code = obj.cmmnCd2
-      this.paramData2.name = obj.inputParam2
-      this.paramData2.data = obj.userData2
-      this.paramData3.code = obj.cmmnCd3
-      this.paramData3.name = obj.inputParam3
-      this.paramData3.data = obj.userData3
-      this.paramData4.code = obj.cmmnCd4
-      this.paramData4.name = obj.inputParam4
-      this.paramData4.data = obj.userData4
-      this.paramData5.code = obj.cmmnCd5
-      this.paramData5.name = obj.inputParam5
-      this.paramData5.data = obj.userData5
-      // this.findCode(obj.cmmnCd)
+      for (let key in obj) {
+          this.broadData[key] = obj[key]
+      }
     },
     setCode1 (event) {
       this.paramData1 = this.findCode(event.target.value)
@@ -201,6 +187,26 @@ export default {
       if (this.textareaData.indexOf(name) < 0) {
         this.textareaData = `${this.textareaData}\r\n${name}`
       }
+    },
+    checkBroadItem () {
+      const requestData = JSON.stringify(this.broadData)
+      StandardBroadApi.checkDetail(requestData)
+      .then(result => {
+       console.log(result)
+        this.$modal.show(CheckMediaModal,{
+          title: '방송문구확인',
+          data: result.data
+        },{
+          width: '350px',
+          height: 'auto',
+          clickToClose: false
+        })
+      })
+      .catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
     }
   }
 }

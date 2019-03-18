@@ -19,7 +19,7 @@
               div.ui.form.inverted
                 div.field
                   label 상위협력업체명
-                  input(type="text", placeholder="상위협력업체명 선택", readonly="", v-model="selectTeam.upperCcpyId").readonly
+                  input(type="text", placeholder="상위협력업체명 선택", readonly="", v-model="createTeam.upperCcpyNm").readonly
                 div.field
                   label 협력업체명
                   input(type="text", placeholder="협력업체명 입력", v-model="createTeam.ccpyNm")
@@ -42,26 +42,22 @@
               div.ui.form.inverted.tiny
                 div.field
                   label 상위협력업체명
-                  input(type="text", placeholder="상위협력업체명 선택", readonly="", v-model="selectTeam.upperCcpyId").readonly
+                  input(type="text", placeholder="상위협력업체명 선택", readonly="", v-model="editTeam.upperCcpyNm").readonly
                 div.field
                   label 협력업체명
-                  input(type="text", placeholder="협력업체명 입력", v-model="selectTeam.ccpyNm")
+                  input(type="text", placeholder="협력업체명 입력", v-model="editTeam.ccpyNm")
                 div.field
                   label 대표전화번호
-                  input(type="text", placeholder="대표전화번호 입력", v-model="selectTeam.reprsntTelno")
+                  input(type="text", placeholder="대표전화번호 입력", v-model="editTeam.reprsntTelno")
                 div.field
                   div.ui.checkbox
-                    input(type="checkbox", true-value="Y", false-value="N", v-model="selectTeam.useYn")
+                    input(type="checkbox", true-value="Y", false-value="N", v-model="editTeam.useYn")
                     label 허용
             div.btnSet
               div.btn-group.left
-                button.ui.button.blue(@click="createTreeItem") 저장
+                button.ui.button.blue(@click="updateTreeItem") 저장
               div.btn-wrap.right
                 button.ui.button(@click="$emit('close')") 취소
-              
-    //- div.treeView-footer
-    //-   button.ui.button.basic.olive {{selectTeam.childDeptNm}} 선택
-    //-   div.selectedName 
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
@@ -91,8 +87,9 @@ export default {
       createTeam: {
         ccpyNm: '',
         reprsntTelno: '',
-        useYn: 'N',
-        upperCcpyId: ''
+        useYn: 'Y',
+        upperCcpyId: '',
+        upperCcpyNm: ''
       },
       selectTeam: {},
       editTeam: this.target,
@@ -107,12 +104,15 @@ export default {
   },
   methods: {
     getTreeList () {
-      PartnerApi.getTreeList()
-      .then(result => {
+      const requestData = JSON.stringify({
+        searchCnd: '',
+        searchNm: '',
+        currPage: 1
+      })
+      PartnerApi.getAllList(requestData).then(result => {
         console.log(result)
         this.treeviewData = result.data.ccpyTrList
-      })
-      .catch(error => {
+      }).catch(error => {
         this.$emit('close')
         const err = error.response
         console.log(err)
@@ -124,6 +124,23 @@ export default {
       PartnerApi.createPartnerInfo(requestData)
       .then(result => {
         console.log(result)
+        this.$emit('close')
+        this.showDailog()
+      })
+      .catch(error => {
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })  
+    },
+    updateTreeItem () {
+      const requestData = JSON.stringify(this.editTeam)
+      PartnerApi.updatePartnerInfo(requestData)
+      .then(result => {
+        console.log(result)
+        this.$emit('close')
+        this.showDailog()
       })
       .catch(error => {
         this.$emit('close')
@@ -134,10 +151,24 @@ export default {
     },
     getItemInfo(item) {
       if(this.type == 'new') {
-        this.createTeam.upperCcpyId = item.upperCcpyId
+        this.createTeam.upperCcpyNm = item.childCcpyNm
+        this.createTeam.upperCcpyId = item.childCcpyId
       }else {
-        this.editTeam.ccpyId = item.ccpyId
+        this.editTeam.upperCcpyId = item.childCcpyId
+        this.editTeam.upperCcpyNm = item.childCcpyNm
       }
+    },
+    showDailog () {
+      let options = {
+        title: '실행확인',
+        text: ''
+      }
+      if(this.type == 'new') {
+        options.text += '등록되었습니다'
+      }else {
+        options.text += '수정되었습니다'
+      }
+      this.$modal.show('dialog', options)
     }
   } 
 }

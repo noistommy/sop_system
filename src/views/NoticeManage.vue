@@ -1,5 +1,6 @@
 <template lang="pug">
   div.historyManage.sub-container
+    modals-container
     div.sub-wrapper
       div.sub-header
         div.title 공지사항
@@ -29,7 +30,6 @@
                 td.center.aligned {{props.item.ntceDt}}
                 td.center.aligned {{props.item.frstRegNm}}
                 td.center.aligned {{props.item.frstRegDt}}
-                td.center.aligned {{props.item.hit}}
               tr.extended(v-if="isExtended", :class="{active:props.selected}", @click.prevent)
                 td(:colspan="props.colspan")
                   div.notice-wrapper
@@ -137,7 +137,7 @@ export default {
         const requestData = JSON.stringify({ noticeSn: this.selected[0].noticeSn })
         NoticeApi.deleteItem(requestData).then(result => {
           console.log('success')
-          this.$modal.show('dialog', codeGenerator('Y', '게시물을 삭제합니다'))
+          this.$modal.show('dialog', codeGenerator('Y', '삭제되었습니다'))
           this.getNoticeList()
         })
         .catch(error => {
@@ -166,7 +166,8 @@ export default {
           title: '수정하기',
           notice: this.selected[0]
         },{
-          height: "auto"
+          height: "auto",
+          clickToClose: false
         },{
           'before-close': () => {
             this.getNoticeList()
@@ -180,9 +181,11 @@ export default {
         title: '작성하기',
         notice: {}
       },{
-        height: "auto"
+        height: "auto",
+        clickToClose: false
       },{
           'before-close': () => {
+
             this.getNoticeList()
           }
         })

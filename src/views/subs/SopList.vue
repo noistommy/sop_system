@@ -1,5 +1,6 @@
 <template lang="pug">
   div.SopList.sub-container
+    modals-container
     div.sub-wrapper
       div.sub-header
         div.title 재난 대응 절차 목록
@@ -30,7 +31,8 @@
             :isListNumber="sopList.isListNumber",
             :isSelect="sopList.isSelect",
             :isPagination="sopList.isPagination",
-            :page="sopList.pageInfo"
+            :page="sopList.pageInfo",
+            @search="getSopList"
           ).ui.table.celled.selectable
             <template slot="items" slot-scope="props">
               tr(:active="props.selected", @click="selectedItem(props)" )
@@ -53,7 +55,7 @@
               button.ui.button.large.green(@click="selectMode") SOP실행
             div.btn-wrap.right
               template(v-if="opratorCode == 'S0400100'")
-              button.ui.button.large.blue(@click="$router.push({name: 'sop-edit'})") 재난절차생성
+                button.ui.button.large.blue(@click="$router.push({name: 'sop-edit'})") 재난절차생성
 
 </template>
 
@@ -90,6 +92,7 @@ export default {
       },
       typeCode: [],
       stepCode: [],
+      buildingInfo: [],
       isSelected: false
     }
   },
@@ -102,19 +105,22 @@ export default {
     this.opratorCode = localStorage.userInfo
     this.getCodeList('S090')
     this.getCodeList('S100')
-    this.getSopList()
+    this.getSopList(1)
   },
   computed: {
   },
   methods: {
-    getSopList () {
+    getSopList (targetNum) {
       if(this.req.msfrtnKndCd == "00") {this.req.msfrtnKndCd = ""}
-      if(this.req.crisisGnfdStepCd == "") {this.req.crisisGnfdStepCd = ""}
+      if(this.req.crisisGnfdStepCd == "00") {this.req.crisisGnfdStepCd = ""}
+      this.req.currPage = targetNum
       this.req.sopTitle = this.searchData.searchNm
       const requestData = JSON.stringify(this.req)
       SopManageApi.getList(requestData).then(result => {
         console.log(result.data)
         this.sopList.sopListData = result.data.sopMgmtList
+        result.data.param.totalCount = result.data.totCnt
+        this.sopList.pageInfo = result.data.param
       }).catch(error => {
         const err = error.response
         console.log(err)
@@ -125,6 +131,17 @@ export default {
       const requestData = JSON.stringify({})
       SopManageApi.getItem(requestData).then(result => {
         console.log(result.data)
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    getSelectBuilding () {
+      const requestData = JSON.stringify({sopId:this.sopList.selected[0].sopId})
+      SopManageApi.selectBuilding(requestData).then(result => {
+        console.log(result.data)
+        this.buildingInfo = result.data.buldList
       }).catch(error => {
         const err = error.response
         console.log(err)
@@ -151,13 +168,13 @@ export default {
       const requestData = JSON.stringify({
         cmmnCd: code
       })
-      PublicCodeApi.getList(requestData).then(result => {
+      PublicCodeApi.getItem(requestData).then(result => {
         console.log(code)
         if(code === 'S090') {
-          this.typeCode = result.data.cmmnCdGroupList
+          this.typeCode = result.data.cmmnCdDetailInfo
         }
         if(code === 'S100') {
-          this.stepCode = result.data.cmmnCdGroupList
+          this.stepCode = result.data.cmmnCdDetailInfo
         }
       }).catch(error => {
         const err = error.response
@@ -171,15 +188,18 @@ export default {
         this.sopList.selected.push(this.sopList.sopListData[itemInfo.idx])
         this.isSelected = true
       }
+      this.getSelectBuilding()
     },
     selectMode () {
       this.selectCheck()
       if(this.isSelected) {
         this.$modal.show(SelectSopMode,{
           title: '실행모드',
-          data: this.sopList.selected[0]
+          data: this.sopList.selected[0],
+          buildings: this.buildingInfo
         },{
-          height: 'auto'
+          height: 'auto',
+          clickToClose: false
         })
       }
     },
@@ -191,7 +211,7 @@ export default {
     },
     selectCheck () {
       if(this.sopList.selected.length == 0) {
-        this.isSeleced = false
+        this.isSelected = false
         this.$modal.show('dialog', {
           title: '선택오류',
           text: '선택 된 SOP가 없습니다.'

@@ -68,7 +68,7 @@ export default {
     },
     getList () {
       const requestData = JSON.stringify({
-        iwId: this.data.iwId
+        iwId: this.data
       })
       SopSlideApi.getPopupItem(requestData).then(result => {
         console.log(result.data)
@@ -83,7 +83,7 @@ export default {
     },
     runSelectSop () {
       if( this.selected[0] != undefined) {
-        this.$router.push({ name: 'sop-run', params: this.selected[0]})
+        this.$router.push({ name: 'sop-run', params: { iwId: this.data, selectData:this.selected[0] }})
         this.$emit('close')
       }else {
         alert('SOP를 선택하세요')
@@ -91,7 +91,7 @@ export default {
     },
     errorSelectSop () {
       const requestData = JSON.stringify({
-        iwId: this.data.iwId
+        iwId: this.data
       })
       SopSlideApi.setErrorSop(requestData).then(result => {
         console.log(result.data)

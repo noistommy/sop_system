@@ -1,14 +1,17 @@
 <template lang="pug">
   div.SopRun.sub-container
+    modals-container
     div.sub-wrapper
       div.sub-content
         div.run-wrapper
           div.preview-view
             div.preview-header
-              h3 {{sopInformation.sopTitle}}
+              h3 
+                span [{{sopInformation.msfrtnKndCdNm}} - {{sopInformation.crisisGnfdStepNm}}]
+                span {{sopInformation.sopTitle}}
               div.sop-info
-                div.sop-location {{sopInformation.buldNm}}
-                div.sop-time {{sopInformation.executDt}}
+                div.sop-location {{sopInformation.displayBuldFloor}}
+                div.sop-time {{sopInformation.displayExecutBeginDt}}
             div.node-wrapper
                 div.node(
                   v-for="(node, index) in sopStepExecutMisnList",
@@ -17,8 +20,8 @@
                   :id="`step_${index}`"
                   )
                   div.order {{index+1}}
-                  div.step-content {{node.stepTitle}}
-                  div.action-history(:class="{active:index == activeCount}", v-if="node.historyList")
+                  div.step-content.ellipse {{node.stepTitle}}
+                  div.action-history(:class="{active:index == activeCount}", v-if="node.historyList.length > 0")
                     div.ui.list 
                       div.item(v-for="act in node.historyList") 
                         i.icon.mobile.alternate.blue(v-if="act.itemKndNm == '문자'")
@@ -26,7 +29,7 @@
                         i.icon.mobile.bullhorn.yellow(v-if="act.itemKndNm == '지시사항'")
                         div.content {{act.itemKndNm}} {{act.contents}}
                       
-            div.history-wrapper
+            div.history-wrapper(v-if="sopType == 'run'")
               DataTable(
                 v-model="stepHistory.historyData",
                 :headers="stepHistory.header",
@@ -46,7 +49,7 @@
                     td.center.aligned {{props.item.stepNo}}
                     td.center.aligned {{props.item.itemKndNm}}
                     td.ellipse {{props.item.contents}}
-          div.running-view
+          div.running-view(v-if="sopType == 'run'")
             div.running-wrapper
               div.step-header
                 h3 임무목록
@@ -75,6 +78,35 @@
                     @click="moveActiveStep('next')")
                     i.icon.right.arrow
                     | 다음
+          div.running-view(v-else)
+            div.monitoring-header
+                h3 실행이력
+            div.monitoring-wrapper
+              div.step-content
+                DataTable(
+                  v-model="stepHistory.historyData",
+                  :headers="stepHistory.header",
+                  :items="stepHistory.historyData",
+                  :itemKey="stepHistory.itemkey",
+                  :isFooter="stepHistory.isfooter",
+                  :isListNumber="stepHistory.isListNumber",
+                  :isSelect="stepHistory.isSelect",
+                  :isPagination="stepHistory.isPagination",
+                  :page="stepHistory.pageInfo",
+                  :tableType="stepHistory.tableType"
+                ).ui.table.celled.selectable
+                  template( slot="items", slot-scope="props")
+                    tr
+                      td.center.aligned {{props.idx + 1}}
+                      td.center.aligned {{props.item.regDt}}
+                      td.center.aligned {{props.item.stepNo}}
+                      td.center.aligned {{props.item.itemKndNm}}
+                      td.ellipse {{props.item.contents}}
+            div.running-control
+              div.btnSet
+                div.btn-group.left
+                div.btn-wrap.right
+                  button.ui.button.blue(@click="closeSopMonitor") 모니터링 종료
               
 </template>
 
@@ -84,43 +116,23 @@ import ActionSms from '@/components/ActionSmsRun'
 import ActionBroad from '@/components/ActionBroadRun'
 import ActionOrder from '@/components/ActionOrderRun'
 import DataTable from '@/components/DataTable'
+import CloseMessageModal from '@/components/CloseMessageModal'
 import { sopRunHistoryHeader } from '@/setting'
-import { codeGenerator } from '@/setting'
+import { codeGenerator } from '@/util'
+import { setInterval } from 'timers';
 
 export default {
   name: 'sop-run',
   data () {
     return {
+      iwId: '',
+      iwSelect: {},
+      sopType: '',
       sopId: '',
       sopExecutSn:'',
       stepNo: 0,
       sopInformation: {},
       sopStepExecutMisnList: [],
-      stepList: [
-        {
-          stepTitle: '첫번째단계',
-          actionItem: [
-            {type: 'ActionSms'},
-            {type: 'ActionBroad'}
-          ]
-        },
-        {
-          stepTitle: '두번째단계',
-          actionItem: [
-            {type: 'ActionOrder'},
-            {type: 'ActionBroad'}
-          ]
-        },
-        {
-          stepTitle: '세번째단계',
-          actionItem: [
-            {type: 'ActionOrder'},
-            {type: 'ActionSms'},
-            {type: 'ActionBroad'}
-          ]
-        },
-        {stepTitle: '네번째단계'}
-      ],
       stepHistory: {
         header: sopRunHistoryHeader.headers,
         historyData: [],
@@ -146,11 +158,17 @@ export default {
   },
   created () {
     console.log(this.$route.params)
+    this.iwId = this.$route.params.iwId
+    this.iwSelect = this.$route.params.selectData
     this.sopId = this.$route.params.sopId
     this.sopExecutSn = this.$route.params.sopExecutSn
+    this.sopType = this.$route.params.type
     this.getInfo()
     this.getStepList()
     this.getStepHistoryList()
+    // setInterval(() => {
+    //   this.getStepHistoryList()
+    // },3000)
     
     // this.closeSop()
   },
@@ -172,11 +190,18 @@ export default {
       const requestData = JSON.stringify({
         sopId: this.sopId,
         sopExecutSn: this.sopExecutSn,
-        stepNo: 0
+        stepNo: ''
       })
       SopManageApi.runStepList(requestData).then(result => {
         console.log(result.data)
         this.sopStepExecutMisnList = result.data.sopStepExecutMisnList
+        this.sopStepExecutMisnList.forEach(e => {
+          this.$set(e, 'historyList', [])
+          this.activeHistory (e)
+          // e.forEach(item => {
+          //   this.$set(e, 'stateCode', false)
+          // })
+        })
         this.moveActiveStep ('')
       }).catch(error => {
         console.log(error)
@@ -201,19 +226,24 @@ export default {
 
     },
     closeSop () {
-      const requestData = JSON.stringify({
+      const closeData = {
         sopId: this.sopId,
         sopExecutSn: this.sopExecutSn,
-        endResn: this.endMessage
+        endResn: '',
+      }
+      this.$modal.show(CloseMessageModal, {
+        title: '사유작성',
+        text: '',
+        data: closeData
+      },{
+        width: '350px',
+        height: 'auto',
+        clickToClose: false
       })
-      SopManageApi.closeSopList(requestData).then(result => {
-        console.log(result.data)
-        this.$router.push('/')
-      }).catch(error => {
-        const err = error.response
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
-
+    },
+    closeSopMonitor () {
+      this.$modal.show()
+      this.$router.push({name:'sop-list'})
     },
     passOperator () {
       const requestData = JSON.stringify({
@@ -222,6 +252,10 @@ export default {
       })
       SopManageApi.passOperation(requestData).then(result => {
         console.log(result.data)
+          this.$modal.show('dialog', {
+            title: '알람',
+            text: '제어권한이 해제되었습니다.'
+          })
         this.$router.push({name:'sop-list'})
       }).catch(error => {
         const err = error.response
@@ -230,7 +264,7 @@ export default {
 
     },
     runAction (actionData) {
-      const req = {
+      let req = {
         sopId: this.sopId,
         sopExecutSn: this.sopExecutSn,
         stepSn: this.activeStep.stepSn,
@@ -241,7 +275,7 @@ export default {
         Object.assign(req, {
           smsContents: actionData.smsContents,
           autoYn: actionData.autoYn,
-          sopStepChrgEmpExecutList: actionData.sopStepChrgEmpExecutList,
+          sopStepChrgEmpExecutList: actionData.sopStepExecutChrgEmpList,
         })
       }
       if(actionData.type == 'ActionBroad') {
@@ -255,13 +289,18 @@ export default {
           autoYn: actionData.autoYn
         })
       }
+      console.log(actionData, req)
       const requestData = JSON.stringify(req)
       SopManageApi.runStepAction(requestData).then(result => {
         console.log(result)
+        this.getStepHistoryList()
       }).catch(error => {
         const err = error.response
-        console.log(err)
+        console.log(err.data.msgCode)
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        // if(err.data.msgCode == 'B') {
+        //   this.$router.push({name:'sop-list'})
+        // }
       })
 
 
@@ -269,6 +308,7 @@ export default {
     setActive (step, i) {
       this.activeStep = step
       this.activeCount = i
+      this.activeHistory (step)
     },
     moveActiveStep (type) {
       if(type == 'prev') {
@@ -281,15 +321,15 @@ export default {
         this.activeCount = 0
       }
       this.activeStep = this.sopStepExecutMisnList[this.activeCount]
-      this.$set(this.activeStep, 'historyList', [])
+      
       this.activeHistory(this.activeStep)
     },
     activeHistory (step) {
-      console.log(this.stepHistory.historyData)
-      // if(this.stepHistory.historyData.length == 0) return 
+      step.historyList = []
+      if (this.stepHistory.historyData.length == 0) return 
       this.stepHistory.historyData.forEach(e => {
         if(e.stepNo == step.stepNo) {
-          this.activeStep.historyList.push(e)
+          step.historyList.push(e)
         }
       })
     }
@@ -327,10 +367,11 @@ export default {
         background-color: #fff;
         box-shadow: inset 0 0 15px 5px rgba(0, 0, 0, 0.06);
         border: 1px solid rgba(0, 0, 0, 0.2);
+        overflow-x: hidden;
         .node {
           display: inline-block;
           background-color: #fff;
-          width: 40%;
+          width: 50%;
           border: 5px solid rgba(0, 0, 0, 0.3);
           // border-style: inset;
           border-radius: 30px;
@@ -358,6 +399,12 @@ export default {
           }
           .step-content {
             margin-left: 45px;
+            width: 80%;
+          }
+          .step-content.ellipse {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
           .action-history {
             position: absolute;
@@ -413,11 +460,24 @@ export default {
         border: 1px solid rgba(0, 0, 0, 0.2);
         margin-top: 10px;
         overflow-y: auto;
+        background-color: #fff;
+        padding: 15px;
       }
     }
     .running-view {
       width: 60%;
       padding-left: 20px;
+      .monitoring-header {
+        margin-bottom: 20px;
+      }
+      .monitoring-wrapper {
+        height: 85%;
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        margin-top: 10px;
+        overflow-y: auto;
+        padding: 15px;
+        background-color: #fff;
+      }
       .running-wrapper {
         display: flex;
         flex-direction: column;

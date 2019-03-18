@@ -29,7 +29,6 @@ export const login = ({ commit }, loginData) => {
   commit('LOGIN')
   return AuthApi.login(loginData).then(result => {
     console.log('loginSuccess')
-    console.log(result)
     if (result.data.oprtrFgCd) {
       commit('LOGIN_SUCCESS', result.data)
     } else {

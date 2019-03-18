@@ -17,21 +17,24 @@
           DataTable(
             v-model="sensorHistory.selected"
             :headers="sensorHistory.headers",
-            :items="sensorHistory.sopHistoryData",
+            :items="sensorHistory.sensorHistoryData",
             :isFooter="sensorHistory.isfooter",
             :isListNumber="sensorHistory.isListNumber",
             :isPagination="sensorHistory.isPagination",
-            :page="sensorHistory.pageInfo"
+            :page="sensorHistory.pageInfo",
+            @search="getHistoryList"
           ).ui.table.celled.selectable
             <template slot="items" slot-scope="props">
               tr
-                td.center.aligned {{(sopHistory.pageInfo.currPage - 1) * 10 + props.idx + 1}}
+                td.center.aligned {{(sensorHistory.pageInfo.currPage - 1) * 10 + props.idx + 1}}
                 td {{props.item.prcpDt}}
-                td {{props.item.manager}}
-                td.center.aligned {{props.item.type}}
-                td {{props.item.title}}
-                td.ellipse {{props.item.location}}
-                td {{props.item.endtime}}
+                td.center.aligned {{props.item.malfuncNm}}
+                td.center.aligned {{props.item.sensorNm}}
+                td.center.aligned {{props.item.sensorId}}
+                td.ellipse {{props.item.buldNm}}
+                td {{props.item.aditInfo}}
+                td {{props.item.oprtrNm}}
+                td.center.aligned {{props.item.processSttus}}
             </template>
         div.footer
           div.btnSet
@@ -44,6 +47,7 @@
 import DataTable from '@/components/DataTable.vue'
 import SearchDate from '@/components/SearchDate.vue'
 import { sensorHistoryTableHeader } from '@/setting'
+// import BarChart from '@/util/BarChart'
 import BarChart from '@/components/BarChart'
 import { convertDateFormat } from '@/util'
 import HistoryApi from '@/api/History'
@@ -65,11 +69,11 @@ export default {
       sensorHistory: {
         selected: [],
         isfooter: true,
-        isPagination: false,
+        isPagination: true,
         isListNumber: true,
         pageInfo: {},
         headers: sensorHistoryTableHeader.headers,
-        sopHistoryData: [],
+        sensorHistoryData: [],
       },
       chartData: {
         labels: [],
@@ -84,8 +88,7 @@ export default {
           pointBorderColor: null,
           backgroundColor: null,
           hoverBackgroundColor: null,
-          fill: false,
-          lineTension: 0
+          fill: false
         }]
       },
       isLoaded: false
@@ -96,6 +99,7 @@ export default {
     this.getHistoryList(1)
   },
   mounted() {
+    this.getHistoryList(1)
   },
   methods: {
     getHistoryList (targetNum) {
@@ -111,9 +115,18 @@ export default {
         this.sensorHistory.sensorHistoryData = result.data.sensorDetctHistList
         result.data.param.totalCount = result.data.totCnt
         this.sensorHistory.pageInfo = result.data.param
-        this.chartData.data.labels = result.data.alarmHistStats.labels
-        this.chartData.data.datasets.data = result.data.alarmHistStats.data
         this.isLoaded = true
+
+        this.chartData = {
+          labels: result.data.alarmHistStats.labels,
+          datasets: [
+            {
+              label: '센서 발생 쵯수',
+              data: result.data.alarmHistStats.data,
+              backgroundColor: '#7bbae7'
+            }
+          ]
+        }
         
       })
       .catch(error => {
@@ -127,15 +140,7 @@ export default {
         prcpFromDt: this.searchData.start,
         prcpToDt: this.searchData.end,
       })
-      HistoryApi.getSensorExcel(requestData)
-      .then(result => {
-        console.log(result)
-      })
-      .catch(error => {
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
+       HistoryApi.sensorHistoryDownload(requestData)
     },
     initDate() {
       const today = new Date()

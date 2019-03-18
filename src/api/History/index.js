@@ -1,4 +1,5 @@
 import HTTP from '@/api'
+import BASE_URL from '@/api/config'
 
 const TargetURL = '/n3n.sop.SopExecutManage'
 
@@ -34,5 +35,14 @@ export default {
   // SOP 제어권 전달
   controlOutSop: (payload) => {
     return HTTP.post(`${TargetURL}.updateSopExecutOprtr.do`, payload)
+  },
+  sopHistoryDownload: () => {
+    location.href = `${BASE_URL}${TargetURL}.selectSopExecutEndHistListExcel.do`
+  },
+  smsHistoryDownload: () => {
+    location.href = `${BASE_URL}${TargetURL}.selectSopExecutSmsHistListExcel.do`
+  },
+  sensorHistoryDownload: () => {
+    location.href = `${BASE_URL}${TargetURL}.selectSensorDetctHistListExcel.do`
   }
 }

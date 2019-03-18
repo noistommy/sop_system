@@ -2,7 +2,7 @@
   div.modal
     div.modal-header {{title}}
     div.modal-content.treeEditor
-      div.tree-editor
+      div.tree-editor-modal
         div.select-part
           h3 부서 선택
           div.treeView-wrapper
@@ -21,22 +21,19 @@
             button.ui.right.floated.button.blue.mini(@click="selectAll") 전체 
           div.treeView-wrapper.select-part
             div.treeView.list.level-0
-              TreeView(
-                  v-model= "selectTeamList",
-                  @select="getListInfo",
-                  v-for="item in selectTeamList.deptEmpInfoPopupList",
-                  :treeItem="item",
-                  :isActive="activeItem"
-                  :isSelect ="true"
-                  :level="1",
-                  :selectYn="recieverSelect")
-          //- div.ui.list
-          //-   div.item(v-for="item in selectTeamList.emplTrList")
-              //- div {{emplNm}}
+              div.treeitem(v-for="(item, index) in selectTeamList",
+              @click="getListInfo(item)",
+              :class="{active:item.checked == 'Y'}")
+                div.treecontent
+                    div.treeheader()
+                      div.item-wrapper
+                        div {{item.deptNm}} 
+                        div {{item.clsfNm}} 
+                        div {{item.emplNm}} 
         div.btnSet
           div.btn-group.left
           div.btn-wrap.right
-            button.ui.button 선택
+            button.ui.button(@click="sendReciever") 선택
             button.ui.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
         div.close X
@@ -49,35 +46,28 @@ import TreeView from '@/components/TreeView'
 import { codeGenerator } from '@/util'
 
 export default {
-  name: 'treeview-modal',
+  name: 'tree-reciever-modal',
   components: {
     TreeView
   },
   props: {
-    type: String,
     title: String,
     text: String,
-    target: Object,
     value: Object,
-    isActive: Boolean
+    isActive: Boolean,
+    stepNo: Number,
+    stepSn: Number,
+    recieveData: Array
   },
   data () {
     return {
       treeviewData: [],
-      selectTeamList: [],
-      createTeam: {
-        slfdfnFbrdNm: '',
-        upperSlfdfnFbrdId: ''
-      },
       selectTeam: {},
-      selectTeamList: {},
-      editTeam: this.target,
+      selectTeamInfo: {},
+      selectTeamList: [],
       activeItem: true,
-      selectTeamInfo: {
-        slfdfnFbrdId: ''
-      },
-      recieverList: [],
-      recieverSelect: false
+      recieveList: this.recieveData,
+      isAllselect: false
     }
   },
   created () {
@@ -91,58 +81,104 @@ export default {
         this.selectTeam = result.data.deptTrList[0]
         this.selectTeamInfo.deptId = this.selectTeam.childDeptId
         this.getTreeItem(this.selectTeamInfo)
+        this.checkPartList(this.treeviewData)
       }).catch(error => {
         const err = error
         console.log(err)
+        // this.$emit('close')
         // this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
-    // getTreeList () {
-    //   // const request = JSON.stringify(this.requestData)
-    //   MemberApi.getTree().then(result => {
-    //     this.treeviewData = result.data.trOrgnList
-    //     this.selectTeam = result.data.trOrgnList[0]
-    //     this.getTreeItem(this.selectTeamInfo)
-    //   }).catch(error => {
-    //     const err = error.response
-    //     console.log(err)
-    //     this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-    //   })
-    // },
     getTreeItem (request) {
       const requestData = JSON.stringify(request)
       SopManageApi.getRecieverList(requestData).then(result => {
        console.log(result.data)
-       this.selectTeamList = result.data
+       this.selectTeamList = result.data.deptEmpInfoPopupList
+       this.selectTeamList.forEach((e, j) => {
+          let isCheck = this.checkItem(e) 
+          this.$set(e, 'checked', isCheck)
+        })
       }).catch(error => {
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        // alert( err.data.msgValue)
       })
     },
     getItemInfo(item) {
       this.selectTeam = item
+      item.selected = this.checkPartItem(item)
       this.selectTeamInfo.deptId = this.selectTeam.childDeptId
       this.getTreeItem(this.selectTeamInfo)
-      this.recieverSelect = false
     },
     getListInfo(item) {
-      let checkitem = false
-      this.recieverList.forEach((e, i) => {
-        if(e.emplNo == item.emplNo) {
-          this.recieverList.splice(i, 1)
-          checkitem = true
+      if(item.checked == 'N') {
+         this.recieveList.push({
+            stepNo: this.stepNo,
+            stepSn: this.stepSn,
+            deptId: item.deptId,
+            deptNm: item.deptNm,
+            emplNo: item.emplNo
+         })
+         item.checked = 'Y'
+      } else {
+        this.recieveList.forEach((e, i) => {
+          if(e.emplNo == item.emplNo) {
+            this.recieveList.splice(i, 1)
+          }
+        })
+        item.checked = 'N'
+      }
+      this.checkPartList(this.treeviewData)
+    },
+    checkPartList (list) {
+      list.forEach(e=> {
+        e.selected = this.checkPartItem(e)
+        if(e.children.length > 0) {
+          this.checkPartList(e.children)
         }
       })
-      if(!checkitem) {
-        this.recieverList.push(item)
-      }
+    },
+    checkPartItem (item) {
+      let isChecked = 'N' 
+      if(this.recieveList == []) return 'N'
+      this.recieveList.forEach((e, i) => {
+        if(e.deptId == item.childDeptId) {
+          isChecked = 'Y'
+          this.selectPartList.push(e.deptNm)
+        }
+      })
+      return isChecked
+    },
+    checkItem (item) {
+      let isChecked = 'N' 
+      if(this.recieveList == []) return 'N'
+      this.recieveList.forEach((e, i) => {
+        if(e.emplNo == item.emplNo) {
+          isChecked = 'Y'
+        }
+      })
+      return isChecked
     },
     selectAll() {
-      this.recieverSelect = !this.recieverSelect
-      this.selectTeamList.deptEmpInfoPopupList.forEach(e => {
-        this.getListInfo(e)
+      this.selectTeamList.forEach(e => {
+        if(this.checkItem(e) == 'Y') {
+          e.checked = 'Y'
+        } else {
+          e.checked = 'Y'
+          this.recieveList.push({
+            stepNo: this.stepNo,
+            stepSn: this.stepSn,
+            deptId: e.deptId,
+            deptNm: e.deptNm,
+            emplNo: e.emplNo
+         })
+        }
       })
+      this.checkPartList(this.treeviewData)
+    },
+    sendReciever () {
+      this.$emit('reciever', this.recieveList)
+      this.$emit('close')
     }
   } 
 }
@@ -171,7 +207,7 @@ export default {
           padding-top: 20px;
         }
       }
-      .tree-editor {
+      .tree-editor-modal {
         display: flex;
         background-color: #454545;
         height: 90%;
@@ -180,14 +216,27 @@ export default {
           width: 100%;
           padding: 10px;
           margin: 0 5px;
-          .treeView-wrapper {
+          .treeView-wrapper.select-part {
             width: 100%;
             height: 85%;
             .treeview {
               height: 90%;
             }
             .level-0 {
-              border:0;
+              .treeitem:hover {
+                background-color: #58666d;
+              }
+              .treeitem.active {
+                background-color: #80b1ca;
+                  .treeheader {
+                      color: #525252;
+                      font-weight: bold;
+                      span {
+                        display: inline-block;
+                        padding-right: 5px;
+                      }
+                  }
+                }
             }
           }
           .editor-wrapper {
@@ -208,7 +257,7 @@ export default {
         .select-person {
           .select-part-name {
             font-size: 1.2rem;
-            height: 20px;
+            height: 45px;
             padding-bottom: 10px;
             .title {
               float: left;
@@ -244,5 +293,5 @@ export default {
     &.small {width: 300px;}
     &.large {width: 600px;}
     &.full {width: 90%;}
-}
+  }
 </style>

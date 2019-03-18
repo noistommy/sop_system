@@ -6,27 +6,37 @@
         div.ui.form.tiny
           table.ui.table
             tbody
-              tr
+              tr(v-if="item=='code'", v-show="true")
                 td.center.aligned 
-                  span 코드그룹*
+                  span 코드그룹
                 td
                   div.field
                     label
-                    input(type="text", v-model="codeData.cmmnCd")
+                    input(type="text", v-model="codeData.upperCmmnCd", readonly).readonly
               tr
                 td.center.aligned 
-                  span 코드그룹명*
+                  span(v-if="item=='group'") 코드그룹* 
+                  span(v-else) 코드*
                 td
                   div.field
                     label
-                    input(type="text", v-model="codeData.cmmnCdNm")
+                    input(v-if="type=='new'", type="text", v-model="codeData.cmmnCd", maxlength="4")
+                    input(v-else, type="text", v-model="codeData.cmmnCd", readonly).readonly
+              tr
+                td.center.aligned 
+                  span(v-if="item=='group'") 코드그룹명* 
+                  span(v-else) 코드명*
+                td
+                  div.field
+                    label
+                    input(type="text", v-model="codeData.cmmnCdNm" maxlength="15")
               tr(v-if="item=='code'")
                 td.center.aligned 
                   span 표시순서*
                 td
                   div.field
                     label
-                    input(type="text", v-model="codeData.indictOrdr")
+                    input(type="number", v-model="codeData.indictOrdr", default="0", min="0", max="99", @keyup="fnChangeIndictOrdr")
               tr
                 td.center.aligned 
                   span 사용여부
@@ -79,29 +89,55 @@ export default {
     },
     updateCodeGroup () {
       const requestData = JSON.stringify(this.codeData)
-      PublicCodeApi.updateCodeGroup(requestData).then(result => {
-        console.log(result)
-        this.$emit('close')
-        this.showDailog()
-      }).catch(error => {
-        this.$emit('close')
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
+      if(this.type == "new" ){
+        PublicCodeApi.insertCodeGroup(requestData).then(result => {
+          console.log(result)
+          this.$emit('close')
+          this.showDailog()
+        }).catch(error => {
+          this.$emit('close')
+          const err = error.response
+          console.log(err)
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        })
+      }else{
+        PublicCodeApi.updateCodeGroup(requestData).then(result => {
+          console.log(result)
+          this.$emit('close')
+          this.showDailog()
+        }).catch(error => {
+          this.$emit('close')
+          const err = error.response
+          console.log(err)
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        })
+      }
     },
     updateCode () {
       const requestData = JSON.stringify(this.codeData)
-      PublicCodeApi.updateCodeItem(requestData).then(result => {
-        console.log(result)
-        this.$emit('close')
-        this.showDailog()
-      }).catch(error => {
-        this.$emit('close')
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
+      if(this.type == "new" ){
+        PublicCodeApi.insertCodeItem(requestData).then(result => {
+          console.log(result)
+          this.$emit('close')
+          this.showDailog()
+        }).catch(error => {
+          this.$emit('close')
+          const err = error.response
+          console.log(err)
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        })
+      }else{
+        PublicCodeApi.updateCodeItem(requestData).then(result => {
+          console.log(result)
+          this.$emit('close')
+          this.showDailog()
+        }).catch(error => {
+          this.$emit('close')
+          const err = error.response
+          console.log(err)
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        })
+      }
     },
     showDailog () {
       let options = {
@@ -119,6 +155,14 @@ export default {
         options.text += '수정되었습니다'
       }
       this.$modal.show('dialog', options)
+    },
+    /* event function */
+    fnChangeIndictOrdr (e) {
+      if( eval(this.codeData.indictOrdr) > 99 ){
+        //e.preventDefault()
+        var str = this.codeData.indictOrdr + ""
+        this.codeData.indictOrdr = str.substring(0,2)
+      }
     }
   }
 }

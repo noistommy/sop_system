@@ -30,5 +30,9 @@ export default {
   // SOP 삭제
   deleteItem: (payload) => {
     return HTTP.post(`${TargetURL}.deleteSopManageInfo.do`, payload)
+  },
+  // sop 실행권한조회
+  checkRunFlag: (payload) => {
+    return HTTP.post(`/n3n.sop.SopExecutManage.selectSopExecutAuthorFlag.do`, payload)
   }
 }

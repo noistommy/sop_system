@@ -1,6 +1,6 @@
 <template lang="pug">
   div.modal.user-editor
-    div.modal-header 운영자{{type}}
+    div.modal-header 운영자{{type == 'new' ? '등록' : '수정'}}
     div.modal-content 
       div.content-wrapper
         div.ui.form.tiny
@@ -11,7 +11,8 @@
                 td
                   div.field
                     label
-                    input(type="text", v-model="userData.oprtrId")
+                    input(v-if="type=='new'", type="text", v-model="userData.oprtrId", @blur="checkUserId")
+                    input(v-else, type="text", v-model="userData.oprtrId", readonly).readonly
                 td 이름*
                 td
                   div.field
@@ -39,27 +40,30 @@
                 td(:colspan='3')
                   div.inline.fields
                     div.field
-                      div.ui.radio.checkbox
-                        label 관리자
-                        input(type="radio", :value="option1", v-model="userData.oprtrFgCd")
-                      div.ui.radio.checkbox
-                        label 운영자
-                        input(type="radio", :value="option2", v-model="userData.oprtrFgCd")
+                      div.field
+                        button.ui.button.mini(@click="activeMode('S0400100')", :class="{blue:userData.oprtrFgCd == 'S0400100'}") 관리자
+                        button.ui.button.mini(@click="activeMode('S0400200')", :class="{blue:userData.oprtrFgCd == 'S0400200'}") 운영자
+                      //- div.ui.radio.checkbox
+                      //-   label 관리자
+                      //-   input(type="radio", :value="option1", v-model="userData.oprtrFgCd")
+                      //- div.ui.radio.checkbox
+                      //-   label 운영자
+                      //-   input(type="radio", :value="option2", v-model="userData.oprtrFgCd")
               tr
                 td 비밀번호*
-                td(v-if="type == '등록'", :colspan='3')
+                td(v-if="type == 'new'", :colspan='3')
                   div.field
-                    | welcome_sop
+                    | {{initPw}}
                 td(v-else, :colspan='3')
                   div.field
                     button.ui.button(@click="initPassword") 초기화
-            
-    div.btnSet.center
-      template(v-if="type=='등록'")
-        button.ui.button.blue(@click="createUser") 등록
-      template(v-else)
-        button.ui.button.blue(@click="updateUser") 저장
-      button.ui.button(@click="$emit('close')") 취소
+          div.error-message {{errorMsg}} 
+      div.btnSet.center
+        template(v-if="type=='new'")
+          button.ui.button.blue(@click="createUser") 등록
+        template(v-else)
+          button.ui.button.blue(@click="updateUser") 저장
+        button.ui.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
         //- i.icon.close
         div.close X
@@ -82,23 +86,38 @@ export default {
     return {
       userData: {},
       option1: "S0400100",
-      option2: "S0400200"
+      option2: "S0400200",
+      errorMsg: '',
+      initPw: ''
     }
   },
   created () {
     this.userData = this.data
+    if(this.type == 'new') {
+      this.userData.oprtrFgCd = 'S0400200'
+    }
     this.spotInfo = this.getCodeList('S020')
     this.positionInfo = this.getCodeList('S030')
-    /*
-    if( this.userData.oprtrId !== ""){
-
-    }
-    */
+    this.getPassword()
+    
   },
   mounted () {
     $('.ui.radio.checkbox').checkbox()
   },
   methods: {
+    activeMode (mode) {
+      this.userData.oprtrFgCd = mode
+    },
+    getPassword () {
+      const requestData = JSON.stringify({})
+      UsersApi.getInitPassword(requestData).then(result => {
+        console.log(result)
+        this.initPw = result.data.userData1
+      }).catch(error => {
+        const err = error.response
+        alert(err.data.msgValue)
+      })
+    },
     createUser () {
       const requestData = JSON.stringify(this.userData)
       UsersApi.createUser(requestData).then(result => {
@@ -106,10 +125,8 @@ export default {
         this.$emit('close')
         this.showDailog()
       }).catch(error => {
-        this.$emit('close')
         const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        alert(err.data.msgValue)
       })
     },
     updateUser () {
@@ -119,10 +136,8 @@ export default {
         this.$emit('close')
         this.showDailog()
       }).catch(error => {
-        this.$emit('close')
         const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        alert(err.data.msgValue)
       })
     },
     initPassword () {
@@ -133,10 +148,8 @@ export default {
         console.log(result)
         alert('비밀번호가 초기화 되었습니다.')
       }).catch(error => {
-        this.$emit('close')
         const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        alert(err.data.msgValue)
       })
     },
     getCodeList (code) {
@@ -147,18 +160,31 @@ export default {
          console.log(result)
          return result.data.cmmnCdGroupList
        }).catch(error => {
-         this.$emit('close')
           const err = error.response
-          console.log(err)
-          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+          alert(err.data.msgValue)
        })
+    },
+    checkUserId () {
+      const requestData = JSON.stringify({
+        oprtrId:this.userData.oprtrId
+      })
+      UsersApi.getDetail(requestData).then(result => {
+        console.log(result)
+        if(result.data.oprtrInfoDetail == null) {
+          this.errorMsg = ''
+          return false
+        }
+        if(this.userData.oprtrId = result.data.oprtrInfoDetail.oprtrId) {
+          this.errorMsg = `[${this.userData.oprtrId}]는 이미 사용중입니다`
+        }
+      })
     },
     showDailog () {
       let options = {
         title: '실행확인',
         text: '운영자가'
       }
-      if(this.type == '등록') {
+      if(this.type == 'new') {
         options.text += '등록되었습니다'
       }else {
         options.text += '수정되었습니다'
@@ -225,11 +251,11 @@ export default {
       color: #9f3a38;
     }
     .btnSet {
-      position:absolute;
-      padding: 15px 0;
-      width: 100%;
-      left: 0;
-      bottom: 0;
+      // position:absolute;
+      // padding: 15px 0;
+      // width: 100%;
+      // left: 0;
+      // bottom: 0;
       display: flex;
       justify-content: center;
       .ui.button {
@@ -242,6 +268,13 @@ export default {
         min-width: 100px;
         background-color: #f9fafb;
       }
+    }
+    .error-message {
+      height: 20px;
+      text-align: right;
+      font-size: 1rem;
+      color:#f3302c;
+      font-weight: bold;
     }
 }
 </style>

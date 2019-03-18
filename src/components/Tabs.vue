@@ -6,7 +6,9 @@
                 <li class="tabItem" 
                     :key="index"
                     :class="{ active: tab.pathName === activeTab }">
-                    <router-link :to="{ name: tab.pathName }">{{ tab.name }}</router-link>
+                    <a v-if="tab.pathName=='sop-run'">{{ tab.name }}</a>
+                    <a v-else-if="tab.pathName=='sop-edit'">{{ tab.name }}</a>
+                    <router-link :to="{ name: tab.pathName }" v-else>{{ tab.name }}</router-link>
                 </li>
               </template>
             </ul>

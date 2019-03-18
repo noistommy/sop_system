@@ -8,6 +8,12 @@
             tbody
               tr
                 td.center.aligned 
+                  span 협력업체명*
+                td
+                  div.field
+                    span {{this.target.childCcpyNm}}
+              tr
+                td.center.aligned 
                   span 사원명*
                 td
                   div.field
@@ -48,7 +54,8 @@ export default {
     data: Object,
     title: String,
     type: String,
-    item: String
+    item: String,
+    target: Object
   },
   data () {
     return {
@@ -60,7 +67,7 @@ export default {
   },
   methods: {
     createPartner() {
-      const requestData = JSON.stringify(this.newPartner)
+      const requestData = JSON.stringify(this.partnerData)
       PartnerApi.createEmployee(requestData)
       .then(result => {
         console.log(result)
@@ -75,7 +82,7 @@ export default {
       })
     },
     updatePartner() {
-      const requestData = JSON.stringify(this.newPartner)
+      const requestData = JSON.stringify(this.partnerData)
       PartnerApi.updateEmployee(requestData)
       .then(result => {
         console.log(result)

@@ -1,64 +1,45 @@
 <template lang="pug">
-  div.order-action
+  div.broad-onoff-action
     div.ui.form.tiny
-      table.ui.table.celled.structured.very.compact.yellow
+      table.ui.table.celled.structured.very.compact.green
         thead
           tr
             th.center.aligned 
-              div.type 지시사항
+              div.type 방송
             th.right.aligned.wide.nine
             th.center.aligned 
               div.ui.radio.checkbox 
-                input(type="checkbox", v-model="orderData.autoYn", true-value="Y", false-value="N")
+                input(type="checkbox", v-model="broadData.autoYn", true-value="Y", false-value="N")
                 label 자동실행
             th.center.aligned 
               button.ui.button.icon.basic.mini(@click="$emit('delete')")
                 i.icon.close
-        tbody 
-          tr 
-            td(colspan="4") 
-              div.field
-                CheckTextCount(
-                  :formType="formType",
-                  :rownum='3',
-                  :maxLength='200',
-                  v-model="orderData.drctContents",
-                  @input="returnText")
-          
+
 </template>
 
 <script>
-import CheckTextCount from '@/components/CheckTextCount.vue'
-
+import StandardBroadApi from '@/api/StandardBroad'
 export default {
-  name: 'action-order',
+  name: 'action-onoff-broad',
   props: {
     idx: Number,
+    paramCode: Array,
     value: Object
   },
   data () {
     return {
+      broadData: this.value,
       actionCheck: false,
-      formType: 'textarea',
-      textareaData: '',
-      orderData: this.value
     }
   },
   components: {
-    CheckTextCount
   },
   created () {
   },
   mounted () {
-    $('ui.checkbox').checkbox()
+    $('.ui.checkbox').checkbox()
   },
   methods: {
-    returnText (text) {
-      this.orderData.drctContents = text
-    },
-    checkAction () {
-      this.$emit('actData', { orderId: this.idx, state:this.actionCheck })
-    }
   }
 }
 </script>
@@ -68,7 +49,7 @@ export default {
   > div {
     padding: 10px 0;
   }
-  .order-action {
+  .broad-action {
     .parameters {
       display: flex;
       flex-wrap: wrap;

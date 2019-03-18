@@ -25,11 +25,11 @@
             <template slot="items" slot-scope="props">
               tr
                 td(v-if="smsHistory.isListNumber").center.aligned {{(smsHistory.pageInfo.currPage - 1) * 10 + props.idx + 1}}
-                td {{props.item.regDt}}
+                td.center.aligned {{props.item.regDt}}
                 td {{props.item.buldNm}}
                 td.center.aligned {{props.item.cnt}}
                 td {{props.item.smsContents}}
-                td.ellipse {{props.item.result}}
+                td.center.aligned.ellipse {{props.item.result}}
             </template>
         div.footer
           div.btnSet
@@ -102,14 +102,7 @@ export default {
         regFromDt: this.searchData.start,
         regToDt: this.searchData.end
       })
-      HistoryApi.getSMSExcel(requestData).then(result => {
-        console.log(result)
-      })
-      .catch(error => {
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
+      HistoryApi.smsHistoryDownload(requestData)
     },
     initDate() {
       const today = new Date()

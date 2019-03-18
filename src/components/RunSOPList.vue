@@ -1,6 +1,8 @@
 <template lang="pug">
   div#SopList(:class="{active:activeSide}")
-    .run-list
+    //- modals-container
+    div.virtual-btn(v-if="!activeSide", @click="toggleSideLayer")
+    div.run-list
       div.item.userInfo
         div.slideBtn(@click="toggleSideLayer")
           i.icon.bars
@@ -61,17 +63,17 @@ export default {
     RunSopModal
   },
   created () {
-    setInterval(() => {
-      this.getSOPList()
-    },5000)
     this.getSOPList()
+    // setInterval(() => {
+    //  this.getSOPList()
+    // },5000)
+    
   },
   methods: {
     ...mapActions([
       'logout'
     ]),
     toggleSideLayer () {
-      console.log()
       this.activeSide = !this.activeSide
     },
     onLogout() {
@@ -89,7 +91,8 @@ export default {
       this.$modal.show(ResetPassword, {
         title: '비밀번호변경',
       }, {
-        width: '350px'
+        width: '350px',
+        clickToClose: false
       })
     },
     getSOPList () {
@@ -105,9 +108,20 @@ export default {
       })
     },
     runningSop (sopItem) {
-      this.$router.push({ name: 'sop-run', params: {sopId: sopItem.sopId, sopExecutSn: sopItem.sopExecutSn}})
+      const requestData = JSON.stringify({
+        sopId: sopItem.sopId,
+        sopExecutSn: sopItem.sopExecutSn
+      })
+      SopSlide.checkRunFlag(requestData).then(result => {
+        if(result.data.executAuthorFlag == 'Y') {
+          this.$router.push({ name: 'sop-run', params: {sopId: sopItem.sopId, sopExecutSn: sopItem.sopExecutSn, type: 'run'}})
+        } else {
+          this.$router.push({ name: 'sop-run', params: {sopId: sopItem.sopId, sopExecutSn: sopItem.sopExecutSn, type: 'monitor'}})
+        }
+      })
     },
     readySop (sopItem) {
+      console.log('click')
       if(sopItem.sopId == undefined) {
         this.selectSopBySensor(sopItem)
       } else {
@@ -120,7 +134,8 @@ export default {
         data: reqData
       },{
         width: '350px',
-        height: 'auto'
+        height: 'auto',
+        clickToClose: false
       })
     },
     selectSopBySensor (reqData) {
@@ -130,7 +145,8 @@ export default {
         data: reqData.iwId
       },{
         width: '600px',
-        height: '500px'
+        height: '500px',
+        clickToClose: false
       })
     }
   }
@@ -172,6 +188,12 @@ export default {
     -webkit-box-shadow: 0 0 20px 0 #333;
             box-shadow: 0 0 20px 0 #333;
     .transition;
+    .virtual-btn {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index:9999;
+    }
     .run-list {
       width: 300px;
       height: 100%;
@@ -234,7 +256,7 @@ export default {
             font-size: .9rem;
             .sop-item {
               color: #f2f2f2;
-              margin: 10px 0;
+              padding: 10px 0;
             }
             a {
               margin: 10px 0;

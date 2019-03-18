@@ -1,5 +1,6 @@
 <template lang="pug">
   div.StandardSms.sub-container
+    modals-container
     div.sub-wrapper
       div.sub-header
         div.title 표준 문자 관리
@@ -21,6 +22,7 @@
                 :isPagination="standardSms.isPagination",
                 :page="standardSms.pageInfo"
                 :isListNumber="standardSms.isListNumber",
+                @search="getSmslist"
               ).ui.table.celled.selectable
                 <template slot="items" slot-scope="props">
                   tr(:active="props.selected", @click="selectedItem(props)" )
@@ -39,6 +41,12 @@
                       td.center.aligned
                         span 문자제목
                       td
+                        //- check-text-count(
+                        //-   :formType="''",
+                        //-   :rownum='0',
+                        //-   :maxLength='50',
+                        //-   v-model="standardSmsDetail.smsTitle",
+                        //-   @input="returnText")
                         input(type="text", v-model="standardSmsDetail.smsTitle")
                         label
                     tr
@@ -47,10 +55,10 @@
                       td
                         check-text-count(
                           :formType="formType",
-                          :rownum='3',
-                          :maxLength='500',
+                          :rownum='6',
+                          :maxLength='200',
                           v-model="standardSmsDetail.smsContents",
-                          @input="returnText")
+                          @input="returnTextarea")
                     tr
                       td.center.aligned 
                         span 파라미터1
@@ -59,7 +67,7 @@
                           div.field.six.wide
                             label
                             select(:id="1", v-model="standardSmsDetail.cmmnCd1", @change="insertValueName")
-                              option(disabled, value="")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -72,6 +80,7 @@
                           div.field.six.wide
                             label
                             select(:id="2",v-model="standardSmsDetail.cmmnCd2", @change="insertValueName")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -84,6 +93,7 @@
                           div.field.six.wide
                             label
                             select(:id="3",v-model="standardSmsDetail.cmmnCd3", @change="insertValueName")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -96,6 +106,7 @@
                           div.field.six.wide
                             label
                             select(:id="4",v-model="standardSmsDetail.cmmnCd4", @change="insertValueName")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -108,6 +119,7 @@
                           div.field.six.wide
                             label
                             select(:id="5",v-model="standardSmsDetail.cmmnCd5", @change="insertValueName")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -121,12 +133,13 @@
                           true-value="Y",
                           false-value="N",
                           v-model="standardSmsDetail.useYn")
-                          label 허용
+                          label 사용{{standardSmsDetail.useYn == 'N' ? '안함' : ''}}
             div.btnSet
                 div.btn-wrap.right
-                  button.ui.button.blue(@click="createSmsItem") 신규등록
+                  button.ui.button.blue(@click="createSmsItem('new')") 신규등록
                 div.btn-group.left
                   button.ui.button.blue(@click="updateSmsItem") 저장
+                  button.ui.button(@click="createSmsItem('init')", v-if="isNewInsert") 초기화
                   button.ui.button(@click="getSmsItem") 취소
           
           
@@ -164,10 +177,13 @@ export default {
       standardSmsDetail: {
       },
       newSmsDetail: {},
-      searchData: {},
+      searchData: {
+        searchNm: ''
+      },
       paramList: [],
       formType: 'textarea',
-      textArea:'S0800100'
+      textArea:'S0800100',
+      isNewInsert: false
     }
   },
   components: {
@@ -179,26 +195,28 @@ export default {
   },
   created () {
     this.getCodeList('S080')
-    this.getSmslist()
+    this.getSmslist(1)
   },
   mounted () {
-    $('.ui.dropdown').dropdown('restore defaults')
-  },
-  updated () {
-   
   },
   computed: {
     alarmYn () {
       return this.standardSmsDetail.useYn == 'Y'
+    },
+    insertTextarea () {
+      return this.standardSmsDetail.insertParams1 + this.standardSmsDetail.insertParams2 + this.standardSmsDetail.insertParams3 + this.standardSmsDetail.insertParams4 + this.standardSmsDetail.insertParams5
     }
   },
   methods: {
-    getSmslist () {
+    getSmslist (targetNum) {
+      this.searchData.currPage = targetNum
       const requestData = JSON.stringify(this.searchData)
       StandardSmsApi.getList(requestData)
       .then(result => {
         this.standardSms.standardSmsData = result.data.stdSmsList
         this.standardSms.selected[0] = this.standardSms.standardSmsData[0]
+        result.data.param.totalCount = result.data.totCnt
+        this.standardSms.pageInfo = result.data.param
         this.getSmsItem()
       }).catch(error => {
         const err = error.response
@@ -213,9 +231,9 @@ export default {
       StandardSmsApi.getDetail(requestData)
       .then(result => {
         console.log(result)
-        $('.ui.dropdown').dropdown('restore defaults')
         this.standardSmsDetail = result.data
-
+        // this.returnText(result.data.smsContents)
+        this.isNewInsert = false
       })
       .catch(error => {
         const err = error.response
@@ -224,11 +242,14 @@ export default {
       })
     },
     updateSmsItem () {
+      if(this.isNewInsert) {
+        this.isNewInsert = false
+      }
       const requestData = JSON.stringify(this.standardSmsDetail)
       StandardSmsApi.updateDetail(requestData)
       .then(result => {
         console.log(result)
-        this.getSmslist()
+        this.getSmslist(this.standardSms.pageInfo.currPage)
         this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
       })
       .catch(error => {
@@ -239,15 +260,15 @@ export default {
     },
     checkSmsItem () {
       const requestData = JSON.stringify(this.standardSmsDetail)
-      StandardSmsApi.checkDetail(requestData)
-      .then(result => {
+      StandardSmsApi.checkDetail(requestData).then(result => {
        console.log(result)
         this.$modal.show(CheckMediaModal,{
           title: '문자(SMS)확인',
           data: result.data
         },{
           width: '350px',
-          height: 'auto'
+          height: 'auto',
+          clickToClose: false
         })
       })
       .catch(error => {
@@ -256,12 +277,15 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
-    createSmsItem () {
+    createSmsItem (type) {
+      if(type == 'new') {
+        this.isNewInsert = true
+      }
       this.standardSmsDetail = {
           smsSn:0,
           smsTitle:'',
           smsContents:'',
-          useYn:"N",
+          useYn:"Y",
           cmmnCd1:'',
           inputParam1:'',
           userData1:'',
@@ -300,8 +324,11 @@ export default {
           this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
        })
     },
-    returnText (text) {
+    returnTextarea (text) {
       this.standardSmsDetail.smsContents = text
+    },
+    returnText (text) {
+      this.standardSmsDetail.smsTitle = text
     },
     insertValueName (event) {
       this.paramList.forEach(e => {

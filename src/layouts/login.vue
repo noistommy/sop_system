@@ -45,7 +45,7 @@ export default {
     onLogin() {
       const requestData = JSON.stringify(this.loginInfo)
       this.login(requestData).then((result) => {
-        console.log(result)
+        console.log(result.data.msgCode)
         if(result == undefined) return 
         if(result.data.msgCode == 'Y') {
           this.$router.push('/')
@@ -55,7 +55,8 @@ export default {
             text: result.data.msgValue,
             userId: this.loginInfo.oprtrId
           }, {
-            width: '350px'
+            width: '350px',
+            clickToClose: false
           })
         }else {
           this.$modal.show('dialog', codeGenerator(result.data.msgCode, result.data.msgValue))

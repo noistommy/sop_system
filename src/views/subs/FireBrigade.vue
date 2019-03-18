@@ -1,5 +1,6 @@
 <template lang="pug">
   div.FireBrigade.sub-container
+    modals-container(@upload="uploadFile")
     div.sub-wrapper
       div.sub-header
         div.title 자위소방대관리
@@ -7,18 +8,19 @@
         :isTextSearch="true",
         @search="searchList")
           template(slot="condition1", slot-scope="props")
-            select.ui.dropdown(v-model="searchData.searchCnd")
-              option(value="", default) 분류
-              option(value="00") 전체
-              option(value="01") 팀명
-              option(value="02") 이름
+            div.ui.form
+              select(v-model="searchData.searchCnd")
+                option(value="", default) 분류
+                option(value="00") 전체
+                option(value="01") 팀명
+                option(value="02") 이름
         div.btnUpload
-          button.ui.button.green(@click="uploadFile") 파일업로드
+          button.ui.button.green(@click="openUploadFile") 파일업로드
           button.ui.button.green(@click="uploadSampleFile") 업로드샘플
       div.sub-content
         div.content.row
           div.section.left-section
-            div.treeView-wrapper(:class="{editabled:isEdit}")
+            div.treeView-wrapper
               div.treeView.list.level-0
                 TreeView(
                   v-model="selectTeam",
@@ -27,7 +29,8 @@
                   :treeItem="item",
                   :isActive="rootActive",
                   :level="1",
-                  @search="getList")
+                  @search="getList",
+                  :selectedTeam="uniqTeam")
             div.treeEdit
             div.btnSet
               div.btn-group.left
@@ -37,7 +40,7 @@
           div.section.right-section
             div.file-movement
               div.files_1
-                h3 {{selectTeam.title}}
+                h3 {{selectTitle}}
                 div.data-list-wrap
                   DataList(
                     v-model="fireBrigade.selected"
@@ -81,7 +84,7 @@
                 div.btn-wrap.right
                 div.btn-group.left
                   button.ui.button.blue(@click="updateItems") 저장
-                  button.ui.button(@click="getList") 취소
+                  button.ui.button(@click="getList") 초기화
         div.footer
           div.btnSet
             div.btn-group.left
@@ -98,9 +101,9 @@ import DataList from '@/components/DataList.vue'
 import TreeView from '@/components/TreeView.vue'
 import SearchComp from '@/components/SearchComp.vue'
 import TreeModal from '@/components/TreeModal.vue'
+import FileUpload from '@/components/FileUpload.vue'
 import { fireBrigadeGroupHeader } from '@/setting'
 import FireBrigadeApi from '@/api/FireBrigade'
-import axios from 'axios'
 import { codeGenerator } from '@/util'
 
 export default {
@@ -121,7 +124,7 @@ export default {
         offFireBrigadeGroup: [],
         isListNumber: false,
         isTitle: false,
-        itemkey: 'emplNo'
+        itemkey: 'rnum'
       },
       FireBrigadeDetail: {},
       treeviewData: [],
@@ -131,8 +134,8 @@ export default {
         searchCnd: '',
         searchNm: ''
       },
-      isEdit: false,
-      uploadTreeData: {}
+      uploadTreeData: {},
+      uniqTeam: {}
     }
   },
   components: {
@@ -144,33 +147,25 @@ export default {
   created () {
     this.getTreeList()
   },
+  computed: {
+    selectTitle () {
+      if(this.selectTeam.title != undefined) {
+        return this.selectTeam.title
+      } else if (this.searchData.searchNm != '') {
+        console.log('search')
+        return `검색 : ${this.searchData.searchNm}`
+      } else {
+        return '사원목록'
+      }
+    }
+  },
   methods: {
     setNumbering (num) {
       return (this.pageInfo.currentPageNo - 1) * 10 + num
     },
-    getList() {
-      if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
-      this.searchData.childSlfdfnFbrdId = this.selectTeam.childSlfdfnFbrdId
-      const requestData = JSON.stringify(this.searchData)
-      FireBrigadeApi.getDetail(requestData)
-      .then(result => {
-        console.log(result)
-        this.initedSelect()
-        this.fireBrigade.fireBrigadeGroup = result.data.slfdfnFbrdEmpInfoList
-        this.offFireBrigade.offFireBrigadeGroup = result.data.fbrdAsignTrgetList
-        this.fireBrigadeDetail = result.data.slfdfnFbrdDetailInfo
-      })
-      .catch(error => {
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
-    },
-    searchList () {
-      this.getList()
-    },
     getTreeList () {
-      FireBrigadeApi.getTreeList()
+      const requestData = JSON.stringify({})
+      FireBrigadeApi.getTreeList(requestData)
       .then(result => {
         console.log(result)
         this.treeviewData = result.data.slfdfnFbrdTrList
@@ -183,11 +178,48 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })  
     },
+    getList() {
+      if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
+      this.searchData.childSlfdfnFbrdId = this.selectTeam.childSlfdfnFbrdId
+      const requestData = JSON.stringify(this.searchData)
+      FireBrigadeApi.getDetail(requestData)
+      .then(result => {
+        console.log(result)
+        this.fireBrigade.fireBrigadeGroup = result.data.slfdfnFbrdEmpInfoList
+        this.offFireBrigade.offFireBrigadeGroup = result.data.fbrdAsignTrgetList
+        this.fireBrigadeDetail = result.data.slfdfnFbrdDetailInfo
+      })
+      .catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    searchList () {
+      this.initSearch('id')
+      this.getList()
+    },
+    getItemInfo (item) {
+      this.initSearch('search')
+      this.selectTeam = item
+      this.uploadTreeData = item
+      this.getList()
+    },
+    initSearch (type) {
+      console.log(type)
+      if(type=='search') {
+        this.searchData.searchCnd = ''
+        this.searchData.searchNm = ''
+      } else {
+        this.selectTeam = {}
+      }
+    },
     updateItems () {
       const requestData = JSON.stringify({
+        slfdfnFbrdId: this.fireBrigade.fireBrigadeGroup[0].slfdfnFbrdId,
         slfdfnFbrdEmpInfoList: this.fireBrigade.fireBrigadeGroup
       })
-      FireBrigadeApi.setFireBrigadeInfo(requestData).then(result => {
+      FireBrigadeApi.setFiremanInfo(requestData).then(result => {
         console.log(result)
       }).catch(error => {
         const err = error.response
@@ -210,7 +242,7 @@ export default {
     selectedrightItems(itemInfo) {
       if(itemInfo.selected) {
         this.offFireBrigade.selected.forEach((e, i) => {
-          if(e[this.fireBrigade.itemkey] == itemInfo.item[this.fireBrigade.itemkey]) {
+          if(e[this.offFireBrigade.itemkey] == itemInfo.item[this.offFireBrigade.itemkey]) {
             this.offFireBrigade.selected.splice(i, 1)
           }
         })
@@ -218,14 +250,6 @@ export default {
         this.offFireBrigade.selected.push(this.offFireBrigade.offFireBrigadeGroup[itemInfo.idx])
       }
       
-    },
-    getItemInfo(item) {
-        this.selectTeam = item
-        this.uploadTreeData = item
-        this.getList(1)
-    },
-    editpanel () {
-      this.isEdit = !this.isEdit
     },
     initedSelect () {
       this.fireBrigade.selected= []
@@ -235,15 +259,32 @@ export default {
       this.$modal.show(TreeModal, {
         title: '자위소방대',
         data: this.treeviewData,
-        target: this.selectTeam,
-        type: editType
+        target: this.fireBrigadeDetail,
+        type: editType,
+        children: this.fireBrigade.fireBrigadeGroup
       },{
         width: '70%',
-        height: '50%'
+        height: '50%',
+        clickToClose: false
+      },{
+        'before-close': () => {
+          // this.getTreeList ()
+        }
+      })
+    },
+    openUploadFile () {
+      this.$modal.show(FileUpload, {
+        title: '파일업로드'
+      },{
+        width: '300px',
+        height: 'auto',
+        clickToClose: false
       })
     },
     uploadFile () {
-      FireBrigadeApi.fileUpload().then(result => {
+      const requestData = new FormData()
+      requestData.append('file', file)
+      FireBrigadeApi.fileUpload(requestData).then(result => {
         console.log(result)
       }).catch(error => {
         const err = error.response
@@ -252,22 +293,10 @@ export default {
       })
     },
     uploadSampleFile () {
-      FireBrigadeApi.fileSampleUpload().then(result => {
-        console.log(result)
-      }).catch(error => {
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
+      FireBrigadeApi.fileSampleUpload()
     },
     downloadFile () {
-      FireBrigadeApi.fileDownload().then(result => {
-        console.log(result)
-      }).catch(error => {
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
+      FireBrigadeApi.fileDownload()
     },
     editArray (type) {
       console.log(type)

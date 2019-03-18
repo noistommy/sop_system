@@ -9,23 +9,23 @@ const codeGenerator = (code, text) => {
   }
   switch (code) {
     case 'Y':
-      dialog.title = 'Success'
+      dialog.title = '성공'
       dialog.text = text
       break
     case 'B':
-      dialog.title = 'vBizException'
+      dialog.title = '알람'
       dialog.text = text
       break
     case 'E':
-      dialog.title = 'Exception'
+      dialog.title = '알람'
       dialog.text = text
       break
     case 'F':
-      dialog.title = 'Page Not Found'
+      dialog.title = '알람'
       dialog.text = text
       break
     case 'L':
-      dialog.title = 'close Session'
+      dialog.title = '알람'
       dialog.text = text
       dialog.buttons = [{
         title: '확인',

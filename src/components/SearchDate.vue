@@ -17,6 +17,7 @@
             input( 
             :value='props.inputValue', 
             :placeholder='inputState.message',
+            :input-props='{readonly: true}'
             @input='props.updateValue($event.target.value, { formatInput: false, hidePopover: false })',
             @change='props.updateValue(selectedDateStart, { formatInput: true, hidePopover: false })', 
             expanded)
@@ -27,6 +28,7 @@
             input( 
             :value='props.inputValue', 
             :placeholder='inputState.message',
+            :input-props='{readonly: true}'
             @input='props.updateValue($event.target.value, { formatInput: false, hidePopover: false })',
             @change='props.updateValue($event.target.value, { formatInput: true, hidePopover: false })', 
             expanded)

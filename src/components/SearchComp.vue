@@ -51,7 +51,7 @@ export default {
   methods: {
     searchList() {
       this.$emit('search')
-      this.searchData.searchNm = ''
+      // this.searchData.searchNm = ''
     },
     setText () {
       this.value.searchNm = this.searchText

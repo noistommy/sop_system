@@ -1,5 +1,6 @@
 <template lang="pug">
   div.StandardBroad.sub-container
+    modals-container
     div.sub-wrapper
       div.sub-header
         div.title 표준 방송 관리
@@ -21,6 +22,7 @@
                 :isPagination="standardBroad.isPagination",
                 :page="standardBroad.pageInfo"
                 :isListNumber="standardBroad.isListNumber",
+                 @search="getBroadlist"
               ).ui.table.celled.selectable
                 <template slot="items" slot-scope="props">
                   tr(:active="props.selected", @click="selectedItem(props)" )
@@ -47,7 +49,7 @@
                       td
                         check-text-count(
                           :formType="formType",
-                          :rownum='3',
+                          :rownum='6',
                           :maxLength='500',
                           v-model="standardBroadDetail.brdcstContents")
                     tr
@@ -58,7 +60,7 @@
                           div.field.six.wide
                             label
                             select(:id="1", v-model="standardBroadDetail.cmmnCd1", @change="insertValueName")
-                              option(disabled, value="")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -71,7 +73,7 @@
                           div.field.six.wide
                             label
                             select(:id="2", v-model="standardBroadDetail.cmmnCd2", @change="insertValueName")
-                              option(disabled, value="")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -84,7 +86,7 @@
                           div.field.six.wide
                             label
                             select(:id="3", v-model="standardBroadDetail.cmmnCd3", @change="insertValueName")
-                              option(disabled, value="")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -97,7 +99,7 @@
                           div.field.six.wide
                             label
                             select(:id="4", v-model="standardBroadDetail.cmmnCd4", @change="insertValueName")
-                              option(disabled, value="")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -110,7 +112,7 @@
                           div.field.six.wide
                             label
                             select(:id="5", v-model="standardBroadDetail.cmmnCd5", @change="insertValueName")
-                              option(disabled, value="")
+                              option(value="") 선택
                               option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                           div.field.ten.wide
                             label
@@ -124,12 +126,13 @@
                           true-value="Y",
                           false-value="N",
                           v-model="standardBroadDetail.useYn")
-                          label 허용
+                          label 사용{{standardBroadDetail.useYn == 'N' ? '안함' : ''}}
             div.btnSet
                 div.btn-wrap.right
-                  button.ui.button.blue(@click="createBroadItem") 신규등록
+                  button.ui.button.blue(@click="createBroadItem('new')") 신규등록
                 div.btn-group.left
                   button.ui.button.blue(@click="updateBroadItem") 저장
+                  button.ui.button(@click="createBroadItem('init')", v-if="isNewInsert") 초기화
                   button.ui.button(@click="getBroadItem") 취소
           
       div.sub-footer
@@ -161,9 +164,12 @@ export default {
         pageInfo: {}
       },
       standardBroadDetail: {},
-      searchData: {},
+      searchData: {
+        searchNm:''
+      },
       paramList: [],
-      formType: 'textarea'
+      formType: 'textarea',
+      isNewInsert: false
     }
   },
   components: {
@@ -174,7 +180,7 @@ export default {
   },
   created () {
     this.getCodeList('S080')
-    this.getBroadlist()
+    this.getBroadlist(1)
   },
   computed: {
     alarmYn () {
@@ -182,12 +188,15 @@ export default {
     }
   },
   methods: {
-    getBroadlist () {
+    getBroadlist (targetNum) {
+      this.searchData.currPage = targetNum
       const requestData = JSON.stringify(this.searchData)
       StandardBroadApi.getList(requestData)
       .then(result => {
         this.standardBroad.standardBroadData = result.data.stdBrdcstList
         this.standardBroad.selected[0] = this.standardBroad.standardBroadData[0]
+        result.data.param.totalCount = result.data.totCnt
+        this.standardBroad.pageInfo = result.data.param
         this.getBroadItem()
       })
       .catch(error => {
@@ -203,6 +212,7 @@ export default {
       StandardBroadApi.getDetail(requestData)
       .then(result => {
         this.standardBroadDetail = result.data
+        this.isNewInsert = false
       })
       .catch(error => {
         const err = error.response
@@ -211,12 +221,15 @@ export default {
       })
     },
     updateBroadItem () {
+      if(this.isNewInsert) {
+        this.isNewInsert = false
+      }
       const requestData = JSON.stringify(this.standardBroadDetail)
       StandardBroadApi.updateDetail(requestData)
       .then(result => {
         console.log(result)
         this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
-        this.getBroadlist()
+        this.getBroadlist(this.standardBroad.pageInfo.currPage)
       })
       .catch(error => {
         const err = error.response
@@ -234,7 +247,8 @@ export default {
           data: result.data
         },{
           width: '350px',
-          height: 'auto'
+          height: 'auto',
+          clickToClose: false
         })
       })
       .catch(error => {
@@ -243,12 +257,15 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
-    createBroadItem () {
+    createBroadItem (type) {
+      if(type == 'new') {
+        this.isNewInsert = true
+      }
       this.standardBroadDetail = {
           brdcstSn:null,
           brdcstTitle:'',
           brdcstContents:'',
-          useYn:"N",
+          useYn:"Y",
           cmmnCd1:'',
           inputParam1:'',
           userData1:'',
@@ -295,6 +312,10 @@ export default {
       this.paramList.forEach(e => {
         if(e.cmmnCd == event.target.value) {
           this.standardBroadDetail[`inputParam${event.target.id}`] = e.cmmnCdNm
+          this.standardBroadDetail[`userData${event.target.id}`] = e.userData1
+          if (this.standardBroadDetail.brdcstContents.indexOf(e.cmmnCdNm) < 0) {
+            this.standardBroadDetail.brdcstContents = `${this.standardBroadDetail.brdcstContents}\r\n${e.cmmnCdNm}`
+          }
         }
       })
     }

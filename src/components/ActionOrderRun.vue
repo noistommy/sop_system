@@ -11,7 +11,7 @@
             td.center.aligned 
               button.ui.button.basic.mini(:class="{blue:state}", @click="stepRunning") {{state ? '완료' : '실행'}}
             td.center.aligned  시간
-            td.center.aligned  11:11
+            td.center.aligned  {{actionData.executDt}}
           tr 
             td(colspan="6") 
               div.field
@@ -19,7 +19,7 @@
                   :formType="formType",
                   :rownum='3',
                   :maxLength='500',
-                  v-model="textareaData",
+                  v-model="actionData.drctContents",
                   @input="returnText")
           
 </template>
@@ -28,7 +28,7 @@
 import CheckTextCount from '@/components/CheckTextCount.vue'
 
 export default {
-  name: 'action-sms',
+  name: 'action-order-run',
   props: {
     idx: Number,
     value: Object
@@ -94,8 +94,16 @@ export default {
       }
     }
     .ui.table {
-      th:nth-child(1) {
-        width: 15%
+      tr:nth-child(1) {
+        td:nth-child(odd){
+          background-color: #f9fafb;
+        }
+        td:nth-child(1) {
+          width: 15%;
+        }
+        td:last-child {
+          width: 8%;
+        }
       }
       td {
         overflow: visible;
