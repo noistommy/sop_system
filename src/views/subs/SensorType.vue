@@ -43,7 +43,7 @@
                         span 알람허용여부
                       td
                         div.ui.toggle.checkbox(@click="toggleCheck")
-                          input(type="checkbox", :checked="alarmYn")
+                          input(type="checkbox", v-model="sensorDetail.alarmPermYn", true-value='Y', false-value='N')
                           label 허용
             div.section_2
               div.wrapper
@@ -69,14 +69,13 @@
                             input(v-model="sensorByType.sensorByTypeData[props.idx].alarmPermYn",
                               true-value="Y",
                               false-value="N",
-                              type="checkbox",
-                              :checked="props.item.alarmPermYn=='Y'",
-                              :disabled="alarmYn == false")
+                              type="checkbox"
+                              )
                             label 허용
-                div.btnSet.right
-                    div.buttons
-                      button.ui.button.blue(@click="updateDetail") 저장
-                      button.ui.button(@click="getSensorDetail(sensorByType.pageInfo.currPage)") 취소
+              div.btnSet.right
+                  div.buttons
+                    button.ui.button.blue(@click="updateDetail") 저장
+                    button.ui.button(@click="getSensorDetail(sensorByType.pageInfo.currPage)") 취소
       div.sub-footer
 </template>
 

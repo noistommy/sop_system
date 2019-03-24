@@ -1,5 +1,9 @@
 <template lang="pug">
   div.sms-action
+    SelectReceiver(@close="$modal.hide('select-reciever')", @reciever="setRecieverList")
+    SelectSmsModal(@close="$modal.hide('select-sms')", @select="insertData")
+    CheckMediaModal(@close="$modal.hide('check-msg-modal')")
+    //- modals-container(@reciever="setRecieverList", @select="insertData")
     div.ui.form.tiny
       table.ui.table.celled.structured.very.compact.blue
         thead
@@ -8,7 +12,7 @@
               div.type 문자
             th.right.aligned.wide.nine
               button.ui.button.basic.mini(@click="selectStandard") 선택
-              button.ui.button.basic.mini 문자(SMS)확인
+              button.ui.button.basic.mini(@click="checkSmsItem") 문자(SMS)확인
             th.center.aligned 
               div.ui.radio.checkbox 
                 input(type="checkbox", v-model="smsData.autoYn", true-value="Y", false-value="N")
@@ -20,10 +24,11 @@
           tr
             td.center.aligned  
               div 부서 및 수신자
-            td(colspan="3") 
+            td(colspan="3")
+              //- button.ui.button(@click="selectSmsReceiver") {{recieveText}} 
               div.ui.input.fluid(@click="selectSmsReceiver")
                 label
-                input(type="text")
+                input(type="button", :value="recieverTitle")
               
           tr 
             td(colspan="4") 
@@ -31,8 +36,8 @@
                 CheckTextCount(
                   :formType="formType",
                   :rownum='3',
-                  :maxLength='500',
-                  v-model="textareaData",
+                  :maxLength='200',
+                  v-model="smsData.smsContents",
                   @input="returnText")
           tr 
             td(colspan="4") 
@@ -41,52 +46,52 @@
                   div.fields.inline
                     div.field
                       label 파라미터 1
-                      select(:id="1", @change="setCode1", v-model="paramData1.code")
-                        option(value="") 파라미터1
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                      select(:id="1", @change="setCode1", v-model="smsData.cmmnCd1")
+                        option(value="") 선택
+                        option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData1.data")
+                        input(v-model="smsData.userData1")
                 .parameter
                   div.fields.inline
                     div.field
                       label 파라미터 2
-                      select(:id="2", @change="setCode2", v-model="paramData2.code")
-                        option(value="") 파라미터2
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                      select(:id="2", @change="setCode2", v-model="smsData.cmmnCd2")
+                        option(value="") 선택
+                        option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData2.data")
+                        input(v-model="smsData.userData2")
                 .parameter
                   div.fields.inline
                     div.field
                       label 파라미터 3
-                      select(:id="3", @change="setCode3", v-model="paramData3.code")
-                        option(value="") 파라미터3
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                      select(:id="3", @change="setCode3", v-model="smsData.cmmnCd3")
+                        option(value="") 선택
+                        option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData3.data")
+                        input(v-model="smsData.userData3")
                 .parameter
                   div.fields.inline
                     div.field
                       label 파라미터 4
-                      select(:id="4", @change="setCode4", v-model="paramData4.code")
-                        option(value="") 파라미터4
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                      select(:id="4", @change="setCode4", v-model="smsData.cmmnCd4")
+                        option(value="") 선택
+                        option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData4.data")
+                        input(v-model="smsData.userData4")
                 .parameter
                   div.fields.inline
                     div.field
                       label 파라미터 5
-                      select(:id="5", @change="setCode5", v-model="paramData5.code")
-                        option(value="") 파라미터5
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                      select(:id="5", @change="setCode5", v-model="smsData.cmmnCd5")
+                        option(value="") 선택
+                        option(v-for="param in paramList", :value="param.cmmnCd", :key="param.cmmnCd") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
-                        input(v-model="paramData5.data")
+                        input(v-model="smsData.userData5")
 </template>
 
 <script>
@@ -94,6 +99,7 @@ import CheckTextCount from '@/components/CheckTextCount.vue'
 import SelectSmsModal from '@/components/SelectSmsModal.vue'
 import SelectReceiver from '@/components/SelectReceiver.vue'
 import StandardSmsApi from '@/api/StandardSMS'
+import CheckMediaModal from '@/components/CheckMediaModal.vue'
 
 export default {
   name: 'action-sms',
@@ -114,29 +120,49 @@ export default {
       paramData2: {code: '',name: '',data: ''},
       paramData3: {code: '',name: '',data: ''},
       paramData4: {code: '',name: '',data: ''},
-      paramData5: {code: '',name: '',data: ''}
-
+      paramData5: {code: '',name: '',data: ''},
+      recieveText:'수신자 선택',
+      recieveCount: ''
     }
   },
   components: {
     CheckTextCount,
-    SelectSmsModal
+    SelectSmsModal,
+    SelectReceiver,
+    CheckMediaModal
   },
   created () {
-    this.insertData(this.smsData)
+    // this.insertData(this.smsData)
+    this.setRecieverList(this.smsData.sopStepChrgEmpList)
   },
   mounted () {
     $('.ui.checkbox').checkbox()
   },
-  updateed () {
+  updated () {
     console.log('aaup')
+  },
+  computed: {
+    recieverTitle () {
+      if(this.smsData.sopStepChrgEmpList.length == 0) {
+        this.recieveText = '수신자선택'
+      }
+      if(this.smsData.sopStepChrgEmpList.length <= 1) {
+        this.recieveCount = ''
+      }
+      return `${this.recieveText} ${this.recieveCount}`
+    }
   },
   methods: {
     returnText (text) {
       this.smsData.smsContents = text
     },
+    setRecieverList(recieveList) {
+      this.smsData.sopStepChrgEmpList = recieveList
+      this.recieveText = `${recieveList[0].deptNm} ${recieveList[0].emplNm}`
+      this.recieveCount = `외 ${recieveList.length-1}명`
+    },
     selectStandard () {
-      this.$modal.show(SelectSmsModal, {
+      this.$modal.show('select-sms', {
         title: '표준문자 선택',
         type: 'ActionSms',
         stepNo: this.smsData.stepNo,
@@ -145,53 +171,49 @@ export default {
       {
         id: this.idx,
         width: '80%',
-        height:'auto'
+        height:'90%',
+        clickToClose: false
       })
     },
     insertData (obj) {
-      console.log('obj', obj)
-      this.textareaData = obj.smsContents
-      this.paramData1.code = obj.cmmnCd1
-      this.paramData1.name = obj.inputParam1
-      this.paramData1.data = obj.userData1
-      this.paramData2.code = obj.cmmnCd2
-      this.paramData2.name = obj.inputParam2
-      this.paramData2.data = obj.userData2
-      this.paramData3.code = obj.cmmnCd3
-      this.paramData3.name = obj.inputParam3
-      this.paramData3.data = obj.userData3
-      this.paramData4.code = obj.cmmnCd4
-      this.paramData4.name = obj.inputParam4
-      this.paramData4.data = obj.userData4
-      this.paramData5.code = obj.cmmnCd5
-      this.paramData5.name = obj.inputParam5
-      this.paramData5.data = obj.userData5
-      // this.findCode(obj.cmmnCd)
+      for (let key in obj) {
+          this.smsData[key] = obj[key]
+      }
     },
     setCode1 (event) {
+      this.smsData.userData1 = ''
       this.paramData1 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData1.name)
-      this.smsData.inputParam1 = this.paramData1.data
+      this.smsData.inputParam1 = this.paramData1.name
+      this.smsData.userData1 = this.paramData1.data
     },
     setCode2 (event) {
+      this.smsData.userData2 = ''
       this.paramData2 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData2.name)
-      this.smsData.inputParam2 = this.paramData2.data
+      this.smsData.inputParam2 = this.paramData2.name
+      this.smsData.userData2 = this.paramData2.data
     },
     setCode3 (event) {
+      this.smsData.userData3 = ''
       this.paramData3 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData3.name)
-      this.smsData.inputParam3 = this.paramData3.data
+      this.smsData.inputParam3 = this.paramData3.name
+      this.smsData.userData3 = this.paramData3.data
     },
     setCode4 (event) {
+      this.smsData.userData4 = ''
       this.paramData4 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData4.name)
-      this.smsData.inputParam4 = this.paramData4.data
+      this.smsData.inputParam4 = this.paramData4.name
+      this.smsData.userData4 = this.paramData4.data
     },
     setCode5 (event) {
+      this.smsData.userData5 = ''
       this.paramData5 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData5.name)
-      this.smsData.inputParam5 = this.paramData5.data
+      this.smsData.inputParam5 = this.paramData5.name
+      this.smsData.userData5 = this.paramData5.data
     },
     findCode (code) {
       const value = {
@@ -209,39 +231,57 @@ export default {
       return value
     },
     insertTextarea (name) {
-      if (this.textareaData.indexOf(name) < 0) {
-        this.textareaData = `${this.textareaData}\r\n${name}`
+      if (this.smsData.smsContents.indexOf(name) < 0) {
+        this.smsData.smsContents = `${this.smsData.smsContents}\r\n${name}`
       }
     },
     selectSmsReceiver () {
-      this.$modal.show(SelectReceiver,{
-        modal:'locationmodal',
-        title: '수신자 선택'
+      this.$modal.show('select-reciever' ,{
+        title: '수신자 선택',
+        stepNo: this.smsData.stepNo,
+        stepSn: this.smsData.stepSn,
+        recieveData: this.smsData.sopStepChrgEmpList
       },{
         width: '70%',
-        height: '80%'
+        height: '80%',
+        clickToClose: false
       })
     },
     checkSmsItem () {
-      const requestData = JSON.stringify(this.standardSmsDetail)
+      const requestData = JSON.stringify(this.smsData)
       StandardSmsApi.checkDetail(requestData)
       .then(result => {
        console.log(result)
-        this.$modal.show(CheckMediaModal,{
+        this.$modal.show('check-msg-modal',{
           title: '문자(SMS)확인',
           data: result.data
         },{
           width: '350px',
-          height: 'auto'
+          height: 'auto',
+          clickToClose: false
         })
       })
       .catch(error => {
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        // this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     }
-  }
+  },
+    // insertSmsData (insert) {
+    //   console.log(insert)
+    //    this.sopNewData.sopStepList.forEach((step, i) => {
+    //      if(insert.stepNo == step.stepNo) {
+    //        step.actionItem.forEach((act, j) => {
+    //          if(insert.stepSn == act.stepSn) {
+    //           //  this.sopNewData.sopStepList[i].actionItem[j] = Object.assign({}, this.sopNewData.sopStepList[i].actionItem[j], insert.action)
+    //           Object.assign(act, insert.action)
+    //           this.isupdate = true
+    //          }
+    //        })
+    //      }
+    //    })
+    // }
 
 }
 </script>

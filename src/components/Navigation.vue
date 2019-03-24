@@ -4,28 +4,28 @@
       a(href="/")
         img(src="../assets/CI_logo.png", alt="vue-logo")
     div#mainNav
-        div.item(@click="activeNavigation('sop-list')", :class="{active:isActive == 'sop-list'}")
+        div.item(@click="activeNavigation('sop-list')", :class="{active:isActive == 'sopmanage'}")
             router-link(:to="{ name: 'sop-list' }")
                 h6.ui.icon.header
                     i.icon-sop-management
                     .content SOP관리
-        div.item(v-if="opratorCode == 'S0400100'",@click="activeNavigation('membergroup')", :class="{active:isActive == 'membergroup'}")
+        div.item(v-if="opratorCode == 'S0400100'",@click="activeNavigation('membergroup')", :class="{active:isActive == 'membermanage'}")
             router-link(:to="{ name: 'membergroup' }")
                 h6.ui.icon.header
                     i.icon-sop-crew
                     .content 조직도관리
-        div.item(@click="activeNavigation('sophistory')", :class="{active:isActive == 'sophistory'}")
+        div.item(@click="activeNavigation('sophistory')", :class="{active:isActive == 'historymanage'}")
             router-link(:to="{ name: 'sophistory' }")
                 h6.ui.icon.header
                     i.icon-sop-history
                     .content 이력관리
-        div.item(v-if="opratorCode == 'S0400100'", @click="activeNavigation('location-info')", :class="{active:isActive == 'location-info'}")
+        div.item(v-if="opratorCode == 'S0400100'", @click="activeNavigation('location-info')", :class="{active:isActive == 'standardinfomanage'}")
             router-link(:to="{ name: 'location-info' }")
                 h6.ui.icon.header
                     i.icon-sop-watch
                     .content 기준정보관리
     div#Simulation
-      .modeBtn 훈련모드 실행중
+    //-   .modeBtn 훈련모드 실행중
 </template>
 
 <script>
@@ -41,13 +41,17 @@ export default {
   },
   created() {
       this.isActive = this.$route.name
-      console.log(localStorage)
       this.opratorCode = localStorage.userInfo
   },
   computed: {
       ...mapGetters([
           'getUser'
       ])
+  },
+  watch : {
+      isActive () {
+          this.isActive = this.$route.path.split('/')[1]
+      }
   },
   methods: {
     activeNavigation (menuItem) {

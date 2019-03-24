@@ -24,7 +24,6 @@ Vue.use(VModal, {
 Vue.use(VCalendar, {
   firstDayOfWeek: 1
 })
-
 Vue.prototype.$http = axios
 
 Vue.config.productionTip = false

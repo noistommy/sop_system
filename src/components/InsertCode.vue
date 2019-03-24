@@ -53,7 +53,7 @@ export default {
       codeGroup: {
         cmmnCd: '',
         cmmnCdNm: '',
-        useYn: 'N'
+        useYn: 'Y'
       }
     }
   },

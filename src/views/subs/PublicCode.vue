@@ -1,5 +1,6 @@
 <template lang="pug">
   div.PublicCode.sub-container
+    modals-container
     div.sub-wrapper
       div.sub-header
         div.title 공통코드 관리
@@ -176,7 +177,8 @@ export default {
           cmmnCd: '',
           cmmnCdNm: '',
           indictOrdr: 0,
-          useYn: 'N'
+          useYn: 'Y',
+		  upperCmmnCd:''
         }
       }
       
@@ -186,9 +188,19 @@ export default {
         }else {
           editdata.data = this.publicCode.selected[0]
         }
+      }else{
+        editdata.data.upperCmmnCd = this.publicCode.selected[0].cmmnCd
       }
+      
       console.log(editdata)
-      this.$modal.show(CodeEditor, editdata, { height: 'auto', draggable: true},{'before-close': () => {this.getCodeList()}})
+      this.$modal.show(CodeEditor, editdata, {
+        height: 'auto',
+        draggable: true,
+        clickToClose: false
+      },{
+        'before-close': () => {this.getCodeList()}
+        }
+      )
     },
     createCodeItem () {
       console.log('click')

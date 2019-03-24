@@ -17,12 +17,6 @@ export default {
   },
   mounted() {
     this.renderChart(this.chartData, this.options)
-  },
-  watch: {
-    chartData () {
-      console.log('update')
-      this.$data._chart.update()
-    }
   }
 
 }

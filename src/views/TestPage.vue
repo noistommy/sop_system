@@ -244,7 +244,8 @@ export default {
         type: 'edit'
       },{
         width: '700px',
-        height: '50%'
+        height: '50%',
+        clickToClose: false
       })
     },
     activeSelected (index) {

@@ -1,26 +1,26 @@
 <template lang="pug">
   div.sms-action
     div.ui.form.tiny
-      table.ui.table.celled.structured.very.compact.yellow
+      table.ui.table.celled.structured.very.compact.green
         tbody
           tr
             td.center.aligned  
-              div 지시사항
+              div 방송
             td.wide.eight
             td.center.aligned  완료
             td.center.aligned 
-              button.ui.button.basic.mini(:class="{blue:state}", @click="stepRunning") {{state ? '완료' : '실행'}}
+              button.ui.button.basic.mini(:class="{blue:state == 'run'}", @click="stepRunning") {{state ? '완료' : '실행'}}
             td.center.aligned  시간
-            td.center.aligned  {{actionData.executDt}}
-          tr 
-            td(colspan="6") 
-              div.field
-                CheckTextCount(
-                  :formType="formType",
-                  :rownum='3',
-                  :maxLength='500',
-                  v-model="actionData.drctContents",
-                  @input="returnText")
+            td.center.aligned  11:11
+          //- tr 
+          //-   td(colspan="6") 
+          //-     div.field
+          //-       CheckTextCount(
+          //-         :formType="formType",
+          //-         :rownum='3',
+          //-         :maxLength='500',
+          //-         v-model="textareaData",
+          //-         @input="returnText")
           
 </template>
 
@@ -28,7 +28,7 @@
 import CheckTextCount from '@/components/CheckTextCount.vue'
 
 export default {
-  name: 'action-order-run',
+  name: 'action-sms',
   props: {
     idx: Number,
     value: Object
@@ -37,10 +37,9 @@ export default {
     return {
       actionCheck: false,
       formType: 'textarea',
-      textareaData: this.value.drctContents,
+      textareaData: this.value.brdcstContents,
       actionData: this.value,
-      state: false
-
+      state: 'ready'
     }
   },
   components: {
@@ -94,16 +93,8 @@ export default {
       }
     }
     .ui.table {
-      tr:nth-child(1) {
-        td:nth-child(odd){
-          background-color: #f9fafb;
-        }
-        td:nth-child(1) {
-          width: 15%;
-        }
-        td:last-child {
-          width: 8%;
-        }
+      th:nth-child(1) {
+        width: 15%
       }
       td {
         overflow: visible;

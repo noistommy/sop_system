@@ -19,11 +19,13 @@
                 td
                   div.fields
                     div.field.wide.nine
-                      select.ui.fluid.selection.dropdown(v-model="selectBuilding")
-                        option(v-for="build in buildingList", :value="build.buldId") {{build.buldNm}}
+                      select.ui.fluid.selection.dropdown(v-model="modeData.buldId", @change="getFloor")
+                        option(value="") 건물선택
+                        option(v-for="build in buldInfo", :value="build.buldId") {{build.buldNm}}
                     div.field.wide.six
                       select.ui.selection.dropdown(v-model="modeData.buldFloor")
-                        option(v-for="floor in floorInfo.floorList", :value="floor.buldFloor") {{floor.buldFloor}}
+                        option(value="") 층선택
+                        option(v-for="floor in floorInfo", :value="floor.buldFloor") {{floor.buldFloor}}
               tr
                 td.center.aligned 
                   span 시간
@@ -65,7 +67,8 @@ export default {
     data: Object,
     title: String,
     type: String,
-    item: String
+    item: String,
+    buildings: Array
   },
   data () {
     return {
@@ -78,10 +81,8 @@ export default {
         sopExecutResn: ''
       },
       buildingList: [],
-      floorInfo: {
-        buildInfo: '',
-        floorList: []
-      },
+      buldInfo: this.buildings,
+      floorInfo: [],
       formData: 'textarea',
       selectBuilding: ''
     }
@@ -89,44 +90,59 @@ export default {
   created () {
     const current = new Date()
     this.modeData.executBeginDt = `${current.getFullYear()}년 ${current.getMonth() + 1}월 ${current.getDate()}일`
-    this.getBuldingList()
+    // this.getBuldingList()
 
   },
   mounted () {
     $('.ui.dropdown').dropdown()
   },
-  watch: {
-    selectBuilding () {
-      console.log('watch')
-      this.getFloorList(this.selectBuilding)
+  computed: {
+    floorLength () {
+      return this.floorInfo.length
     }
   },
+  // watch: {
+  //   selectBuilding () {
+  //     this.getFloorList(this.selectBuilding)
+  //   }
+  // },
   methods: {
     activeMode (mode) {
       this.modeData.executFgCd = mode
     },
-    getBuldingList () {
-      LocationApi.getList().then(result => {
-        console.log(result.data)
-        this.buildingList = result.data.buldManageList
+    getFloor (event) {
+      this.buldInfo.forEach(e => {
+        if(e.buldId == event.target.value) {
+          this.floorInfo = e.buldFloorList
+        }
       })
     },
-    getFloorList (buildId) {
-      this.floorInfo.floorList = []
-      const requestData = JSON.stringify({
-        buldId: buildId
-      })
-      LocationApi.getItem(requestData).then(result => {
-        console.log(result.data)
-        this.modeData.buldId = result.data.buldManageInfo.buldId
-        this.floorInfo.floorList = result.data.buldFloorInfoList
-      })
-    },
+    // getBuldingList () {
+    //   LocationApi.getList().then(result => {
+    //     console.log(result.data)
+    //     this.buildingList = result.data.buldManageList
+    //   })
+    // },
+    // getFloorList (buildId) {
+    //   this.floorInfo.floorList = []
+    //   const requestData = JSON.stringify({
+    //     buldId: buildId
+    //   })
+    //   LocationApi.getItem(requestData).then(result => {
+    //     console.log(result.data)
+    //     this.modeData.buldId = result.data.buldManageInfo.buldId
+    //     this.floorInfo.floorList = result.data.buldFloorInfoList
+    //   })
+    // },
     goToSopRun () {
       const requestData = JSON.stringify(this.modeData)
       SopManageApi.runStepListByOper(requestData).then(result => {
         console.log(result.data)
-        this.$router.push({ name: 'sop-run', params: {sopId: result.data.sopId, sopExecutSn: result.data.sopExecutSn}})
+        this.$router.push({ name: 'sop-run', params: {
+          sopId: result.data.sopId,
+          sopExecutSn: result.data.sopExecutSn,
+          type: 'run'}
+        })
         this.$emit('close')
       }).catch(error => {
         this.$emit('close')
@@ -181,7 +197,18 @@ export default {
         padding: 15px;
         .content-wrapper {
           padding: 15px 15px 55px 15px;
-
+          .ui.table {
+            td {
+              overflow: visible !important;
+            }
+            td:nth-child(odd) {
+              text-align: center;
+              width: 100px;
+              min-width: 100px;
+              background-color: #f9fafb;
+              
+            }
+          }
         }
     }
     .modal-close {
@@ -223,17 +250,6 @@ export default {
         border-radius: 0 !important;
       }
     }
-    .ui.table {
-      td {
-        overflow: visible !important;
-      }
-      td:nth-child(odd) {
-        text-align: center;
-        width: 100px;
-        min-width: 100px;
-        background-color: #f9fafb;
-        
-      }
-    }
+    
 }
 </style>

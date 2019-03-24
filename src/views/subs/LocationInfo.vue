@@ -43,7 +43,7 @@
                         span 알람허용여부
                       td
                         div.ui.toggle.checkbox(@click="toggleCheck")
-                          input(type="checkbox", :checked="alarmYn")
+                          input(type="checkbox", v-model="locationDetail.alarmPermYn", true-value='Y', false-value='N')
                           label 허용
                 
             div.section_2
@@ -64,9 +64,7 @@
                           input(v-model="locationFloor.locationFloorData[props.idx].alarmPermYn",
                             true-value="Y",
                             false-value="N",
-                            type="checkbox",
-                            :checked="props.item.alarmPermYn=='Y'",
-                            :disabled="alarmYn == false")
+                            type="checkbox")
                           label 허용
             div.selcion_3
               div.btnSet.right

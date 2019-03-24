@@ -1,47 +1,50 @@
 <template lang="pug">
-   modal(name="check-msg-modal", :width='350', :height='250' :clickToClose="false", @before-open="setProps")
-    div.modal
-      div.modal-header {{title}}
-      div.modal-content 
-        //- div.discription {{text}}
-        div.content-text {{contentData}}
-        div.state-message {{message}}
-        div.foot-btn
-          button.ui.floated.right.button(@click="$emit('close')", :class="contentYn=='Y'?'green':'orange'") {{contentYn=='Y'?'정상':'오류'}}
-      div.modal-close(@click="$emit('close')")
-          div.close X
+  div.modal
+    div.modal-header {{title}}
+    div.modal-content 
+      div.content-form
+        div.ui.form
+          textarea(rows=10, v-model="closeData.endResn")
+      div.foot-btn
+        button.ui.floated.right.button.blue(@click="closeMessage") 작성완료
+    div.modal-close(@click="$emit('close')")
+        div.close X
 </template>
 
 <script>
-import UsersApi from '@/api/Users'
+import SopManageApi from '@/api/SopManage'
 
 export default {
-  name: 'check-media-modal',
+  name: 'close-message-modal',
   components: {
   },
-  // props: {
-  //   title: String,
-  //   text: String,
-  //   data: Object
-  // },
+  props: {
+    title: String,
+    text: String,
+    data: Object
+  },
   data () {
     return {
-      title: '',
-      text:'',
-      contentData: '',
-      contentYn:'',
-      message:''
+      closeData: this.data
     }
   },
   created () {
   },
   methods: {
-    setProps (event) {
-      this.title = event.params.title
-      this.text = event.params.text
-      this.contentData = event.params.data.vrifyContents
-      this.contentYn = event.params.data.vrifyYn
-      this.message = event.params.data.vrifyMessage
+    closeMessage () {
+      const requestData = JSON.stringify(this.closeData)
+      SopManageApi.closeSopList(requestData).then(result => {
+        console.log(result.data)
+        this.$emit('close')
+        this.$modal.show('dialod', {
+          title: '알람',
+          text: '종료되었습니다.'
+        })
+        this.$router.push({name:'sop-list'})
+      }).catch(error => {
+        const err = error.response
+        alert(err.data.msgValue)
+      })
     }
   }
 }
@@ -68,11 +71,7 @@ export default {
     .modal-content {
         flex-grow: 1;
         padding: 15px;
-        .content-text {
-          padding: 15px;
-          background-color: #f9f9f9;
-        }
-        .state-message {
+        .content-form {
           padding: 15px;
         }
         .foot-btn {

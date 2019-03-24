@@ -8,14 +8,8 @@ export default {
     return HTTP.post(`${TargetURL}.selectOprtrInfoList.do`, {})
   },
   // 운영자상세조회
-  getDetail: () => {
-    return HTTP.post(`${TargetURL}.selectOprtrInfoDetail.do`, {})
-      .then(res => {
-        return res.data
-      })
-      .catch(error => {
-        return console.log(`ERROR:${error}`)
-      })
+  getDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.selectOprtrInfoDetail.do`, payload)
   },
   // 운영자정보삭제
   deleteUser: (payload) => {
@@ -36,5 +30,9 @@ export default {
   // 운영자비밀번호초기화저장
   resetPassword: (payload) => {
     return HTTP.post(`${TargetURL}.updatePassword.do`, payload)
+  },
+  // 운영자비밀번호초기화저장
+  getInitPassword: (payload) => {
+    return HTTP.post(`/n3n.sop.CmmnCd.selectCmmnCdOprtPw.do`, payload)
   }
 }

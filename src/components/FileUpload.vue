@@ -1,47 +1,47 @@
 <template lang="pug">
-   modal(name="check-msg-modal", :width='350', :height='250' :clickToClose="false", @before-open="setProps")
-    div.modal
-      div.modal-header {{title}}
-      div.modal-content 
-        //- div.discription {{text}}
-        div.content-text {{contentData}}
-        div.state-message {{message}}
-        div.foot-btn
-          button.ui.floated.right.button(@click="$emit('close')", :class="contentYn=='Y'?'green':'orange'") {{contentYn=='Y'?'정상':'오류'}}
-      div.modal-close(@click="$emit('close')")
-          div.close X
+  div.modal
+    div.modal-header {{title}}
+    div.modal-content 
+      //- form(:action="url", method="post", enctype="multipart/form-data")
+      div.content-text
+        form.ui.form
+          input(type="file", id="file" ref="file", @change="handleUpload")
+      div.state-message {{message}}
+      div.foot-btn
+        //- button.ui.floated.right.button.green(type="submit") 업로드
+        button.ui.floated.right.button.green(@click="upload") 업로드
+        button.ui.floated.right.button(@click="$emit('close')") 취소
+    div.modal-close(@click="$emit('close')")
+        div.close X
 </template>
 
 <script>
 import UsersApi from '@/api/Users'
 
 export default {
-  name: 'check-media-modal',
+  name: 'file-upload-modal',
   components: {
   },
-  // props: {
-  //   title: String,
-  //   text: String,
-  //   data: Object
-  // },
+  props: {
+    title: String,
+    text: String
+  },
   data () {
     return {
-      title: '',
-      text:'',
-      contentData: '',
-      contentYn:'',
+      file: '',
       message:''
     }
   },
   created () {
   },
   methods: {
-    setProps (event) {
-      this.title = event.params.title
-      this.text = event.params.text
-      this.contentData = event.params.data.vrifyContents
-      this.contentYn = event.params.data.vrifyYn
-      this.message = event.params.data.vrifyMessage
+    handleUpload () {
+      this.file = this.$refs.file.files[0]
+      console.log(this.$refs)
+    },
+    upload () {
+      this.$emit('upload', this.file)
+      this.$emit('close')
     }
   }
 }

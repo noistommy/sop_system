@@ -18,7 +18,7 @@
                   :isListNumber="mainSopHistory.isListNumber",
                   :isPagination="mainSopHistory.isPagination",
                   :page="mainSopHistory.pageInfo"
-                ).ui.table.celled.selectable
+                )
                   <template slot="items" slot-scope="props">
                     tr
                       td.center.aligned(v-if="mainSopHistory.isListNumber") {{props.idx+1}}
@@ -36,7 +36,20 @@
               h3 센서탐지분석
             div.mainContent
               div.content.chart-wrapper
-                PieChart(:data="chartData.data", :options="chartData.options")
+                PieChart(:chart-data="chartData")
+                div.chart-text 
+                  div.ui.labeled.button.mini.label-text
+                    div.ui.button.mini.violet
+                      | 정상작동
+                    a.ui.basic.left.pointing.label.violet {{chartText.data[0]}}%({{chartText.cnt[0]}}건)
+                  div.ui.labeled.button.mini.label-text
+                    div.ui.button.mini.blue
+                      | 오작동
+                    a.ui.basic.left.pointing.label.blue {{chartText.data[1]}}%({{chartText.cnt[1]}}건)
+                  div.total-text
+                    span 발생건수
+                    span.count {{chartText.totCnt}}건
+
         div.nine.wide.column
           div.main-wrapper
             div.btn-link
@@ -53,14 +66,15 @@
                   :isListNumber="mainSmsHistory.isListNumber",
                   :isPagination="mainSmsHistory.isPagination",
                   :page="mainSmsHistory.pageInfo"
-                ).ui.table.celled.fixed
+                )
                   template(slot="items", slot-scope="props")
                     tr
                       td.center.aligned(v-if="mainSmsHistory.isListNumber") {{props.idx+1}}
                       td {{props.item.regDt}}
                       td {{props.item.buldNm}}
                       td.center.aligned {{props.item.cnt}}
-                      td {{props.item.smsContents}}
+                      td 
+                        span.text-wrap {{props.item.smsContents}}
         div.six.wide.column
           div.main-wrapper
             div.btn-link
@@ -69,12 +83,12 @@
               h3 공지사항
             div.mainContent
               div.content
-                div.ui.list.celled
-                  div.item(v-for="item in 2")
-                    div.right.floated.content
-                      div 2019.0101
+                div.ui.list.notice-list
+                  div.item(v-for="item in noticeList")
+                    div.content.date
+                      div {{item.ntceDt}}
                     div.content
-                      div 내용
+                      div {{item.noticeContents}}
                 
 </template>
 
@@ -91,6 +105,7 @@ export default {
   data () {
     return {
       selected: [],
+      noticeList: [],
       mainSopHistory: {
         isfooter: false,
         isPagination: false,
@@ -108,20 +123,16 @@ export default {
         smsHistoryData: []
       },
       chartData: {
-        data: {
-          labels: ["Red", "Blue"],
-          datasets: [{
-            labels: 'Test Chart',
-            data: [],
-            backgroundColor: [],
-            borderColor: [],
-            borderWidth: 1
-          }]
-        },
-        options: {
-
-        }
-      } 
+        labels: [],
+        datasets: [{
+          label: '',
+          data: [],
+          backgroundColor: ['#7977c2', '#7bbae7'],
+          borderColor: [],
+          borderWidth: 1
+        }]
+      },
+      chartText : {}
     }
   },
   components: {
@@ -131,14 +142,24 @@ export default {
   created() {
     this.getMainLists()
   },
+  mounted () {
+    this.getMainLists()
+  },
   methods: {
     getMainLists () {
       MainApi.getMainList().then(result => {
         console.log(result)
         this.mainSopHistory.sopHistoryData = result.data.sopExecutHistList
         this.mainSmsHistory.smsHistoryData = result.data.smsExecutHistList
-        this.chartData.data.labels = result.data.sensorAlarmStats.label
-        this.chartData.data.datasets[0].data = result.data.sensorAlarmStats.data
+        this.noticeList = result.data.noticeList
+        this.chartText = result.data.sensorAlarmStats
+        this.chartData = {
+          labels: result.data.sensorAlarmStats.label,
+          datasets: [{
+            data: result.data.sensorAlarmStats.data,
+            backgroundColor: ['#7977c2', '#7bbae7']
+          }]
+        }
       }).catch(error => {
         const err = error.response
         console.log(err)
@@ -171,11 +192,66 @@ export default {
       max-height: 330px;
       padding: 20px;
       background-color: #fff;
+      position: relative;
+      .content {
+        width: 100%;
+        table {
+          width: 100%;
+          .text-wrap {
+            display: inline-block;
+            max-width: 200px;
+          }
+        }
+      }
     }
     .chart-wrapper {
         width: 60%;
+        max-width: 260px;
         padding: 20px;
         margin: 0 auto;
+        // position: relative;
+        .chart-text {
+          .total-text {
+            width:100%;
+            text-align: center;
+            padding-top: 10px;
+            .count {
+              display: inline-block;
+              font-size: 1.2rem;
+              color: rgb(204, 74, 74);
+              font-weight: bold; 
+            }
+          }
+          .label-text{
+            position: absolute;
+            top:20px;
+            
+            .ui.violet {
+              background-color: #7977c2;
+            }
+            .ui.blue {
+              background-color: #7bbae7;
+            }
+            &:first-child {
+              left: 20px;
+            }
+            &:nth-child(2) {
+              right:20px;
+            }
+          }
+        }
+    }
+    .notice-list {
+      .item {
+        background-color: #f9f9f9;
+        padding: 10px;
+        margin-bottom: 5px;
+        .date {
+          text-align: right;
+          color: #a5a5a5;
+          font-size: .8rem;
+        }
+      }
     }
   }
 }

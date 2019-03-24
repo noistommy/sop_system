@@ -46,18 +46,18 @@ const mainSopHistoryHeader = {
   headers: [
     { text: '실행일시', align: 'center', value: 'executBeginDt', size: '' },
     { text: '재난절차', align: 'center', value: 'msfrtnKndCdNm', size: '' },
-    { text: '위기발령단계', align: 'center', value: 'titcrisisGnfdStepNmle', size: '' },
+    // { text: '위기발령단계', align: 'center', value: 'titcrisisGnfdStepNmle', size: '' },
     { text: 'SOP', align: 'center', value: 'sopTitle', size: '' },
-    { text: '위치', align: 'center', value: 'buldNm', size: '' },
-    { text: '담당자', align: 'center', value: 'oprtrNm', size: '' }
+    { text: '위치', align: 'center', value: 'buldNm', size: '' }
+    // { text: '담당자', align: 'center', value: 'oprtrNm', size: '' }
   ]
 }
 // sms전송이력
 const mainSmsHistoryHeader = {
   headers: [
-    { text: '날짜', align: 'center', value: 'regDt', size: '' },
-    { text: '위치', align: 'center', value: 'buldNm', size: '' },
-    { text: '전송인원', align: 'center', value: 'cnt', size: 'two' },
+    { text: '날짜', align: 'center', value: 'regDt', size: 'three' },
+    { text: '위치', align: 'center', value: 'buldNm', size: 'four' },
+    { text: '인원', align: 'center', value: 'cnt', size: 'two' },
     { text: '전송내용', align: 'center', value: 'smsContents', size: 'six' }
   ]
 }
@@ -89,7 +89,7 @@ const smsHistoryTableHeader = {
 const sensorHistoryTableHeader = {
   headers: [
     // { text: 'NO', align: 'center', value: 'no', size: '' },
-    { text: '감사일시', align: 'center', value: 'prcpDt', size: '' },
+    { text: '감사일자', align: 'center', value: 'prcpDt', size: '' },
     { text: '오작동여부', align: 'center', value: 'date', size: '' },
     { text: '센서종류', align: 'center', value: 'location', size: '' },
     { text: '센서아이디', align: 'center', value: 'sensorId', size: '' },
@@ -105,8 +105,7 @@ const noticeTableHeader = {
     { text: '제목', align: 'center', value: 'date', size: 'five' },
     { text: '게시시간', align: 'center', value: 'endtime', size: '' },
     { text: '작성자', align: 'center', value: 'manager', size: '' },
-    { text: '작성일', align: 'center', value: 'title', size: '' },
-    { text: '조회수', align: 'center', value: 'location', size: 'one' }
+    { text: '작성일', align: 'center', value: 'title', size: '' }
   ]
 }
 // 조직도
@@ -131,6 +130,7 @@ const fireBrigadeGroupHeader = {
 // 협력업체
 const partnerGroupeHeader = {
   headers: [
+    { text: '협력업체', align: 'center', value: 'emplNm', size: '' },
     { text: '이름', align: 'center', value: 'emplNm', size: '' },
     { text: '직급', align: 'center', value: 'ofcpsCdNm', size: '' },
     { text: '휴대전화번호', align: 'center', value: 'moblphonNo', size: 'four' }
@@ -171,14 +171,14 @@ const sensorByTypeHeader = {
 const standardSmsHeader = {
   headers: [
     { text: '문자제목', align: 'center', value: 'smsTitle', size: 'twelve' },
-    { text: '사용여부', align: 'center', value: 'useYn', size: '' }
+    { text: '사용여부', align: 'center', value: 'useYn', size: 'four' }
   ]
 }
 // 표준방송관리
 const standardBroadHeader = {
   headers: [
     { text: '방송제목', align: 'center', value: 'brdcstTitle', size: 'twelve' },
-    { text: '사용여부', align: 'center', value: 'useYn', size: '' }
+    { text: '사용여부', align: 'center', value: 'useYn', size: 'four' }
   ]
 }
 // 공통코드-공통코드 관리
@@ -192,8 +192,8 @@ const publicCodeHeader = {
 // 공통코드-공통코드 상세목록
 const publicCodeDetailHeader = {
   headers: [
-    { text: '코드그룹', align: 'center', value: 'cmmnCd', size: '' },
-    { text: '코드그룹명', align: 'center', value: 'cmmnCdNm', size: '' },
+    { text: '코드', align: 'center', value: 'cmmnCd', size: '' },
+    { text: '코드명', align: 'center', value: 'cmmnCdNm', size: '' },
     { text: '표시순서', align: 'center', value: 'indictOrdr', size: '' },
     { text: '사용여부', align: 'center', value: 'useYn', size: '' },
     { text: '파라미터1', align: 'center', value: 'userData1', size: '' },

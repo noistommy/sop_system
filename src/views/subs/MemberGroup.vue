@@ -7,11 +7,12 @@
         :isTextSearch="true",
         @search="searchList")
           template(slot="condition1", slot-scope="props")
-            select.ui.dropdown(v-model="searchData.searchCnd")
-              option(value="", default) 분류
-              option(value="00") 전체
-              option(value="01") 팀명
-              option(value="02") 이름
+            div.ui.form
+              select(v-model="searchData.searchCnd")
+                option(value="", disabled) 분류
+                option(value="00") 전체
+                option(value="01") 팀명
+                option(value="02") 이름
       div.sub-content
         div.content.row
           div.section.left-section
@@ -26,7 +27,7 @@
                   :level="1",
                   @search="getList")
           div.section.right-section
-            h3.table-title {{selectTeam.title}}
+            h3.table-title {{selectTitle}}
               //- span.total 총 {{memberGroup.pageInfo.totalCount}}명
             DataTable(
               v-model="selected",
@@ -94,36 +95,26 @@ export default {
   },
   created () {
     this.getTreeList() 
+    
+  },
+  mounted() {
+    this.getList(1) 
   },
   computed: {
+    selectTitle () {
+      if(this.selectTeam.title != undefined) {
+        return this.selectTeam.title
+      } else if (this.searchData.searchNm != '') {
+        console.log('search')
+        return `검색 : ${this.searchData.searchNm}`
+      } else {
+        return '사원목록'
+      }
+    }
   },
   methods: {
     setNumbering (num) {
       return (this.pageInfo.currentPageNo - 1) * 10 + num
-    },
-    getList (targetNum) {
-      if(targetNum == undefined) {targetNum = 1}
-      if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
-      this.searchData.currPage = targetNum
-      this.searchData.childDeptId = this.selectTeam.childDeptId
-      // this.searchData.upperDeptId = this.selectTeam.upperDeptId
-      const requestData = JSON.stringify(this.searchData)
-
-      MemberApi.getItems(requestData).then(result => {
-        this.memberGroup.memberGoupData = result.data.deptEmpInfoList
-        result.data.param.totalCount = result.data.totCnt
-        this.memberGroup.pageInfo = result.data.param
-      }).catch(error => {
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
-    },
-    searchList () {
-      if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
-      this.searchData.childDeptId = ""
-      console.log(this.searchData)
-      this.getList(1)
     },
     getTreeList () {
       // const request = JSON.stringify(this.requestData)
@@ -137,10 +128,42 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
+    getList (targetNum) {
+      if(targetNum == undefined) {targetNum = 1}
+      if(this.searchData.searchCnd == "00") {this.searchData.searchCnd = ""}
+      this.searchData.childDeptId = this.selectTeam.childDeptId
+      this.searchData.currPage = targetNum
+      this.searchData.childDeptId = this.selectTeam.childDeptId
+      this.searchData.pagePerCnt = this.memberGroup.pageInfo.pagePerCnt
+      const requestData = JSON.stringify(this.searchData)
+
+      MemberApi.getItems(requestData).then(result => {
+        this.memberGroup.memberGoupData = result.data.deptEmpInfoList
+        result.data.param.totalCount = result.data.totCnt
+        this.memberGroup.pageInfo = result.data.param
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    searchList () {
+      this.initSearch('id')
+      this.getList(1)
+    },
     getItemInfo(item) {
-        this.selectTeam = item
-        this.getList(1)
-    }
+      this.initSearch('search')
+      this.selectTeam = item
+      this.getList(1)
+    },
+    initSearch (type) {
+      if(type=='search') {
+        this.searchData.searchCnd = ''
+        this.searchData.searchNm = ''
+      } else {
+        this.selectTeam = {}
+      }
+    },
   }
 }
 </script>

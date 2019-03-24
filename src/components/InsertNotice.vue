@@ -6,7 +6,7 @@
         div.date-wrapper 
           div 게시기간  
           template
-            v-date-picker(mode='range', v-model='uploadDate', show-caps)
+            v-date-picker(mode='single', v-model='startDate', show-caps)
               div.ui.input(:type='inputState.type', slot-scope='props')
                 input(
                 :value='props.inputValue', 
@@ -14,7 +14,16 @@
                 @input='props.updateValue($event.target.value, { formatInput: false, hidePopover: false })',
                 @change='props.updateValue($event.target.value, { formatInput: true, hidePopover: false })', 
                 expanded)
-                //- <i class="calendar alternate outline icon"></i>
+            span ~
+            v-date-picker(mode='single', v-model='endDate', show-caps)
+              div.ui.input(:type='inputState.type', slot-scope='props')
+                input(
+                :value='props.inputValue', 
+                :placeholder='inputState.message',
+                @input='props.updateValue($event.target.value, { formatInput: false, hidePopover: false })',
+                @change='props.updateValue($event.target.value, { formatInput: true, hidePopover: false })', 
+                expanded)
+
         div.content-wrapper
             div.ui.form
               table.ui.table
@@ -67,7 +76,10 @@ export default {
       uploadDate: {
         start: new Date(),
         end: new Date(),
-      }
+      },
+      startDate: new Date(),
+      endDate: new Date(),
+
     }
   },
   created () {
@@ -112,18 +124,18 @@ export default {
           ntceEndDt:''
         }
       }
-      this.setData.ntceBeginDt = convertDateFormat(this.uploadDate.start, '')
-      this.setData.ntceEndDt = convertDateFormat(this.uploadDate.end, '')
+      this.setData.ntceBeginDt = convertDateFormat(this.startDate, '')
+      this.setData.ntceEndDt = convertDateFormat(this.endDate, '')
+      if(this.setData.ntceEndDt==null) {this.setData.ntceEndDt = '99991231'}
       const requestData = JSON.stringify(this.setData)
       NoticeApi.setItem(requestData).then(result => {
         console.log(result)
         this.$emit('close')
         this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
       }).catch(error => {
-        this.$emit('close')
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        alert(err.data.msgValue)
       })
 
     }

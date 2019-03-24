@@ -1,30 +1,29 @@
 <template lang="pug">
     div.treeitem
         div.treecontent
-            div.treeheader(:style="isActiveItem" @click.stop="getClick(treeItem)")
+            div.treeheader(@click.stop="getClick")
                 template(v-if="childCount > 0")
                     i.icon.caret(:class="activeItem ? 'down' : 'right'", @click.stop="setActive")
-                    span {{treeItem.title}} 
+                    span {{treeItem.title}}
+                    i.icon.circle(v-if="treeItem.selected == 'Y'", :style="activeStyle")
                     span.badge(v-if="childCount > 0") {{childCount}}
                 template(v-else-if="treeItem.title")
-                    div {{treeItem.title}} 
+                    span {{treeItem.title}}
+                    i.icon.circle(v-if="treeItem.selected == 'Y'", :style="activeStyle")
                 template(v-else)
                     div.item-wrapper
                         div {{treeItem.clsfCdNm}} 
                         div {{treeItem.childDeptNm}} 
                         div {{treeItem.emplNm}} 
-                        //- div.ui.checkbox
-                        //-     input(type="checkbox")
-                        //-     label
-                    //- div {{treeItem.moblphonNo}} 
             template(v-if="childCount > 0")
                 div.list(:class="[{active:activeItem}, `level-${level}`]", v-if="childCount > 0" )
-                    tree-view(v-model="selectTeam",
+                    tree-view(
                     @select="getItemInfo",
                     v-for="item in treeItem.children",
                     :treeItem="item",
                     :level="childLevel",
-                    :isActive=" branchActive")
+                    :isActive="branchActive",
+                    )
 </template>
 
 <script>
@@ -37,9 +36,7 @@ export default {
     isRoot: Boolean,
     isActive: Boolean,
     level: Number,
-    value: Object,
-    selectYn :Boolean,
-    isSelect: Boolean
+    value: Object
   },
   data() {
       return {
@@ -47,15 +44,10 @@ export default {
         childrenList: this.treeItem,
         branchActive: true,
         activeItem: this.isActive,
-        selectedItem: false,
-        selectTeam: {},
         activeStyle : {
-            backgroundColor:'#80b7be',
-            color: '#525252',
+            color:'#80b1ca',
             fontWeight: 'bold'
-        },
-        selectedYn: this.selectYn,
-        allselect:this.isSelect
+        }
       }
   },
   components: {
@@ -70,27 +62,14 @@ export default {
       childCount () {
         if(this.treeItem.children == undefined) return 
         return this.treeItem.children.length 
-      },
-
-      isActiveItem () {
-          return this.selectedYn || this.allselect ? this.activeStyle : {}
       }
   },
   methods: {
       setActive() {
           this.activeItem = !this.activeItem
       },
-      setSelect() {
-          this.selectedItem = !this.selectedItem
-      },
-      selectHover(event) {
-      },
-      getClick(selItem) {
-        this.$emit('select', selItem)
-        this.selectedYn = !this.selectedYn
-        if(this.allselect) {
-            this.allselect = false
-        }
+      getClick() {
+        this.$emit('select', this.treeItem)
       },
       getItemInfo(item) {
         this.$emit('select', item)
@@ -123,19 +102,24 @@ export default {
                 padding: 0.5em 1.2em;
                 color:#ddd;
                 &:hover {
-                    background-color: #818080;
+                    background-color: #58666d;
                     // color: rgb(223, 201, 77);
                     color: #fff;
                     font-weight: bold;
                 }
                 &.active {
-                    background-color: #80b7be;
+                    background-color: #80b1ca;
                     >.treeheader {
                         color: #525252;
                         font-weight: bold;
                     }
                 }
             }
+        }
+        .treecontent > .treeheader.selected {
+            background-color: #80b7be;
+            color: #525252;
+            font-weight: bold;
         }
         
     }
@@ -158,11 +142,7 @@ export default {
     }
     &.level-2 {
         background-color: #656565;
-        // box-shadow: inset 0 3px 5px #2c2c2c88;
         > .treeitem {
-            
-            // border-top: 1px solid rgba(34,36,38,.15);
-            // border-bottom: 1px solid #555;
             .treecontent {
                 .treeheader {
                     border-left: 5px solid rgb(223, 201, 77);
@@ -173,12 +153,37 @@ export default {
             }
         }
     }
+    &.level-3 {
+        background-color: #797979;
+        > .treeitem {
+            .treecontent {
+                .treeheader {
+                    border-left: 5px solid rgb(223, 77, 77);
+                    border-top: 0;
+                    border-bottom: 0;
+                    padding-left: 150px;
+                }
+            }
+        }
+    }
+    &.level-4 {
+        background-color: #8b8b8b;
+        > .treeitem {
+            .treecontent {
+                .treeheader {
+                    border-left: 5px solid rgb(223, 123, 77);
+                    border-top: 0;
+                    border-bottom: 0;
+                    padding-left: 200px;
+                }
+            }
+        }
+    }
 }
 
 
 .level-0 {
     max-height: 650px;
-    background-color: #fff;
     background-color: #454545;
     color: #f2f2f2;
     border: 1px solid rgba(139, 139, 139, 0.493);
@@ -194,16 +199,19 @@ export default {
             position:relative;
             padding: 0.5em 1.2em;
             color:#ddd;
-            &:hover {
-                background-color: #818080;
-                // color: rgb(223, 201, 77);
-                color: #fff;
-                font-weight: bold;
-            }
+            // &:hover {
+            //     background-color: #818080;
+            //     // color: rgb(223, 201, 77);
+            //     color: #fff;
+            //     font-weight: bold;
+            // }
             .item-wrapper {
                 display: flex;
                 > div {
                     &:first-child {
+                        width: 30%;
+                    }
+                    &:nth-child(2) {
                         width: 30%;
                     }
                     // display: inline-block;

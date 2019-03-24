@@ -1,21 +1,22 @@
 <template lang="pug">
-div.modal.select-sop-info
-    div.modal-header {{title}}
-    div.modal-content 
-      div.content-wrapper
-        div.list-content
-          div.ui.attached.segment.inverted
-            ul.ui.list.bulleted
-              li.item 재난위치: {{runSopData.msfrtnLc}}
-              li.item 재난절차: {{runSopData.msfrtnProcss}}
-              li.item 발생시간: {{runSopData.occrrncTm}}
-          div.ui.bottom.attached.segment.inverted
-            div.seg-btn.center
-              button.ui.button.blue.mini(v-if="runSopData.executPosblYn == 'Y'", @click='runSelectSop') 실행
-              button.ui.button.yellow.mini(@click='errorSelectSop') 모니터링
-              button.ui.button.mini(@click="$emit('close')") 취소
-        div.modal-close(@click="$emit('close')")
-            div.close X
+modal(name="run-sop-modal", width="350", @before-open="setProps")
+  div.modal.select-sop-info
+      div.modal-header {{title}}
+      div.modal-content 
+        div.content-wrapper
+          div.list-content
+            div.ui.attached.segment.inverted
+              ul.ui.list.bulleted
+                li.item 재난위치: {{runSopData.msfrtnLc}}
+                li.item 재난절차: {{runSopData.msfrtnProcss}}
+                li.item 발생시간: {{runSopData.occrrncTm}}
+            div.ui.bottom.attached.segment.inverted
+              div.seg-btn.center
+                button.ui.button.blue.mini(v-if="runSopData.executPosblYn == 'Y'", @click='runSelectSop') 실행
+                button.ui.button.yellow.mini(@click='monitoringSop') 모니터링
+                button.ui.button.mini(@click="$emit('close')") 취소
+          div.modal-close(@click="$emit('close')")
+              div.close X
               
 </template>
 
@@ -26,23 +27,32 @@ import { codeGenerator } from '@/util'
 
 export default {
   name: 'run-sop-modal',
-  props: {
-    data: Object,
-    title: String,
-    text: String
-  },
+  // props: {
+  //   data: Object,
+  //   title: String,
+  //   text: String
+  // },
   data () {
     return {
+      title: '',
+      data: '',
       runSopData: [],
-      runParams: {}
+      runParams: {},
+      type: ''
     }
   },
   components: {
   },
   created () {
-    this.getList()
+    if(this.title != '') {
+      this.getList()
+    }
   },
   methods: {
+    setProps (event) {
+      this.title = event.params.title
+      this.data = event.params.data
+    },
     getList () {
       const requestData = JSON.stringify({
         sopId: this.data.sopId,
@@ -61,6 +71,7 @@ export default {
     },
     runSelectSop () {
       if( this.runSopData != undefined) {
+        this.runSopData.type = 'run'
         this.$router.push({ name: 'sop-run', params: this.runSopData})
         this.$emit('close')
       }else {
@@ -79,6 +90,15 @@ export default {
         console.log(err)
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
+    },
+    monitoringSop () {
+      if( this.runSopData != undefined) {
+        this.runSopData.type = 'monitor'
+        this.$router.push({ name: 'sop-run', params: this.runSopData})
+        this.$emit('close')
+      }else {
+        alert('SOP를 선택하세요')
+      }
     }
   }
   

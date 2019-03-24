@@ -1,44 +1,42 @@
 <template lang="pug">
-  modal(name="select-reciever", :width='1000', height='800',  :clickToClose="false", @before-open="setProps")
-    div.modal
-      div.modal-header {{title}}
-      div.modal-content.treeSelector
-        div.tree-editor-modal
-          div.select-part
-            h3 부서 선택
-            div.treeView-wrapper
-              div.treeView.list.level-0
-                TreeView(
-                  v-model= "selectTeam",
-                  @select="getItemInfo",
-                  v-for="item in treeviewData",
-                  :treeItem="item",
-                  :isActive="activeItem",
-                  :isSelect ="false"
-                  :level="1")
-          div.select-person
-            div.select-part-name 
-              div.title {{selectTeam.title ? selectTeam.title : '수신자선택'}}
-              button.ui.right.floated.button.mini(@click="unSelectAll") 전체취소 
-              button.ui.right.floated.button.blue.mini(@click="selectAll") 전체 
-            div.treeView-wrapper.select-part
-              div.treeView.list.level-0
-                div.treeitem(v-for="(item, index) in selectTeamList",
-                @click="getListInfo(item)",
-                :class="{active:item.checked == 'Y'}")
-                  div.treecontent
-                      div.treeheader()
-                        div.item-wrapper
-                          div {{item.deptNm}} 
-                          div {{item.clsfNm}} 
-                          div {{item.emplNm}} 
-          div.btnSet
-            div.btn-group.left
-            div.btn-wrap.right
-              button.ui.button(@click="sendReciever") 선택
-              button.ui.button(@click="initReciever") 취소
-      div.modal-close(@click="$emit('close')")
-          div.close X
+  div.modal
+    div.modal-header {{title}}
+    div.modal-content.treeSelector
+      div.tree-editor-modal
+        div.select-part
+          h3 부서 선택
+          div.treeView-wrapper
+            div.treeView.list.level-0
+              TreeView(
+                v-model= "selectTeam",
+                @select="getItemInfo",
+                v-for="item in treeviewData",
+                :treeItem="item",
+                :isActive="activeItem",
+                :isSelect ="false"
+                :level="1")
+        div.select-person
+          div.select-part-name 
+            div.title {{selectTeam.title ? selectTeam.title : '수신자선택'}}
+            button.ui.right.floated.button.blue.mini(@click="selectAll") 전체 
+          div.treeView-wrapper.select-part
+            div.treeView.list.level-0
+              div.treeitem(v-for="(item, index) in selectTeamList",
+              @click="getListInfo(item)",
+              :class="{active:item.checked == 'Y'}")
+                div.treecontent
+                    div.treeheader()
+                      div.item-wrapper
+                        div {{item.deptNm}} 
+                        div {{item.clsfNm}} 
+                        div {{item.emplNm}} 
+        div.btnSet
+          div.btn-group.left
+          div.btn-wrap.right
+            button.ui.button(@click="sendReciever") 선택
+            button.ui.button(@click="$emit('close')") 취소
+    div.modal-close(@click="$emit('close')")
+        div.close X
 </template>
 
 <script>
@@ -52,21 +50,17 @@ export default {
   components: {
     TreeView
   },
-  // props: {
-  //   title: String,
-  //   text: String,
-  //   value: Object,
-  //   isActive: Boolean,
-  //   stepNo: Number,
-  //   stepSn: Number,
-  //   recieveData: Array
-  // },
+  props: {
+    title: String,
+    text: String,
+    value: Object,
+    isActive: Boolean,
+    stepNo: Number,
+    stepSn: Number,
+    recieveData: Array
+  },
   data () {
     return {
-      title: '',
-      text: '',
-      stepNo: 0,
-      stepSn: 0,
       treeviewData: [],
       selectTeam: {},
       selectTeamInfo: {},
@@ -80,23 +74,6 @@ export default {
     this.getTreeList()
   },
   methods: {
-    setProps (event) {
-      this.title = event.params.title
-      this.stepNo = event.params.stepNo
-      this.stepSn = event.params.stepSn
-      this.recieveList = event.params.recieveData
-    },
-    initReciever () {
-      this.recieveList = []
-      this.treeviewData.forEach(e => {
-        if(e.selected == 'Y') {
-          this.selectTeamInfo.deptId = e.childDeptId
-          this.getTreeItem(this.selectTeamInfo)
-        }
-      })
-      this.getTreeList()
-      this.sendReciever()
-    },
     getTreeList () {
       const request = JSON.stringify({})
       SopManageApi.getRecieverTree(request).then(result => {
@@ -140,7 +117,6 @@ export default {
             stepSn: this.stepSn,
             deptId: item.deptId,
             deptNm: item.deptNm,
-            emplNm: item.emplNm,
             emplNo: item.emplNo
          })
          item.checked = 'Y'
@@ -194,23 +170,12 @@ export default {
             stepSn: this.stepSn,
             deptId: e.deptId,
             deptNm: e.deptNm,
-            emplNm: e.emplNm,
+            deptNm: e.emplNm,
             emplNo: e.emplNo
          })
         }
       })
       this.checkPartList(this.treeviewData)
-    },
-    unSelectAll() {
-      this.selectTeamList.forEach(e => {
-        e.checked = 'N'
-         this.recieveList.forEach((el, i) => {
-          if(el.emplNo == e.emplNo) {
-            this.recieveList.splice(i, 1)
-          }
-        })
-        this.checkPartList(this.treeviewData)
-      })
     },
     sendReciever () {
       this.$emit('reciever', this.recieveList)

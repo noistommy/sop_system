@@ -124,6 +124,7 @@ i {
   min-width: 1280px;
 }
 .basepage {
+  width:100%;
   display: flex;
   flex-grow: 1;
   flex-direction: column;
@@ -131,9 +132,13 @@ i {
   .container {
     overflow:hidden;
     flex-grow: 1;
+    width: 100%;
     height: 100%;
     & > div {
       height: 100%;
+    }
+    .home {
+      width: 100%;
     }
   }
   > .header {
@@ -168,6 +173,7 @@ i {
     flex-grow: 1;
     display:flex;
     flex-direction: column;
+    height: 100vh;
     .sub-header {
       min-height: 50px;
       position: relative;
@@ -179,13 +185,16 @@ i {
       }
     }
     .sub-content {
-      flex-grow: 1;
+      // flex-grow: 1;
+      flex: 1 1 auto;
       display: flex;
       flex-direction: column;
+      height: 80vh;
       > .header {
         height: 30px;
       }
       > .content {
+        height: 100%;
         flex-grow: 1;
         background-color: #fff;
         border:1px solid rgba(0, 0, 0, .15);
@@ -195,7 +204,8 @@ i {
           overflow-y: auto;
           padding: 20px;
           &.left-section {
-            width: 400px;
+            width: 25%;
+            min-width: 400px;
             background-color: #454545;
           }
           &.right-section {
@@ -208,7 +218,7 @@ i {
         }
       }
       .footer {
-        padding: 20px 0;
+        // padding: 20px 0;
       }
       &.column {
           padding:0;

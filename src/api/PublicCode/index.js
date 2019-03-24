@@ -12,11 +12,19 @@ export default {
     return HTTP.post(`${TargetURL}.selectCmmnCdDetailInfo.do`, payload)
   },
   // 공통코드그룹정보저장
+  insertCodeGroup: (payload) => {
+    return HTTP.post(`${TargetURL}.insertCmmnCdGroupInfo.do`, payload)
+  },
+  // 공통코드그룹정보수정
   updateCodeGroup: (payload) => {
-    return HTTP.post(`${TargetURL}.saveCmmnCdGroupInfo.do`, payload)
+    return HTTP.post(`${TargetURL}.updateCmmnCdGroupInfo.do`, payload)
   },
   // 공통코드상세정보저장
+  insertCodeItem: (payload) => {
+    return HTTP.post(`${TargetURL}.insertCmmnCdDetailInfo.do`, payload)
+  },
+  // 공통코드상세정보수정
   updateCodeItem: (payload) => {
-    return HTTP.post(`${TargetURL}.saveCmmnCdDetailInfo.do`, payload)
+    return HTTP.post(`${TargetURL}.updateCmmnCdDetailInfo.do`, payload)
   }
 }
