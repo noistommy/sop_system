@@ -1,28 +1,28 @@
 <template lang="pug">
-  div.modal
-    div.modal-header {{title}}
-    div.modal-content 
-      //- div.discription {{text}}
-      div.content-wrapper
-        div.ui.form
-          div.inline.field
-            label 기존비밀번호
-            input(type="password", v-model="resetData.oprtrPassword")
-          div.inline.field
-            label 새비밀번호
-            input(type="password", v-model="resetData.newOprtrPassword")
-          div.inline.field(:class="{error:errorMessage}")
-            label 새비밀번호확인
-            input(type="password", v-model="comfirmPassword")
-            div.msgError.error(v-if="errorMessage")
-              div {{errorMessage}}
-            
-      div.btnSet.center
-        button.ui.button.blue(@click="resetPassword") 저장
-        button.ui.button(@click="$emit('close')") 취소
-    div.modal-close(@click="$emit('close')")
-        //- i.icon.close
-        div.close X
+  modal(name="reset-password", width = "350", :clickToClose="false", @before-open="setProps")
+    div.modal
+      div.modal-header {{title}}
+      div.modal-content 
+        div.content-wrapper
+          div.ui.form
+            div.inline.field
+              label 기존비밀번호
+              input(type="password", v-model="resetData.oprtrPassword")
+            div.inline.field
+              label 새비밀번호
+              input(type="password", v-model="resetData.newOprtrPassword")
+            div.inline.field(:class="{error:errorMessage}")
+              label 새비밀번호확인
+              input(type="password", v-model="comfirmPassword")
+              div.msgError.error(v-if="errorMessage")
+                div {{errorMessage}}
+              
+        div.btnSet.center
+          button.ui.button.blue(@click="resetPassword") 저장
+          button.ui.button(@click="$emit('close')") 취소
+      div.modal-close(@click="$emit('close')")
+          //- i.icon.close
+          div.close X
 </template>
 
 <script>
@@ -33,15 +33,17 @@ export default {
   name: 'reset-password',
   components: {
   },
-  props: {
-    userId: String,
-    title: String,
-    text: String
-  },
+  // props: {
+  //   userId: String,
+  //   title: String,
+  //   text: String
+  // },
   data () {
     return {
+      title: '',
+      text: '',
       resetData: {
-        oprtrId: this.userId,
+        oprtrId: '',
         oprtrPassword: '',
         newOprtrPassword: ''
       },
@@ -52,6 +54,12 @@ export default {
   created () {
   },
   methods: {
+    setProps (event) {
+      console.log(event.params)
+      this.title = event.params.title
+      this.text = event.params.text
+      this.resetData.oprtrId = event.params.userId
+    },
     resetPassword () {
       const requestData = JSON.stringify(this.resetData)
       if(this.resetData.oprtrPassword == '' || this.resetData.newOprtrPassword == '') {

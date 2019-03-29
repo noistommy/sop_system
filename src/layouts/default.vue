@@ -132,9 +132,13 @@ i {
   .container {
     overflow:hidden;
     flex-grow: 1;
+    width: 100%;
     height: 100%;
     & > div {
       height: 100%;
+    }
+    .home {
+      width: 100%;
     }
   }
   > .header {
@@ -190,7 +194,7 @@ i {
         height: 30px;
       }
       > .content {
-        height: 100%;
+        height: 90%;
         flex-grow: 1;
         background-color: #fff;
         border:1px solid rgba(0, 0, 0, .15);
@@ -212,6 +216,9 @@ i {
           padding:0;
           display:flex;
         }
+      }
+      > .section {
+        height: 100%;
       }
       .footer {
         // padding: 20px 0;

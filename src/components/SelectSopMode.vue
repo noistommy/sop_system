@@ -176,6 +176,9 @@ export default {
 </script>
 
 <style lang="less">
+.v--modal-overlay, .v--modal {
+  overflow: visible !important;
+}
 .modal.user-editor {
     background-color: #fff;
     position: relative;

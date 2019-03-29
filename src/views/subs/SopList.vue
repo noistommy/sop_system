@@ -102,7 +102,8 @@ export default {
     SelectSopMode
   },
   created() {
-    this.opratorCode = localStorage.userInfo
+    // this.opratorCode = localStorage.userInfo
+    this.opratorCode = sessionStorage.userInfo
     this.getCodeList('S090')
     this.getCodeList('S100')
     this.getSopList(1)
@@ -124,7 +125,9 @@ export default {
       }).catch(error => {
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        if(err) {
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        }
       })
     },
     getSopItem () {
@@ -134,7 +137,9 @@ export default {
       }).catch(error => {
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        if(err) {
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        }
       })
     },
     getSelectBuilding () {
@@ -145,7 +150,9 @@ export default {
       }).catch(error => {
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        if(err) {
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        }
       })
     },
     deleteSop () {
@@ -160,7 +167,9 @@ export default {
         }).catch(error => {
           const err = error.response
           console.log(err)
-          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+          if(err) {
+            this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+          }
         })
       }
     },
@@ -179,7 +188,9 @@ export default {
       }).catch(error => {
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        if(err) {
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        }
       })
     },
     selectedItem(itemInfo) {

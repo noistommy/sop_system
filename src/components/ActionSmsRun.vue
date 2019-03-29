@@ -1,6 +1,7 @@
 <template lang="pug">
   div.sms-action
-    modals-container(@reciever="setRecieverList")
+    SelectReceiver(@close="$modal.hide('select-reciever')", @reciever="setRecieverList")
+    //- modals-container(@reciever="setRecieverList")
     div.ui.form.tiny
       table.ui.table.celled.structured.very.compact.blue
         tbody
@@ -8,9 +9,9 @@
             td.center.aligned  
               div 문자
             td.wide.eight
-              div.ui.fluid.input
-                input(type="button",v-model="recieveText", placeholder="부서 및 수신자 선택", @click="selectSmsReceiver")
+              div.ui.fluid.input( @click="selectSmsReceiver")
                 label
+                button.ui.button(type="button", :value="recieverTitle") {{recieverTitle}}
             td.center.aligned  완료
             td.center.aligned 
               button.ui.button.basic.mini(:class="{blue:state}", @click="stepRunning") {{state ? '완료' : '실행'}}
@@ -46,7 +47,9 @@ export default {
       textareaData: this.value.smsContents,
       actionData: this.value,
       state: false,
-      recieveText: '수신자선택'
+      recieveText: '수신자선택',
+      recieveCount: 0,
+      modalname: '',
     }
   },
   components: {
@@ -56,15 +59,27 @@ export default {
   created () {
     if(this.actionData.autoYn == null) {
       this.actionData.autoYn = 'N'
-    } else if(this.actionData.autoYn == 'Y') {
-      this.stepRunning()
-    } else{
-      console.log('start')
-    }
+    } 
+    // else if(this.actionData.autoYn == 'Y') {
+    //   this.stepRunning()
+    // } else{
+    //   console.log('start')
+    // }
     this.setRecieverList(this.actionData.sopStepExecutChrgEmpList)
   },
   mounted () {
     $('ui.checkbox').checkbox()
+  },
+  computed: {
+    recieverTitle () {
+      if(this.actionData.sopStepExecutChrgEmpList.length == 0) {
+        this.recieveText = '수신자선택'
+      }
+      if(this.actionData.sopStepExecutChrgEmpList.length <= 1) {
+        this.recieveCount = ''
+      }
+      return `${this.recieveText} ${this.recieveCount}`
+    }
   },
   methods: {
     returnText (text) {
@@ -81,11 +96,9 @@ export default {
       
     },
     selectSmsReceiver () {
-      this.$modal.show(SelectReceiver,{
+      this.$modal.show('select-reciever', {
         modal:'locationmodal',
         title: '수신자 선택',
-        // stepNo: this.smsData.stepNo,
-        // stepSn: this.smsData.stepSn,
         recieveData: this.actionData.sopStepExecutChrgEmpList
       },{
         width: '70%',
@@ -94,8 +107,12 @@ export default {
       })
     },
     setRecieverList(recieveList) {
+      this.modalname = ''
       this.actionData.sopStepExecutChrgEmpList = recieveList
-      this.recieveText = `${recieveList[0].deptNm}외 ${recieveList.length - 1}명`
+      if(recieveList.length > 0) {
+        this.recieveText = `${recieveList[0].deptNm} ${recieveList[0].emplNm}`
+        this.recieveCount = `외 ${recieveList.length-1}명`
+      }
     },
   }
 }

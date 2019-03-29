@@ -8,7 +8,8 @@ import axios from 'axios'
 Vue.use(Vuex)
 
 const enhanceAccessToeken = () => {
-  const { accessToken } = localStorage
+  const { accessToken } = sessionStorage
+  // const { accessToken } = localStorage
   if (!accessToken) return
   axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
 }

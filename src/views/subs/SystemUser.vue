@@ -4,6 +4,16 @@
     div.sub-wrapper
       div.sub-header
         div.title 운영자 관리
+        //- SearchComp(
+        //-   v-model="searchData",
+        //-   :isTextSearch="true",
+        //-   @search="searchUserList")
+        //-   template(slot="condition1", slot-scope="props")
+        //-     select.ui.dropdown(v-model="searchData")
+        //-       option(value="", default) 분류
+        //-       option(value="00") 전체
+        //-       option(value="01") 운영자명
+        //-       option(value="02") 운영자ID
       div.sub-content
         div.content
           DataTable(
@@ -43,8 +53,8 @@
 <script>
 import DataTable from '@/components/DataTable.vue'
 import DataList from '@/components/DataList.vue'
-import SearchComp from '@/components/SearchComp.vue'
 import UserEditor from '@/components/UserEditor.vue'
+import SearchComp from '@/components/SearchComp.vue'
 import { systemUserHeader } from '@/setting'
 import SystemUser from '@/api/Users'
 import { codeGenerator } from '@/util'
@@ -53,6 +63,7 @@ export default {
   name: 'system-user',
   data () {
     return {
+      searchData: {},
       systemUser: {
         selected: [],
         headers: systemUserHeader.headers,
@@ -73,6 +84,9 @@ export default {
   },
   created() {
     this.getUsersList ()
+  },
+  mounted () {
+    $('.ui.dropdown').dropdown()
   },
   methods: {
     getUsersList () {

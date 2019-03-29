@@ -1,21 +1,22 @@
 <template lang="pug">
-div.modal.select-sop-info
-    div.modal-header {{title}}
-    div.modal-content 
-      div.content-wrapper
-        div.list-content
-          div.ui.attached.segment.inverted
-            ul.ui.list.bulleted
-              li.item 재난위치: {{runSopData.msfrtnLc}}
-              li.item 재난절차: {{runSopData.msfrtnProcss}}
-              li.item 발생시간: {{runSopData.occrrncTm}}
-          div.ui.bottom.attached.segment.inverted
-            div.seg-btn.center
-              button.ui.button.blue.mini(v-if="runSopData.executPosblYn == 'Y'", @click='runSelectSop') 실행
-              button.ui.button.yellow.mini(@click='monitoringSop') 모니터링
-              button.ui.button.mini(@click="$emit('close')") 취소
-        div.modal-close(@click="$emit('close')")
-            div.close X
+modal(name="run-sop-modal", width="350", height="200", @before-open="setProps")
+  div.modal.select-sop-info
+      div.modal-header {{title}}
+      div.modal-content 
+        div.content-wrapper
+          div.list-content
+            div.ui.attached.segment.inverted
+              ul.ui.list.bulleted
+                li.item 재난위치: {{runSopData.msfrtnLc}}
+                li.item 재난절차: {{runSopData.msfrtnProcss}}
+                li.item 발생시간: {{runSopData.occrrncTm}}
+            div.ui.bottom.attached.segment.inverted
+              div.seg-btn.center
+                button.ui.button.blue.mini(v-if="runSopData.executPosblYn == 'Y'", @click='runSelectSop') 실행
+                button.ui.button.yellow.mini(@click='monitoringSop') 모니터링
+                button.ui.button.mini(@click="$emit('close')") 취소
+          div.modal-close(@click="$emit('close')")
+              div.close X
               
 </template>
 
@@ -23,16 +24,19 @@ div.modal.select-sop-info
 import DataList from '@/components/DataList.vue'
 import SopSlideApi from '@/api/SopSlide'
 import { codeGenerator } from '@/util'
+import { EventBus } from '@/util'
 
 export default {
   name: 'run-sop-modal',
-  props: {
-    data: Object,
-    title: String,
-    text: String
-  },
+  // props: {
+  //   data: Object,
+  //   title: String,
+  //   text: String
+  // },
   data () {
     return {
+      title: '',
+      data: '',
       runSopData: [],
       runParams: {},
       type: ''
@@ -41,10 +45,19 @@ export default {
   components: {
   },
   created () {
-    this.getList()
+    // 
   },
   methods: {
-    getList () {
+    setProps (event) {
+      this.title = event.params.title
+      this.data = event.params.data
+      this.getSopInfo()
+
+      // if(this.$route.name == 'sop-run') {
+      //     this.$router.push({name: 'sop-list'})
+      //   }
+    },
+    getSopInfo () {
       const requestData = JSON.stringify({
         sopId: this.data.sopId,
         sopExecutSn: this.data.sopExecutSn
@@ -53,39 +66,55 @@ export default {
         console.log(result.data)
         this.runSopData = result.data.legacySopExecut
       }).catch(error => {
-        this.$emit('close')
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        if(err) {
+          alert(err.data.msgValue)
+        }
       })
-      
     },
     runSelectSop () {
+       if(this.$route.name == 'sop-run') {
+          const sopInfo = {
+            sopId:this.data.sopId,
+            sopExecutSn:this.data.sopExecutSn,
+            type: 'run'
+          }
+          EventBus.$emit('trans-sop', sopInfo)
+        }
+      
       if( this.runSopData != undefined) {
-        this.runSopData.type = 'run'
-        this.$router.push({ name: 'sop-run', params: this.runSopData})
+        this.$router.push({ 
+          name: 'sop-run',
+          params: { 
+            sopId: this.data.sopId,
+            sopExecutSn:this.data.sopExecutSn,
+            type: 'run' 
+            }
+          })
         this.$emit('close')
       }else {
         alert('SOP를 선택하세요')
       }
     },
-    errorSelectSop () {
-      const requestData = JSON.stringify({
-        iwId: this.data.iwId
-      })
-      SopSlideApi.setErrorSop(requestData).then(result => {
-        console.log(result.data)
-      }).catch(error => {
-        this.$emit('close')
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
-    },
     monitoringSop () {
+      if(this.$route.name == 'sop-run') {
+          const sopInfo = {
+            sopId:this.data.sopId,
+            sopExecutSn:this.data.sopExecutSn,
+            type: 'monitor'
+          }
+          EventBus.$emit('trans-sop', sopInfo)
+        }
       if( this.runSopData != undefined) {
-        this.runSopData.type = 'monitor'
-        this.$router.push({ name: 'sop-run', params: this.runSopData})
+        this.$router.push({ 
+          name: 'sop-run',
+          params: {
+            sopId: this.data.sopId,
+            sopExecutSn:this.data.sopExecutSn,
+            type: 'monitoring'
+            }
+          })
         this.$emit('close')
       }else {
         alert('SOP를 선택하세요')

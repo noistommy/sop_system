@@ -1,6 +1,7 @@
 <template lang="pug">
   div.StandardBroad.sub-container
-    modals-container
+    //- modals-container
+    CheckMediaModal(@close="$modal.hide('check-msg-modal')")
     div.sub-wrapper
       div.sub-header
         div.title 표준 방송 관리
@@ -131,7 +132,7 @@
                 div.btn-wrap.right
                   button.ui.button.blue(@click="createBroadItem('new')") 신규등록
                 div.btn-group.left
-                  button.ui.button.blue(@click="updateBroadItem") 저장
+                  button.ui.button.blue(@click="updateWithCheckItem") 저장
                   button.ui.button(@click="createBroadItem('init')", v-if="isNewInsert") 초기화
                   button.ui.button(@click="getBroadItem") 취소
           
@@ -176,7 +177,8 @@ export default {
     DataTable,
     DataList,
     SearchComp,
-    CheckTextCount
+    CheckTextCount,
+    CheckMediaModal
   },
   created () {
     this.getCodeList('S080')
@@ -237,18 +239,33 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
+    updateWithCheckItem () {
+      const requestData = JSON.stringify(this.standardBroadDetail)
+      StandardBroadApi.checkDetail(requestData)
+      .then(result => {
+       if(result.data.vrifyYn != 'Y'){
+          this.$modal.show('check-msg-modal',{
+            title: '방송문구확인',
+            data: result.data
+          })
+        } else {
+          this.updateBroadItem()
+        }
+      })
+      .catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
     checkBroadItem () {
       const requestData = JSON.stringify(this.standardBroadDetail)
       StandardBroadApi.checkDetail(requestData)
       .then(result => {
        console.log(result)
-        this.$modal.show(CheckMediaModal,{
+        this.$modal.show('check-msg-modal',{
           title: '방송문구확인',
           data: result.data
-        },{
-          width: '350px',
-          height: 'auto',
-          clickToClose: false
         })
       })
       .catch(error => {
@@ -308,7 +325,10 @@ export default {
        })
     },
     insertValueName (event) {
-      console.log(event)
+      if(event.target.value == '') {
+        this.standardBroadDetail[`userData${event.target.id}`] = ''
+        this.standardBroadDetail[`inputParam${event.target.id}`] = ''
+      }
       this.paramList.forEach(e => {
         if(e.cmmnCd == event.target.value) {
           this.standardBroadDetail[`inputParam${event.target.id}`] = e.cmmnCdNm
@@ -324,6 +344,13 @@ export default {
 </script>
 
 <style lang="less">
+.StandardBroad {
+  .sub-wrapper {
+    .sub-content > .content {
+      height: 100%;
+    }
+  }
+}
 .StandardBroad {
   .content.section.section-1 {
     width: 30% !important;

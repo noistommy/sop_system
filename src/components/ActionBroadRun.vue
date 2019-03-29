@@ -20,7 +20,7 @@
                   :rownum='3',
                   :maxLength='500',
                   v-model="actionData.brdcstContents",
-                  @input="returnText")
+                  )
           
 </template>
 
@@ -31,6 +31,7 @@ export default {
   name: 'action-broad-run',
   props: {
     idx: Number,
+    activeNum: Number,
     value: Object
   },
   data () {
@@ -39,8 +40,8 @@ export default {
       formType: 'textarea',
       textareaData: this.value.brdcstContents,
       actionData: this.value,
-      state: false
-
+      state: false,
+      stepIndex: this.activeNum
     }
   },
   components: {
@@ -49,18 +50,25 @@ export default {
   created () {
     if(this.actionData.autoYn == null) {
       this.actionData.autoYn = 'N'
-    } else if(this.actionData.autoYn == 'Y') {
-      this.stepRunning()
-    } else{
-      console.log('start')
-    }
+    } 
+    // else if(this.actionData.autoYn == 'Y') {
+    //   this.stepRunning()
+    // } else{
+    //   console.log('start')
+    // }
+    this.actionData = this.value
   },
   mounted () {
     $('ui.checkbox').checkbox()
   },
+  watch: {
+    stepIndex () {
+      alert(this.index)
+    }
+  },
   methods: {
     returnText (text) {
-      this.textareaData = text
+      this.actionData.brdcstContents = text
     },
     stepRunning () {
       if(this.state) {

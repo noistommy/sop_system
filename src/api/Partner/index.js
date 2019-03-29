@@ -1,5 +1,6 @@
 import HTTP from '@/api'
 import BASE_URL from '@/api/config'
+import axios from 'axios'
 
 const TargetURL = '/n3n.sop.ccpyInfo'
 
@@ -30,24 +31,28 @@ export default {
   },
   // 파일업로드
   fileUpload: (payload) => {
-    return HTTP.post(`${TargetURL}.uploadCcpyExcelFile.do`, payload)
+    return axios.post(`${BASE_URL}${TargetURL}.uploadCcpyExcelFile.do`, payload, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   },
   // 업로드샘플
-  fileSampleUpload: () => {
+  fileSampleUpload: (param) => {
     location.href = `${BASE_URL}${TargetURL}.selectCcpyExcelDownLoad.do`
   },
   // 파일다운로드
   fileDownload: (param) => {
     var url = `${BASE_URL}${TargetURL}.selectCcpyDetailExcelInfo.do`
-    var form = "<form action="+url+" method='post'>"
-    if( param != null && typeof param != 'undefined' ){
-      $.each(param, function(index, value){
-        form += "<input type='hidden' name="+index+" value="+value+" />"  
+    var form = '<form action=' + url + " method='post'>"
+    if (param != null && typeof param !== 'undefined') {
+      $.each(param, function (index, value) {
+        form += "<input type='hidden' name=" + index + ' value=' + value + ' />'
       })
     }
-    //form += "<input type='hidden' name='resultData' value='"+postData+"' />"
-    form += "</form>"
-    jQuery(form).appendTo("body").submit().remove()
-    //location.href = `${BASE_URL}${TargetURL}.selectCcpyDetailExcelInfo.do`
+    // form += "<input type='hidden' name='resultData' value='"+postData+"' />"
+    form += '</form>'
+    $(form).appendTo('body').submit().remove()
+    // location.href = `${BASE_URL}${TargetURL}.selectCcpyDetailExcelInfo.do`
   }
 }

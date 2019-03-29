@@ -2,7 +2,7 @@
   div.home
     div.home-container
       div.ui.grid
-        div.nine.wide.column
+        div.ten.wide.column
           div.main-wrapper
             div.btn-link
               router-link(:to="{ name: 'sophistory' }").ui.button.basic.small 자세히보기
@@ -18,7 +18,7 @@
                   :isListNumber="mainSopHistory.isListNumber",
                   :isPagination="mainSopHistory.isPagination",
                   :page="mainSopHistory.pageInfo"
-                ).ui.table.celled.selectable
+                )
                   <template slot="items" slot-scope="props">
                     tr
                       td.center.aligned(v-if="mainSopHistory.isListNumber") {{props.idx+1}}
@@ -50,7 +50,7 @@
                     span 발생건수
                     span.count {{chartText.totCnt}}건
 
-        div.nine.wide.column
+        div.ten.wide.column
           div.main-wrapper
             div.btn-link
               router-link(:to="{ name: 'smshistory' }").ui.button.basic.small 자세히보기
@@ -66,14 +66,15 @@
                   :isListNumber="mainSmsHistory.isListNumber",
                   :isPagination="mainSmsHistory.isPagination",
                   :page="mainSmsHistory.pageInfo"
-                ).ui.table.celled
+                )
                   template(slot="items", slot-scope="props")
                     tr
                       td.center.aligned(v-if="mainSmsHistory.isListNumber") {{props.idx+1}}
                       td {{props.item.regDt}}
                       td {{props.item.buldNm}}
                       td.center.aligned {{props.item.cnt}}
-                      td {{props.item.smsContents}}
+                      td 
+                        span.text-wrap {{props.item.smsContents}}
         div.six.wide.column
           div.main-wrapper
             div.btn-link
@@ -192,6 +193,16 @@ export default {
       padding: 20px;
       background-color: #fff;
       position: relative;
+      .content {
+        width: 100%;
+        table {
+          width: 100%;
+          .text-wrap {
+            display: inline-block;
+            max-width: 200px;
+          }
+        }
+      }
     }
     .chart-wrapper {
         width: 60%;

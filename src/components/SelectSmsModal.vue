@@ -1,114 +1,119 @@
 <template lang="pug">
-  div.StandardSmsModal.sub-container
-    div.sub-wrapper
-      div.sub-header
-        div.title 표준 문자 선택
-      div.sub-content.column
-        div.content.section.section-1
-            h3.title 표준문자관리
+  modal(name="select-sms", :width='1500', height='800',  :clickToClose="false", @before-open="setProps")
+    div.StandardSmsModal.sub-container
+      div.sub-wrapper
+        div.sub-header
+          div.title 표준 문자 선택
+        div.sub-content.column
+          div.content.section.section-1
+              h3.title 표준문자관리
+              div.contant-wrapper
+                DataTable(
+                  v-model="standardSms.selected"
+                  :headers="standardSms.headers",
+                  :items="standardSms.standardSmsData",
+                  :itemKey="standardSms.itemkey",
+                  :isFooter="standardSms.isfooter",
+                  :isPagination="standardSms.isPagination",
+                  :page="standardSms.pageInfo"
+                  :isListNumber="standardSms.isListNumber",
+                  @search="getSmslist"
+                ).ui.table.celled.selectable
+                  <template slot="items" slot-scope="props">
+                    tr(:active="props.selected", @click="selectedItem(props)" )
+                      td {{props.item.smsTitle}}
+                      td.center.aligned {{props.item.useYn}}
+                  </template>
+          div.content.section.section-2
+            h3.title 표준문자 상세정보
             div.contant-wrapper
-              DataTable(
-                v-model="standardSms.selected"
-                :headers="standardSms.headers",
-                :items="standardSms.standardSmsData",
-                :itemKey="standardSms.itemkey",
-                :isFooter="standardSms.isfooter",
-                :isPagination="standardSms.isPagination",
-                :page="standardSms.pageInfo"
-                :isListNumber="standardSms.isListNumber",
-                 @search="getSmslist"
-              ).ui.table.celled.selectable
-                <template slot="items" slot-scope="props">
-                  tr(:active="props.selected", @click="selectedItem(props)" )
-                    td {{props.item.smsTitle}}
-                    td.center.aligned {{props.item.useYn}}
-                </template>
-        div.content.section.section-2
-          h3.title 표준문자 상세정보
-          div.contant-wrapper
-            div.section_1
-              div.ui.form.tiny
-                table.ui.table.celled
-                  tbody
-                    tr
-                      td.center.aligned
-                        span 문자제목
-                      td
-                        div.text-title {{standardSmsDetail.smsTitle}}
-                    tr
-                      td.center.aligned
-                        span 문자내용
-                      td
-                        div.text-contents {{standardSmsDetail.smsContents}}
-                    tr(v-if="standardSmsDetail.inputParam1")
-                      td.center.aligned 
-                        span 파라미터1
-                      td.visibleTd
-                        div.fields
-                          div.field.six.wide
-                            div.pram-name [{{standardSmsDetail.inputParam1}}]
+              div.section_1
+                div.ui.form.tiny
+                  table.ui.table.fixed
+                    thead
+                      tr 
+                        th.two.wide
+                        th.fourteen.wide
+                    tbody
+                      tr
+                        td.center.aligned
+                          span 문자제목
+                        td
+                          div.text-title {{standardSmsDetail.smsTitle}}
+                      tr
+                        td.center.aligned
+                          span 문자내용
+                        td
+                          div.text-contents {{standardSmsDetail.smsContents}}
+                      tr(v-if="standardSmsDetail.inputParam1")
+                        td.center.aligned 
+                          span 파라미터1
+                        td.visibleTd
+                          div.fields
+                            div.field.six.wide
+                              div.pram-name [{{standardSmsDetail.inputParam1}}]
+                              
+                            div.field.ten.wide
+                              span {{standardSmsDetail.userData1}}
+                              
+                      tr(v-if="standardSmsDetail.inputParam2")
+                        td.center.aligned 
+                          span 파라미터2
+                        td.visibleTd
+                          div.fields
+                            div.field.six.wide
+                              div.code-name [{{standardSmsDetail.inputParam2}}]
                             
-                          div.field.ten.wide
-                            span {{standardSmsDetail.userData1}}
+                            div.field.ten.wide
+                              span {{standardSmsDetail.userData2}}
                             
-                    tr(v-if="standardSmsDetail.inputParam2")
-                      td.center.aligned 
-                        span 파라미터2
-                      td.visibleTd
-                        div.fields
-                          div.field.six.wide
-                            div.code-name [{{standardSmsDetail.inputParam2}}]
+                      tr(v-if="standardSmsDetail.inputParam3")
+                        td.center.aligned 
+                          span 파라미터3
+                        td.visibleTd
+                          div.fields
+                            div.field.six.wide
+                              div.code-name [{{standardSmsDetail.inputParam3}}]
+                            
+                            div.field.ten.wide
+                              span {{standardSmsDetail.userData3}}
+                            
+                      tr(v-if="standardSmsDetail.inputParam4")
+                        td.center.aligned 
+                          span 파라미터4
+                        td.visibleTd
+                          div.fields
+                            div.field.six.wide
+                              div.code-name [{{standardSmsDetail.inputParam4}}]
+                              
+                            div.field.ten.wide
+                              span {{standardSmsDetail.userData4}}
+                              
+                      tr(v-if="standardSmsDetail.inputParam5")
+                        td.center.aligned 
+                          span 파라미터5
+                        td.visibleTd
+                          div.fields
+                            div.field.six.wide
+                              div.code-name [{{standardSmsDetail.inputParam5}}]
+                              
+                            div.field.ten.wide
+                              span {{standardSmsDetail.userData5}}
+                            
+                      tr
+                        td.center.aligned 
+                          span 사용여부
+                        td
+                          div {{standardSmsDetail.useYn == 'Y' ? '사용' : '사용안함'}}
                           
-                          div.field.ten.wide
-                            span {{standardSmsDetail.userData2}}
-                           
-                    tr(v-if="standardSmsDetail.inputParam3")
-                      td.center.aligned 
-                        span 파라미터3
-                      td.visibleTd
-                        div.fields
-                          div.field.six.wide
-                            div.code-name [{{standardSmsDetail.inputParam3}}]
-                           
-                          div.field.ten.wide
-                            span {{standardSmsDetail.userData3}}
-                           
-                    tr(v-if="standardSmsDetail.inputParam4")
-                      td.center.aligned 
-                        span 파라미터4
-                      td.visibleTd
-                        div.fields
-                          div.field.six.wide
-                            div.code-name [{{standardSmsDetail.inputParam4}}]
-                            
-                          div.field.ten.wide
-                            span {{standardSmsDetail.userData4}}
-                            
-                    tr(v-if="standardSmsDetail.inputParam5")
-                      td.center.aligned 
-                        span 파라미터5
-                      td.visibleTd
-                        div.fields
-                          div.field.six.wide
-                            div.code-name [{{standardSmsDetail.inputParam5}}]
-                            
-                          div.field.ten.wide
-                            span {{standardSmsDetail.userData5}}
-                           
-                    tr
-                      td.center.aligned 
-                        span 사용여부
-                      td
-                        div {{standardSmsDetail.useYn == 'Y' ? '사용' : '사용안함'}}
-                        
-            div.btnSet
-                div.btn-wrap.right
-                div.btn-group.left
-                  button.ui.button.blue(@click="getSelectData") 선택
-                  button.ui.button(@click="$emit('close')") 취소
-          
-          
-      div.sub-footer
+              div.btnSet
+                  div.btn-wrap.right
+                  div.btn-group.left
+                    button.ui.button.blue(@click="getSelectData") 선택
+                    button.ui.button(@click="$emit('close')") 취소
+            
+            
+        div.sub-footer
 </template>
 
 <script>
@@ -127,15 +132,19 @@ import { setTimeout } from 'timers';
 
 export default {
   name: 'standard-sms-modal',
-  props: {
-    title: String,
-    data: Object,
-    stepNo: Number || String,
-    stepSn: Number || String,
-    type: String
-  },
+  // props: {
+  //   title: String,
+  //   data: Object,
+  //   stepNo: Number || String,
+  //   stepSn: Number || String,
+  //   type: String
+  // },
   data () {
     return {
+      title: '',
+      type: '',
+      stepNo: 0,
+      stepSn: 0,
       standardSms: {
         selected: [],
         headers: standardSmsHeader.headers,
@@ -183,6 +192,12 @@ export default {
     }
   },
   methods: {
+    setProps (event) {
+      this.title = event.params.title,
+      this.stepNo = event.params.stepNo,
+      this.stepSn = event.params.stepSn,
+      this.type = event.params.type
+    },
     getSmslist (targetNum) {
       this.searchData.currPage = targetNum
       this.searchData.useYn = 'Y'
@@ -197,7 +212,7 @@ export default {
       }).catch(error => {
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        alert(err.data.msgValue)
       })
     },
     getSmsItem () {
@@ -274,17 +289,16 @@ export default {
       }
     }
   }
-  .content.section.section-1 {
+  .section.section-1 {
     width: 30% !important;
     .ui.table tr:nth-child(1) td:nth-child(odd) {
         background: none;
       }
   }
-  .content.section.section-2 {
-    table tr td:nth-child(2) {
-      width: 70%;
-    }
-  }
+  table tr th {
+      padding: 0;
+       opacity: 0 !important;
+       }
   .ld,.lh {
     width: 80% !important;
   }
@@ -302,9 +316,10 @@ export default {
     }
   }
   .text-contents {
-    height: 5rem;
+    height: 10rem;
     background-color: #f9f9f9;
     padding: 5px;
+    white-space: normal;
   }
   td {
     .code-name {padding: 5px;}
@@ -312,6 +327,7 @@ export default {
     span {
       display: inline-block;
       width: 100%;
+      height: 2rem;
       background-color: #f9f9f9;
       padding: 5px;
     }

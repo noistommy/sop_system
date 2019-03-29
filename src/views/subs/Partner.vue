@@ -86,7 +86,7 @@ export default {
         isFooter: true,
         isPagination: true,
         isListNumber: false,
-        itemkey: 'moblphonNo',
+        itemkey: 'uniqueKey',
         pageInfo: {},
       },
       partnerDetailInfo: {},
@@ -236,12 +236,11 @@ export default {
         clickToClose: false
       })
     },
-    uploadFile (file) {
+    uploadFile (fileData) {
       const requestData = new FormData()
-      console.log(file)
-      requestData.append('file', file)
+      requestData.append('file', fileData)
       PartnerApi.fileUpload(requestData).then(result => {
-        console.log(result)
+        console.log(result,"success")
       }).catch(error => {
         const err = error.response
         console.log(err)

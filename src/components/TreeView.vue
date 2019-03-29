@@ -5,11 +5,12 @@
                 template(v-if="childCount > 0")
                     i.icon.caret(:class="activeItem ? 'down' : 'right'", @click.stop="setActive")
                     span {{treeItem.title}}
-                    i.icon.circle(v-if="treeItem.selected == 'Y'", :style="activeStyle")
+                    i.icon.check(v-if="treeItem.selected == 'Y'", :style="activeStyle")
                     span.badge(v-if="childCount > 0") {{childCount}}
                 template(v-else-if="treeItem.title")
+                    i.icon
                     span {{treeItem.title}}
-                    i.icon.circle(v-if="treeItem.selected == 'Y'", :style="activeStyle")
+                    i.icon.check(v-if="treeItem.selected == 'Y'", :style="activeStyle")
                 template(v-else)
                     div.item-wrapper
                         div {{treeItem.clsfCdNm}} 
@@ -54,7 +55,7 @@ export default {
     'tree-view': TreeView
   },
   created () {
-
+    //   console.log('check')
   },
   mounted () {
   },
@@ -114,6 +115,9 @@ export default {
                         font-weight: bold;
                     }
                 }
+                i.check {
+                    margin: 0 5px;
+                }
             }
         }
         .treecontent > .treeheader.selected {
@@ -162,6 +166,19 @@ export default {
                     border-top: 0;
                     border-bottom: 0;
                     padding-left: 150px;
+                }
+            }
+        }
+    }
+    &.level-4 {
+        background-color: #8b8b8b;
+        > .treeitem {
+            .treecontent {
+                .treeheader {
+                    border-left: 5px solid rgb(223, 123, 77);
+                    border-top: 0;
+                    border-bottom: 0;
+                    padding-left: 200px;
                 }
             }
         }

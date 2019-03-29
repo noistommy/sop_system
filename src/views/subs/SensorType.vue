@@ -72,10 +72,12 @@
                               type="checkbox"
                               )
                             label 허용
+            div.section_3
               div.btnSet.right
-                  div.buttons
-                    button.ui.button.blue(@click="updateDetail") 저장
-                    button.ui.button(@click="getSensorDetail(sensorByType.pageInfo.currPage)") 취소
+                div.buttons
+                  button.ui.button.blue(@click="updateDetail") 저장
+                  button.ui.button(@click="getSensorDetail(sensorByType.pageInfo.currPage)") 취소
+
       div.sub-footer
 </template>
 
@@ -207,10 +209,25 @@ export default {
 
 <style lang="less">
 .SensorType {
+  .sub-wrapper {
+    .sub-content > .content {
+      height: 100%;
+    }
+  }
+}
+.SensorType {
   .content.section.section-1 {
     width: 25% !important;
   }
   .contant-wrapper {
+    height: 90%;
+    max-height: auto;
+    display: flex;
+    flex-direction: column;
+    // flex: 1 2 auto;
+    > div {
+      padding-bottom: 15px
+    }
     .ui.table {
       tr {
         td{
@@ -220,6 +237,7 @@ export default {
         }
       }
     }
+    
   }
   .ld,.lh {
     width: 30% !important;

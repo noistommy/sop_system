@@ -1,4 +1,5 @@
 <template lang="pug">
+modal(name="select-location", :width="1000", :height="800", :clickToClose="false", @before-open="setProps")
   div.modal
     div.modal-header {{title}}
     div.modal-content
@@ -17,8 +18,8 @@
                   @click="toggleCheck(local, floor)")
                   div.ui.label(:class="{select:floor.checked}") {{floor.buldFloor}} {{floor.buldFloor == '' ? '단일층' : ''}}
     div.btnSet.center
-      button.ui.button.blue(@click="sendSetList('parameter')") 확인
-      button.ui.button(@click="$emit('close')") 취소
+      button.ui.button.blue(@click="sendSetList(sopBuldMapngList)") 확인
+      button.ui.button(@click="initSetList") 취소
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
@@ -27,27 +28,31 @@
 import LocationApi from '@/api/Location'
 import { codeGenerator } from '@/util'
 
+let selectedBuildList = []
+
 export default {
   name: 'location-select-modal',
   components: {
   },
-  props: {
-    title: String,
-    value: Object,
-    isActive: Boolean,
-    data: Array
-  },
+  // props: {
+  //   title: String,
+  //   value: Object,
+  //   isActive: Boolean,
+  //   data: Array
+  // },
   data () {
     return {
+      title: '',
+      isActive: false,
       locationData: [],
-      selectedList: this.data,
+      selectedList: [],
       sopBuldTitle: '',
       sopBuldMapngList: [],
       activeLocation: ''
-
     }
   },
   created () {
+    console.log(this.selectedList)
     this.getLocationList()
     this.insertSetList ()
   },
@@ -55,6 +60,16 @@ export default {
     $('.ui.checkbox').checkbox()
   },
   methods: {
+    setProps (event) {
+      this.title = event.params.title
+      this.selectedList = event.params.data
+      selectedBuildList = []
+      this.selectedList.forEach(e=>{
+        const selectedItem = e
+        selectedBuildList.push(selectedItem)
+      })
+      this.getLocationList ()
+    },
     getLocationList () {
       LocationApi.locationList().then(result => {
         this.locationData = result.data.sopBuldFloorList
@@ -64,6 +79,8 @@ export default {
             this.$set(e, 'checked', false)
           })
         })
+        
+      }).then(()=>{
         this.setCheck()
       })
     },
@@ -75,7 +92,8 @@ export default {
         e.children.forEach(el => {
           this.selectedList.forEach(sel => {
             if(el.buldId == sel.buldId && el.buldFloor == sel.buldFloor) {
-              this.toggleCheck(e, el)
+              this.setCheckItem(e, el)
+              // this.toggleCheck(e, el)
             }
           })
         })
@@ -86,6 +104,18 @@ export default {
       list.children.forEach(e => {
         e.checked = list.allchecked
       })
+      this.insertSetList ()
+    },
+    setCheckItem (list, item) {
+      let isAllCheck = true
+      list.allchecked = false
+      item.checked = true
+      list.children.forEach(e => {
+        if(!e.checked) {
+          isAllCheck = false
+        }
+      })
+      list.allchecked = isAllCheck
       this.insertSetList ()
     },
     toggleCheck (list, item) {
@@ -116,8 +146,11 @@ export default {
         })
       })
     },
-    sendSetList () {
-      this.$emit('location', this.sopBuldMapngList)
+    initSetList() {
+      this.sendSetList(selectedBuildList)
+    },
+    sendSetList (selectedList) {
+      this.$emit('location', selectedList)
       this.$emit('close')
     }
   } 

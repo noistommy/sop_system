@@ -28,7 +28,7 @@ const historyMenuList = {
   ]
 }
 
-const standardInfoMenuList = {
+const standardInfoMenuList1 = {
   defaultTab: 'location-info',
   tabList: [
     { name: '건물/층관리', pathName: 'location-info', default: true, icon: '' },
@@ -38,6 +38,15 @@ const standardInfoMenuList = {
     { name: '공통코드관리', pathName: 'public-code', default: false, icon: '' },
     { name: '공지사항', pathName: 'notice-manage', default: false, icon: '' },
     { name: '운영자관리', pathName: 'system-user', default: false, icon: '' }
+  ]
+}
+
+const standardInfoMenuList2 = {
+  defaultTab: 'standard-sms',
+  tabList: [
+    { name: '표준문자관리', pathName: 'standard-sms', default: false, icon: '' },
+    { name: '표준방송관리', pathName: 'standard-broad', default: false, icon: '' },
+    { name: '공지사항', pathName: 'notice-manage', default: false, icon: '' }
   ]
 }
 // MAIN TABLE
@@ -56,9 +65,9 @@ const mainSopHistoryHeader = {
 const mainSmsHistoryHeader = {
   headers: [
     { text: '날짜', align: 'center', value: 'regDt', size: 'three' },
-    { text: '위치', align: 'center', value: 'buldNm', size: 'three' },
-    { text: '인원', align: 'center', value: 'cnt', size: 'three' },
-    { text: '전송내용', align: 'center', value: 'smsContents', size: 'sic' }
+    { text: '위치', align: 'center', value: 'buldNm', size: 'four' },
+    { text: '인원', align: 'center', value: 'cnt', size: 'two' },
+    { text: '전송내용', align: 'center', value: 'smsContents', size: 'six' }
   ]
 }
 
@@ -241,7 +250,8 @@ export {
   sopMenuList,
   memberMenuList,
   historyMenuList,
-  standardInfoMenuList,
+  standardInfoMenuList1,
+  standardInfoMenuList2,
   sopHistoryTableHeader,
   smsHistoryTableHeader,
   sensorHistoryTableHeader,

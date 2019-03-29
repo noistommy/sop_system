@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import { standardInfoMenuList } from '@/setting'
+import { standardInfoMenuList1, standardInfoMenuList2 } from '@/setting'
 import Tabs from '@/components/Tabs.vue'
 
 export default {
@@ -14,7 +14,17 @@ export default {
   },
   data () {
     return {
-      tabMenuList: standardInfoMenuList
+      tabMenuList: standardInfoMenuList1,
+      opratorCode: ''
+    }
+  },
+  created () {
+    // this.opratorCode = localStorage.userInfo
+    this.opratorCode = sessionStorage.userInfo
+    if(this.opratorCode == 'S0400100') {
+      this.tabMenuList = standardInfoMenuList1
+    } else {
+      this.tabMenuList = standardInfoMenuList2
     }
   }
 }

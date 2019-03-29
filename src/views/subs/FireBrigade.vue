@@ -116,7 +116,7 @@ export default {
         fireBrigadeGroup: [],
         isListNumber: false,
         isTitle: false,
-        itemkey: 'emplNo'
+        itemkey: 'uniqueKey'
       },
       offFireBrigade: {
         selected: [],
@@ -124,7 +124,7 @@ export default {
         offFireBrigadeGroup: [],
         isListNumber: false,
         isTitle: false,
-        itemkey: 'rnum'
+        itemkey: 'uniqueKey'
       },
       FireBrigadeDetail: {},
       treeviewData: [],
@@ -188,6 +188,8 @@ export default {
         this.fireBrigade.fireBrigadeGroup = result.data.slfdfnFbrdEmpInfoList
         this.offFireBrigade.offFireBrigadeGroup = result.data.fbrdAsignTrgetList
         this.fireBrigadeDetail = result.data.slfdfnFbrdDetailInfo
+        // this.fireBrigade.selected =[]
+        // this.offFireBrigade.selected =[]
       })
       .catch(error => {
         const err = error.response
@@ -204,6 +206,7 @@ export default {
       this.selectTeam = item
       this.uploadTreeData = item
       this.getList()
+      this.initedSelect()
     },
     initSearch (type) {
       console.log(type)
@@ -216,11 +219,16 @@ export default {
     },
     updateItems () {
       const requestData = JSON.stringify({
-        slfdfnFbrdId: this.fireBrigade.fireBrigadeGroup[0].slfdfnFbrdId,
+        slfdfnFbrdId: this.selectTeam.childSlfdfnFbrdId,
         slfdfnFbrdEmpInfoList: this.fireBrigade.fireBrigadeGroup
       })
       FireBrigadeApi.setFiremanInfo(requestData).then(result => {
         console.log(result)
+        this.$modal.show('dialog', {
+          title: '실행확인',
+          text: '저장되었습니다'
+        })
+        this.getList()
       }).catch(error => {
         const err = error.response
         console.log(err)
@@ -230,7 +238,7 @@ export default {
     },
     selectedleftItems(itemInfo) {
       if(itemInfo.selected) {
-        this.selected.forEach((e, i) => {
+        this.fireBrigade.selected.forEach((e, i) => {
           if(e[this.fireBrigade.itemkey] == itemInfo.item[this.fireBrigade.itemkey]) {
             this.fireBrigade.selected.splice(i, 1)
           }
@@ -268,22 +276,23 @@ export default {
         clickToClose: false
       },{
         'before-close': () => {
-          // this.getTreeList ()
+          this.getTreeList ()
         }
       })
     },
     openUploadFile () {
       this.$modal.show(FileUpload, {
-        title: '파일업로드'
+        title: '파일업로드',
+        // url: 'http://192.168.43.8:8080/n3n.sop.SlfdfnFbrdInfo.uploadSlfdfnFbrdExcelFile.do'
       },{
         width: '300px',
         height: 'auto',
         clickToClose: false
       })
     },
-    uploadFile () {
+    uploadFile (fileData) {
       const requestData = new FormData()
-      requestData.append('file', file)
+      requestData.append('file', fileData)
       FireBrigadeApi.fileUpload(requestData).then(result => {
         console.log(result)
       }).catch(error => {
@@ -379,7 +388,7 @@ export default {
   position:relative;
   .file-movement {
     width: 100%;
-    height: 90%;
+    height: 85%;
     display: flex;
     flex-direction: row;
     .movement-btn {

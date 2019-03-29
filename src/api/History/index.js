@@ -36,13 +36,37 @@ export default {
   controlOutSop: (payload) => {
     return HTTP.post(`${TargetURL}.updateSopExecutOprtr.do`, payload)
   },
-  sopHistoryDownload: () => {
-    location.href = `${BASE_URL}${TargetURL}.selectSopExecutEndHistListExcel.do`
+  sopHistoryDownload: (param) => {
+    var url = `${BASE_URL}${TargetURL}.selectSopExecutEndHistListExcel.do`
+    var form = '<form action=' + url + " method='post'>"
+    if (param != null && typeof param !== 'undefined') {
+      $.each(param, function (index, value) {
+        form += "<input type='hidden' name=" + index + ' value=' + value + ' />'
+      })
+    }
+    form += '</form>'
+    $(form).appendTo('body').submit().remove()
   },
-  smsHistoryDownload: () => {
-    location.href = `${BASE_URL}${TargetURL}.selectSopExecutSmsHistListExcel.do`
+  smsHistoryDownload: (param) => {
+    var url = `${BASE_URL}${TargetURL}.selectSopExecutSmsHistListExcel.do`
+    var form = '<form action=' + url + " method='post'>"
+    if (param != null && typeof param !== 'undefined') {
+      $.each(param, function (index, value) {
+        form += "<input type='hidden' name=" + index + ' value=' + value + ' />'
+      })
+    }
+    form += '</form>'
+    $(form).appendTo('body').submit().remove()
   },
-  sensorHistoryDownload: () => {
-    location.href = `${BASE_URL}${TargetURL}.selectSensorDetctHistListExcel.do`
+  sensorHistoryDownload: (param) => {
+    var url = `${BASE_URL}${TargetURL}.selectSensorDetctHistListExcel.do`
+    var form = '<form action=' + url + " method='post'>"
+    if (param != null && typeof param !== 'undefined') {
+      $.each(param, function (index, value) {
+        form += "<input type='hidden' name=" + index + ' value=' + value + ' />'
+      })
+    }
+    form += '</form>'
+    $(form).appendTo('body').submit().remove()
   }
 }

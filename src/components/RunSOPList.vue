@@ -1,6 +1,8 @@
 <template lang="pug">
   div#SopList(:class="{active:activeSide}")
-    //- modals-container
+    ResetPassword(@close="$modal.hide('reset-password')")
+    RunSopModal(@close="$modal.hide('run-sop-modal')")
+    RunBySensorList(@close="$modal.hide('run-sensor-list')")
     div.virtual-btn(v-if="!activeSide", @click="toggleSideLayer")
     div.run-list
       div.item.userInfo
@@ -45,8 +47,9 @@ import RunSopModal from '@/components/RunSopModal'
 import { mapActions } from 'vuex'
 import About from '@/views/About'
 import SopSlide from'@/api/SopSlide'
-import { setInterval } from 'timers';
+import { setInterval, clearInterval } from 'timers';
 import { codeGenerator } from '@/util'
+import { EventBus } from '@/util'
 
 export default {
   name: 'run-sop-list',
@@ -54,7 +57,8 @@ export default {
     return {
       activeSide: true,
       excuteList: [],
-      waitingList: []
+      waitingList: [],
+      interval: ''
     }
   },
   components: {
@@ -64,9 +68,9 @@ export default {
   },
   created () {
     this.getSOPList()
-    // setInterval(() => {
+    // this.interval = setInterval(() => {
     //  this.getSOPList()
-    // },5000)
+    // },3000)
     
   },
   methods: {
@@ -79,6 +83,7 @@ export default {
     onLogout() {
       this.logout().then((result) => {
         console.log(result)
+        clearInterval(this.interval)
         this.$router.push('/login')
       }).catch(error => {
         this.$emit('close')
@@ -87,41 +92,45 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
+    getSOPList () {
+      SopSlide.getList().then(result => {
+        this.excuteList = result.data.selectExecutSopList
+        this.waitingList = result.data.selectWaitSopList
+      }).catch(error => {
+        this.$emit('close')
+        const err = error.response
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
+    runningSop (sopItem) {
+      
+      const requestData = JSON.stringify({
+        sopId: sopItem.sopId,
+        sopExecutSn: sopItem.sopExecutSn
+      })
+      SopSlide.checkRunFlag(requestData).then(result => {
+        const executFlag = result.data.executAuthorFlag == 'Y' ? 'run' : 'monitor'
+        if(this.$route.name == 'sop-run'){
+          console.log(sopItem)
+          sopItem.type = executFlag
+          // this.$router.push({name: 'sop-list'})
+          EventBus.$emit('trans-sop', sopItem)
+        } else {
+          this.$router.push({ name: 'sop-run', params: {sopId: sopItem.sopId, sopExecutSn: sopItem.sopExecutSn, type: executFlag}})
+        }
+
+      })
+    },
     resetPassword () {
-      this.$modal.show(ResetPassword, {
+      this.$modal.show('reset-password' , {
         title: '비밀번호변경',
       }, {
         width: '350px',
         clickToClose: false
       })
     },
-    getSOPList () {
-      SopSlide.getList().then(result => {
-        console.log(result)
-        this.excuteList = result.data.selectExecutSopList
-        this.waitingList = result.data.selectWaitSopList
-      }).catch(error => {
-        this.$emit('close')
-        const err = error.response
-        console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
-      })
-    },
-    runningSop (sopItem) {
-      const requestData = JSON.stringify({
-        sopId: sopItem.sopId,
-        sopExecutSn: sopItem.sopExecutSn
-      })
-      SopSlide.checkRunFlag(requestData).then(result => {
-        if(result.data.executAuthorFlag == 'Y') {
-          this.$router.push({ name: 'sop-run', params: {sopId: sopItem.sopId, sopExecutSn: sopItem.sopExecutSn, type: 'run'}})
-        } else {
-          this.$router.push({ name: 'sop-run', params: {sopId: sopItem.sopId, sopExecutSn: sopItem.sopExecutSn, type: 'monitor'}})
-        }
-      })
-    },
     readySop (sopItem) {
-      console.log('click')
+      console.log(sopItem)
       if(sopItem.sopId == undefined) {
         this.selectSopBySensor(sopItem)
       } else {
@@ -129,17 +138,17 @@ export default {
       }
     },
     selectSop (reqData) {
-      this.$modal.show(RunSopModal, {
+      this.$modal.show('run-sop-modal', {
         title: 'SOP실행',
         data: reqData
       },{
         width: '350px',
-        height: 'auto',
+        height: '200px',
         clickToClose: false
       })
     },
     selectSopBySensor (reqData) {
-      this.$modal.show(RunBySensorList, {
+      this.$modal.show('run-sensor-list', {
         title: 'SOP선택',
         text: reqData.dispSopTitle,
         data: reqData.iwId

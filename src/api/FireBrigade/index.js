@@ -1,5 +1,6 @@
 import HTTP from '@/api'
 import BASE_URL from '@/api/config'
+import axios from 'axios'
 
 const TargetURL = '/n3n.sop.SlfdfnFbrdInfo'
 
@@ -35,7 +36,7 @@ export default {
   },
   // 파일업로드
   fileUpload: (payload) => {
-    return HTTP.post(`${TargetURL}.uploadSlfdfnFbrdExcelFile.do`, payload, {
+    return axios.post(`${BASE_URL}${TargetURL}.uploadSlfdfnFbrdExcelFile.do`, payload, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

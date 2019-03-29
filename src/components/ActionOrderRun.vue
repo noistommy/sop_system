@@ -20,7 +20,7 @@
                   :rownum='3',
                   :maxLength='500',
                   v-model="actionData.drctContents",
-                  @input="returnText")
+                  )
           
 </template>
 
@@ -49,19 +49,17 @@ export default {
   created () {
     if(this.actionData.autoYn == null) {
       this.actionData.autoYn = 'N'
-    } else if(this.actionData.autoYn == 'Y') {
-      this.stepRunning()
-    } else{
-      console.log('start')
-    }
+    } 
+    // else if(this.actionData.autoYn == 'Y') {
+    //   this.stepRunning()
+    // } else{
+    //   console.log('start')
+    // }
   },
   mounted () {
     $('ui.checkbox').checkbox()
   },
   methods: {
-    returnText (text) {
-      this.textareaData = text
-    },
     stepRunning () {
       if(this.state) {
         this.state = false

@@ -58,6 +58,6 @@ export default {
   },
   // sop 수신자 조회
   getRecieverList: (payload) => {
-    return HTTP.post(`/n3n.sop.OrgnztInfo.selectDeptEmpInfoPopupList.do`, payload)
+    return HTTP.post(`/n3n.sop.SlfdfnFbrdInfo.selectAllDeptEmpPopupList.do`, payload)
   }
 }

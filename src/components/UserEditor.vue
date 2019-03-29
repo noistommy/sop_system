@@ -13,36 +13,36 @@
                     label
                     input(v-if="type=='new'", type="text", v-model="userData.oprtrId", @blur="checkUserId")
                     input(v-else, type="text", v-model="userData.oprtrId", readonly).readonly
-                td 이름*
+                td 이름
                 td
                   div.field
                     label
                     input(type="text", v-model="userData.oprtrNm")
               tr
-                td 직위*
+                td 직위
                 td
                   div.field
                     label
                     input(type="text", placeholder="직위", v-model="userData.ofcpsCdNm")
-                td 직급*
+                td 직급
                 td
                   div.field
                     label
                     input(type="text", placeholder="직급" v-model="userData.clsfCdNm")
               tr
-                td 휴대전화*
+                td 휴대전화
                 td(:colspan='3')
                   div.field
                     label
                     input(type="text", v-model="userData.moblphonNo")
               tr
-                td 권한설정*
+                td 권한설정
                 td(:colspan='3')
                   div.inline.fields
                     div.field
-                      div.field
-                        button.ui.button.mini(@click="activeMode('S0400100')", :class="{blue:userData.oprtrFgCd == 'S0400100'}") 관리자
-                        button.ui.button.mini(@click="activeMode('S0400200')", :class="{blue:userData.oprtrFgCd == 'S0400200'}") 운영자
+                      div.ui.button.mini(@click="activeMode('S0400100')", :class="{blue:activeCode == 'S0400100'}") 관리자
+                    div.field
+                      div.ui.button.mini(@click="activeMode('S0400200')", :class="{blue:activeCode == 'S0400200'}") 운영자
                       //- div.ui.radio.checkbox
                       //-   label 관리자
                       //-   input(type="radio", :value="option1", v-model="userData.oprtrFgCd")
@@ -50,7 +50,7 @@
                       //-   label 운영자
                       //-   input(type="radio", :value="option2", v-model="userData.oprtrFgCd")
               tr
-                td 비밀번호*
+                td 비밀번호
                 td(v-if="type == 'new'", :colspan='3')
                   div.field
                     | {{initPw}}
@@ -84,17 +84,20 @@ export default {
   },
   data () {
     return {
-      userData: {},
+      userData: this.data,
       option1: "S0400100",
       option2: "S0400200",
       errorMsg: '',
-      initPw: ''
+      initPw: '',
+      activeCode: ''
     }
   },
   created () {
-    this.userData = this.data
     if(this.type == 'new') {
+      this.activeCode = 'S0400200'
       this.userData.oprtrFgCd = 'S0400200'
+    } else {
+      this.activeCode = this.userData.oprtrFgCd
     }
     this.spotInfo = this.getCodeList('S020')
     this.positionInfo = this.getCodeList('S030')
@@ -106,7 +109,9 @@ export default {
   },
   methods: {
     activeMode (mode) {
+      console.log(mode)
       this.userData.oprtrFgCd = mode
+      this.activeCode = mode
     },
     getPassword () {
       const requestData = JSON.stringify({})

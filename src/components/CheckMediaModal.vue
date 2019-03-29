@@ -1,14 +1,15 @@
 <template lang="pug">
-  div.modal
-    div.modal-header {{title}}
-    div.modal-content 
-      //- div.discription {{text}}
-      div.content-text {{contentData}}
-      div.state-message {{message}}
-      div.foot-btn
-        button.ui.floated.right.button(@click="$emit('close')", :class="contentYn=='Y'?'green':'orange'") {{contentYn=='Y'?'정상':'오류'}}
-    div.modal-close(@click="$emit('close')")
-        div.close X
+   modal(name="check-msg-modal", width='350px', height='350px' :clickToClose="false", @before-open="setProps")
+    div.modal
+      div.modal-header {{title}}
+      div.modal-content 
+        //- div.discription {{text}}
+        div.content-text {{contentData}}
+        div.state-message {{message}}
+        div.foot-btn
+          button.ui.floated.right.button(@click="$emit('close')", :class="contentYn=='Y'?'green':'orange'") {{contentYn=='Y'?'정상':'오류'}}
+      div.modal-close(@click="$emit('close')")
+          div.close X
 </template>
 
 <script>
@@ -18,21 +19,30 @@ export default {
   name: 'check-media-modal',
   components: {
   },
-  props: {
-    title: String,
-    text: String,
-    data: Object
-  },
+  // props: {
+  //   title: String,
+  //   text: String,
+  //   data: Object
+  // },
   data () {
     return {
-      contentData: this.data.vrifyContents,
-      contentYn:this.data.vrifyYn,
-      message:this.data.vrifyMessage
+      title: '',
+      text:'',
+      contentData: '',
+      contentYn:'',
+      message:''
     }
   },
   created () {
   },
   methods: {
+    setProps (event) {
+      this.title = event.params.title
+      this.text = event.params.text
+      this.contentData = event.params.data.vrifyContents
+      this.contentYn = event.params.data.vrifyYn
+      this.message = event.params.data.vrifyMessage
+    }
   }
 }
 </script>
@@ -59,13 +69,22 @@ export default {
         flex-grow: 1;
         padding: 15px;
         .content-text {
+          width: 100%;
           padding: 15px;
           background-color: #f9f9f9;
+          height: 180px;
+          white-space: normal !important;
+          overflow-y: auto;
+          word-break:break-all;
         }
         .state-message {
           padding: 15px;
         }
         .foot-btn {
+          width: 100%;
+          position:absolute;
+          left: 0;
+          bottom: 20px;
           display: flex;
           justify-content: center;
         }

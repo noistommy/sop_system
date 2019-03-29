@@ -1,28 +1,29 @@
 <template lang="pug">
-div.modal.select-sensor
-    div.modal-header {{title}} ({{text}})
-    div.modal-content 
-      div.content-wrapper
-        div.list-content
-          DataList(
-            v-model="selected",
-            :headers="headers",
-            :items="runBySensorData",
-            :itemKey="itemkey",
-            :isListNumber="isListNumber"
-          )
-            template(slot="items", slot-scope="props")
-              div.item.lr.listitem(@click="selectedItem(props)" )
-                .ld.center {{props.item.msfrtnKndNm}}
-                .ld.center {{props.item.crisisGnfdStepNm}}
-                .ld.center {{props.item.sopTitle}}
-                .ld.center {{props.item.executYnNm}}
-        div.btnSet.right
-          button.ui.button.blue(@click='runSelectSop') 실행
-          button.ui.button.yellow(@click='errorSelectSop') 오작동
-          button.ui.button(@click="$emit('close')") 취소
-        div.modal-close(@click="$emit('close')")
-            div.close X
+modal(name='run-sensor-list', :width='800', :height='600', :clickToClose="false", @before-open="setProps")
+  div.modal.select-sensor
+      div.modal-header {{title}} ({{text}})
+      div.modal-content 
+        div.content-wrapper
+          div.list-content
+            DataList(
+              v-model="selected",
+              :headers="headers",
+              :items="runBySensorData",
+              :itemKey="itemkey",
+              :isListNumber="isListNumber"
+            )
+              template(slot="items", slot-scope="props")
+                div.item.lr.listitem(:class="{active:props.selected}", @click="selectedItem(props)" )
+                  .ld.center {{props.item.msfrtnKndNm}}
+                  .ld.center {{props.item.crisisGnfdStepNm}}
+                  .ld.center.title {{props.item.sopTitle}}
+                  .ld.center {{props.item.executYnNm}}
+          div.btnSet.right
+            button.ui.button.blue(@click='runSelectSop') 실행
+            button.ui.button.yellow(@click='errorSelectSop') 오작동
+            button.ui.button(@click="$emit('close')") 취소
+          div.modal-close(@click="$emit('close')")
+              div.close X
               
 </template>
 
@@ -33,24 +34,27 @@ import { codeGenerator } from '@/util'
 
 export default {
   name: 'run-sensor-list',
-  props: {
-    data: String,
-    title: String,
-    text: String
-  },
+  // props: {
+  //   data: String,
+  //   title: String,
+  //   text: String
+  // },
   data () {
     return {
       selected:[],
       headers: [
         { text: '재난종류', align: 'center', value: 'msfrtnKndNm', size: '' },
         { text: '위기발령단계', align: 'center', value: 'crisisGnfdStepNm', size: '' },
-        { text: 'SOP명', align: 'center', value: 'sopTitle', size: '' },
+        { text: 'SOP명', align: 'center', value: 'sopTitle', size: 'title' },
         { text: '종료여부', align: 'center', value: 'executYnNm', size: '' }
       ],
       runBySensorData: [],
       isListNumber: false,
       itemkey: 'sopExecutSn',
-      runParams: {}
+      runParams: {},
+      title: '',
+      text: '',
+      data: ''
     }
   },
   components: {
@@ -60,34 +64,57 @@ export default {
     this.getList()
   },
   methods: {
+    setProps (event) {
+      this.title = event.params.title
+      this.text = event.params.text
+      this.data = event.params.data
+      this.getList()
+    },
     selectedItem(itemInfo) {
       this.selected = []
       if(!itemInfo.selected) {
-        this.selected.push(this.sopList.sopListData[itemInfo.idx])
+        this.selected.push(this.runBySensorData[itemInfo.idx])
       }
     },
     getList () {
+      if(this.data == '') return 
       const requestData = JSON.stringify({
         iwId: this.data
       })
       SopSlideApi.getPopupItem(requestData).then(result => {
-        console.log(result.data)
         this.runBySensorData = result.data.sopChoisePopupList
+        this.selected.push(this.runBySensorData[0])
       }).catch(error => {
         this.$emit('close')
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        alert(err.data.msgValue)
       })
       
     },
     runSelectSop () {
-      if( this.selected[0] != undefined) {
-        this.$router.push({ name: 'sop-run', params: { iwId: this.data, selectData:this.selected[0] }})
+      const requestData = JSON.stringify({
+        iwId: this.data,
+        sopId: this.selected[0].sopId,
+        buldId: this.selected[0].buldId,
+        buldFloor: this.selected[0].buldFloor,
+        executFgCd: this.selected[0].executFgCd,
+      })
+      SopSlideApi.selectRunSop(requestData).then(result => {
+        console.log(result.data)
+        this.$router.push({ name: 'sop-run', params: { 
+          iwId: this.data,
+          sopId: result.data.sopId,
+          sopExecutSn: result.data.sopExecutSn,
+          type: 'run'
+          }})
         this.$emit('close')
-      }else {
-        alert('SOP를 선택하세요')
-      }
+      }).catch(error => {
+        this.$emit('close')
+        const err = error.response
+        console.log(err)
+        alert(err.data.msgValue)
+      })
     },
     errorSelectSop () {
       const requestData = JSON.stringify({
@@ -95,11 +122,12 @@ export default {
       })
       SopSlideApi.setErrorSop(requestData).then(result => {
         console.log(result.data)
+        this.$emit('close')
       }).catch(error => {
         this.$emit('close')
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        alert(err.data.msgValue)
       })
     }
   }
@@ -129,6 +157,11 @@ export default {
           padding: 0;
           .list-content {
             height: 88%;
+            .ui.list.item {
+              .lh.title, .ld.title {
+                width: 80%;
+              }
+            }
           }
         }
     }

@@ -30,7 +30,7 @@
                 td.center.aligned {{props.item.msfrtnKndCdNm}}
                 td.center.aligned {{props.item.crisisGnfdStepCdNm}}
                 td.ellipse {{props.item.sopTitle}}
-                td {{props.item.buldNm}} {{props.item.buldFloor}}
+                td {{props.item.buldNm}}
                 td {{props.item.oprtrId}}
             </template>
         div.footer
@@ -104,11 +104,10 @@ export default {
       })
     },
     sopDownload () {
-      const requestData = JSON.stringify({
+      const requestData = {
         executEndFromDt: this.searchData.start,
         executEndToDt: this.searchData.end,
-        currPage: targetNum
-      })
+      }
       HistoryApi.sopHistoryDownload(requestData)
     },
     initDate() {

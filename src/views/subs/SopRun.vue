@@ -6,13 +6,13 @@
         div.run-wrapper
           div.preview-view
             div.preview-header
-              h3 
+              h3.sop-title.ellipse
                 span [{{sopInformation.msfrtnKndCdNm}} - {{sopInformation.crisisGnfdStepNm}}]
                 span {{sopInformation.sopTitle}}
-              div.sop-info
+              div.sop-info.ellipse
                 div.sop-location {{sopInformation.displayBuldFloor}}
                 div.sop-time {{sopInformation.displayExecutBeginDt}}
-            div.node-wrapper
+            div.node-wrapper(:class="{monitor:sopType == 'monitor'}")
                 div.node(
                   v-for="(node, index) in sopStepExecutMisnList",
                   :class="{active:index == activeCount}",
@@ -48,7 +48,8 @@
                     td.center.aligned {{props.item.regDt}}
                     td.center.aligned {{props.item.stepNo}}
                     td.center.aligned {{props.item.itemKndNm}}
-                    td.ellipse {{props.item.contents}}
+                    td
+                      div.mission.ellipse {{props.item.contents}}
           div.running-view(v-if="sopType == 'run'")
             div.running-wrapper
               div.step-header
@@ -60,7 +61,8 @@
                   template(v-for="(action, index) in activeStep.actionItem")
                     component(:is="action.type",
                     v-model="activeStep.actionItem[index]",
-                    :idx="index"
+                    :idx="index",
+                    :activeNum="activeCount"
                     @runstep="runAction")
             div.running-control
               div.btnSet
@@ -101,7 +103,8 @@
                       td.center.aligned {{props.item.regDt}}
                       td.center.aligned {{props.item.stepNo}}
                       td.center.aligned {{props.item.itemKndNm}}
-                      td.ellipse {{props.item.contents}}
+                      td
+                        div.mission.ellipse {{props.item.contents}}
             div.running-control
               div.btnSet
                 div.btn-group.left
@@ -112,6 +115,7 @@
 
 <script>
 import SopManageApi from '@/api/SopManage'
+import SopSlideApi from '@/api/SopSlide'
 import ActionSms from '@/components/ActionSmsRun'
 import ActionBroad from '@/components/ActionBroadRun'
 import ActionOrder from '@/components/ActionOrderRun'
@@ -119,6 +123,7 @@ import DataTable from '@/components/DataTable'
 import CloseMessageModal from '@/components/CloseMessageModal'
 import { sopRunHistoryHeader } from '@/setting'
 import { codeGenerator } from '@/util'
+import { EventBus } from '@/util'
 import { setInterval } from 'timers';
 
 export default {
@@ -130,7 +135,7 @@ export default {
       sopType: '',
       sopId: '',
       sopExecutSn:'',
-      stepNo: 0,
+      stepNo: 1,
       sopInformation: {},
       sopStepExecutMisnList: [],
       stepHistory: {
@@ -157,22 +162,35 @@ export default {
     DataTable
   },
   created () {
-    console.log(this.$route.params)
+    
+
     this.iwId = this.$route.params.iwId
     this.iwSelect = this.$route.params.selectData
     this.sopId = this.$route.params.sopId
     this.sopExecutSn = this.$route.params.sopExecutSn
     this.sopType = this.$route.params.type
+    EventBus.$on('trans-sop', returnData => {
+      console.log(returnData)
+      this.initRunSop(returnData)
+    })
     this.getInfo()
     this.getStepList()
     this.getStepHistoryList()
     // setInterval(() => {
     //   this.getStepHistoryList()
-    // },3000)
-    
-    // this.closeSop()
+    // },1000)
   },
   methods: {
+    initRunSop (sopInfo) {
+      this.iwId = sopInfo.iwId
+      this.iwSelect = sopInfo.selectData
+      this.sopId = sopInfo.sopId
+      this.sopExecutSn = sopInfo.sopExecutSn
+      this.sopType = sopInfo.type
+      this.getInfo()
+      this.getStepList()
+      this.getStepHistoryList()
+    },
     getInfo () {
       const requestData = JSON.stringify({
         sopId: this.sopId,
@@ -186,29 +204,32 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
-    getStepList () {
+    getStepList (stepNumber) {
       const requestData = JSON.stringify({
         sopId: this.sopId,
         sopExecutSn: this.sopExecutSn,
-        stepNo: ''
+        stepNo: stepNumber
       })
       SopManageApi.runStepList(requestData).then(result => {
         console.log(result.data)
-        this.sopStepExecutMisnList = result.data.sopStepExecutMisnList
+        if(stepNumber == '' || stepNumber == undefined) {
+          this.sopStepExecutMisnList = result.data.sopStepExecutMisnList
+          this.activeCount = 0
+        }else {
+          this.sopStepExecutMisnList[stepNumber-1] = result.data.sopStepExecutMisnList[0]
+        }
         this.sopStepExecutMisnList.forEach(e => {
           this.$set(e, 'historyList', [])
           this.activeHistory (e)
-          // e.forEach(item => {
-          //   this.$set(e, 'stateCode', false)
-          // })
         })
-        this.moveActiveStep ('')
+        this.activeStep = []
+        this.activeStep = this.sopStepExecutMisnList[this.activeCount]
+        // this.moveActiveStep ('')
       }).catch(error => {
         console.log(error)
         const err = error.response
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
-
     },
     getStepHistoryList () {
       const requestData = JSON.stringify({
@@ -217,7 +238,6 @@ export default {
         stepNo: 0
       })
       SopManageApi.getSophistoryList(requestData).then(result => {
-        console.log(result.data)
         this.stepHistory.historyData = result.data.selectSopStepExecutHistList
       }).catch(error => {
         const err = error.response
@@ -294,6 +314,7 @@ export default {
       SopManageApi.runStepAction(requestData).then(result => {
         console.log(result)
         this.getStepHistoryList()
+        this.getStepList(this.activeCount + 1)
       }).catch(error => {
         const err = error.response
         console.log(err.data.msgCode)
@@ -306,11 +327,14 @@ export default {
 
     },
     setActive (step, i) {
-      this.activeStep = step
+      this.activeStep = {}
       this.activeCount = i
+      this.getStepList(this.activeCount + 1)
       this.activeHistory (step)
+      
     },
     moveActiveStep (type) {
+      this.activeStep = {}
       if(type == 'prev') {
         this.activeCount--
       }
@@ -320,8 +344,7 @@ export default {
       else {
         this.activeCount = 0
       }
-      this.activeStep = this.sopStepExecutMisnList[this.activeCount]
-      
+      this.getStepList (this.activeCount + 1)
       this.activeHistory(this.activeStep)
     },
     activeHistory (step) {
@@ -338,6 +361,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.ellipse {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .SopRun {
   .sub-content {
     .content {
@@ -356,7 +385,19 @@ export default {
       display:flex;
       flex-direction: column;
       .preview-header {
-        height: 6%;
+        height: 5.5%;
+        font-weight: bold;
+        .sop-title {
+          float: left;
+          width:70%;
+        }
+        .sop-info {
+          width: 30%;
+          float: right;
+          > div:first-child {
+            margin-bottom: 5px;
+          }
+        }
       }
       .node-wrapper {
         display: flex;
@@ -371,7 +412,7 @@ export default {
         .node {
           display: inline-block;
           background-color: #fff;
-          width: 50%;
+          width: 40%;
           border: 5px solid rgba(0, 0, 0, 0.3);
           // border-style: inset;
           border-radius: 30px;
@@ -454,6 +495,9 @@ export default {
             }
           }
         }
+        &.monitor {
+          height: 85%;
+        }
       }
       .history-wrapper {
         height: 35%;
@@ -462,6 +506,9 @@ export default {
         overflow-y: auto;
         background-color: #fff;
         padding: 15px;
+        .mission {
+          max-width: 200px;
+        }
       }
     }
     .running-view {

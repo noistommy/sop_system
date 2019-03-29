@@ -6,7 +6,7 @@
             tr
               th(v-if="isSelect").center.aligned.collapsing
               th(v-if="isListNumber", :class="['wide one']").center.aligned NO
-              th( v-for="th of headers", :class="[`${th.align} aligned`, `wide ${th.size}`]" ) {{th.text}}
+              th( v-for="th of headers", :class="[`${th.align} aligned`, `${th.size} wide`]" ) {{th.text}}
         tbody
           tr(v-if="items.length == 0").no-data
             td(:colspan="colspan")

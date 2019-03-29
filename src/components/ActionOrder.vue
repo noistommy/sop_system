@@ -21,7 +21,7 @@
                 CheckTextCount(
                   :formType="formType",
                   :rownum='3',
-                  :maxLength='200',
+                  :maxLength='500',
                   v-model="orderData.drctContents",
                   @input="returnText")
           

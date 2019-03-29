@@ -136,10 +136,10 @@ export default {
       })
     },
     sensorDownload () {
-      const requestData = JSON.stringify({
+      const requestData = {
         prcpFromDt: this.searchData.start,
         prcpToDt: this.searchData.end,
-      })
+      }
        HistoryApi.sensorHistoryDownload(requestData)
     },
     initDate() {

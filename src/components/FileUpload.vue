@@ -2,11 +2,13 @@
   div.modal
     div.modal-header {{title}}
     div.modal-content 
+      //- form(:action="url", method="post", enctype="multipart/form-data")
       div.content-text
-        div.ui.form
+        form.ui.form
           input(type="file", id="file" ref="file", @change="handleUpload")
       div.state-message {{message}}
       div.foot-btn
+        //- button.ui.floated.right.button.green(type="submit") 업로드
         button.ui.floated.right.button.green(@click="upload") 업로드
         button.ui.floated.right.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
@@ -35,7 +37,7 @@ export default {
   methods: {
     handleUpload () {
       this.file = this.$refs.file.files[0]
-      console.log(this.$refs)
+      console.log(this.file)
     },
     upload () {
       this.$emit('upload', this.file)

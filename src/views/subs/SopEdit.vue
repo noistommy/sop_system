@@ -1,9 +1,7 @@
 <template lang="pug">
   div.SopEdit.sub-container
-    modals-container(
-      @location="setLocationList",
-      @select="insertData"
-      )
+    SelectLocation(@close="$modal.hide('select-location')", @location="setLocationList", @select="insertData")
+    //- modals-container(name="locationmodal", @location="setLocationList", @select="insertData")
     div.sub-wrapper
       div.baseInfo.ui.form
         div.base-info.info-1
@@ -23,6 +21,7 @@
             input(type="text", placeholder="재난절차제목입력", v-model="sopNewData.sopTitle")
         div.base-info.info-5
           button.ui.button.blue(@click="createSop") 재난절차저장
+          button.ui.button(@click="$router.push({ name:'sop-list'})") 취소
       div.sub-content
         div.content
           div.editor-wrapper
@@ -45,9 +44,9 @@
                   button.ui.button.blue.mini(@click='copyStep') 복사
                   button.ui.button.blue.mini(@click='deleteStep') 삭제
                 div.ui.buttons.right.floated
-                  button.ui.button.olive.mini(@click="addAction('sms')") 문자
-                  button.ui.button.olive.mini(@click="addAction('broad')") 방송
-                  button.ui.button.olive.mini(@click="addAction('order')") 지시사항
+                  button.ui.button.olive.mini(@click="addAction('ActionSms')") 문자
+                  button.ui.button.olive.mini(@click="addAction('ActionBroad')") 방송
+                  button.ui.button.olive.mini(@click="addAction('ActionOrder')") 지시사항
               div.edit-content
                 div.steps-wrapper
                   div.step(
@@ -91,6 +90,7 @@ import ActionBroadOnOff from '@/components/ActionBroadOnOff.vue'
 import ActionOrder from '@/components/ActionOrder.vue'
 import SelectLocation from '@/components/SelectLocation.vue'
 import { codeGenerator } from '@/util'
+import SelectReceiver from '@/components/SelectReceiver'
 
 export default {
   name: 'sop-edit',
@@ -137,7 +137,9 @@ export default {
     ActionSms,
     ActionBroad,
     ActionOrder,
-    ActionBroadOnOff
+    ActionBroadOnOff,
+    SelectReceiver,
+    SelectLocation
   },
   created () {
     this.sopNewData.sopId = this.$route.params.sopId
@@ -149,6 +151,7 @@ export default {
     if(this.sopNewData.sopId) {
       this.getSopItem()
     }
+   
   },
   mounted () {
     $('.ui.dropdown').dropdown()
@@ -161,6 +164,11 @@ export default {
     $('.step-content').popup({
       position:'bottom left'
     })
+  },
+  computed: {
+    newNumber () {
+      return this.sopNewData.sopStepList.length
+    }
   },
   methods: {
     getCodeList (code) {
@@ -192,6 +200,7 @@ export default {
         console.log(result.data)
         this.sopNewData = result.data
         this.newStepNo = this.sopNewData.sopStepList.length + 1
+        this.setLocationList(this.sopNewData.sopBuldMapngList)
       }).catch(error => {
         const err = error.response
         console.log(err)
@@ -214,13 +223,21 @@ export default {
       })
     },
     selectLocation () {
-      this.$modal.show(SelectLocation,{
+      this.$modal.show('select-location', {
         title: '건물/층 선택',
         data: this.sopNewData.sopBuldMapngList
       },{
         height: '80%',
         clickToClose: false
       })
+      // this.$modal.show(SelectLocation,{
+      //   title: '건물/층 선택',
+      //   data: this.sopNewData.sopBuldMapngList
+      // },{
+      //   modal: 'locationmodal',
+      //   height: '80%',
+      //   clickToClose: false
+      // })
     },
     
     setLocationList(local) {
@@ -270,16 +287,19 @@ export default {
       }
       copyStep.stepNo = this.selectedStep.stepNo
       copyStep.stepTitle = this.selectedStep.stepTitle
-      this.selectedStep.actionItem.forEach((item,i) => {
-        copyStep.actionItem.push(item)
-      })
+
+      
       console.log(copyStep)
-      // copyStep.actionItem = this.selectedStep.actionItem
-      // const step = this.selectedStep
-      // const copyStep = Object.assign({}, step)
+      
       copyStep.stepNo = this.newStepNo + 1
       this.sopNewData.sopStepList.push(copyStep)
       this.newStepNo++
+
+      this.selectedStep.actionItem.forEach((item,i) => {
+        console.log(item)
+        this.copyAction(item)
+      })
+
       this.setNodeActive(copyStep)
     },
     deleteStep () {
@@ -300,7 +320,7 @@ export default {
         autoYn: 'N',
         ischeck: false
       }
-      if(actionType == 'sms') {
+      if(actionType == 'ActionSms') {
         actionItem.type = 'ActionSms'
         actionItem.itemKnd = 'S0500100'
         Object.assign(actionItem,{
@@ -311,9 +331,19 @@ export default {
           inputParam3: '',
           inputParam4: '',
           inputParam5: '',
+          cmmnCd1: '',
+          cmmnCd2: '',
+          cmmnCd3: '',
+          cmmnCd4: '',
+          cmmnCd5: '',
+          userData1: '',
+          userData2: '',
+          userData3: '',
+          userData4: '',
+          userData5: ''
         })
       }
-      if(actionType == 'broad') {
+      if(actionType == 'ActionBroad') {
         actionItem.type = 'ActionBroad'
         actionItem.itemKnd = 'S0500200'
         Object.assign(actionItem,{
@@ -323,13 +353,23 @@ export default {
           inputParam3: '',
           inputParam4: '',
           inputParam5: '',
+          cmmnCd1: '',
+          cmmnCd2: '',
+          cmmnCd3: '',
+          cmmnCd4: '',
+          cmmnCd5: '',
+          userData1: '',
+          userData2: '',
+          userData3: '',
+          userData4: '',
+          userData5: ''
         })
       }
       if(actionType == 'broadon') {
         actionItem.type = 'ActionBroadOnOff'
         actionItem.itemKnd = 'S0500200'
       }
-      if(actionType == 'order') {
+      if(actionType == 'ActionOrder') {
         actionItem.type = 'ActionOrder'
         actionItem.itemKnd = 'S0500300'
         Object.assign(actionItem,{drctContents: ''})
@@ -341,6 +381,52 @@ export default {
           this.sopNewData.sopStepList[i].actionItem.push(actionItem)
         }
       })
+    },
+    copyAction (action) {
+      const actionItem = {
+        type: '',
+        itemKnd: '',
+        stepNo: 0,
+        stepSn: 0,
+        autoYn: 'N',
+        ischeck: false
+      }
+      if(action.type == 'ActionSms') {
+        actionItem.type = 'ActionSms'
+        actionItem.itemKnd = 'S0500100'
+        Object.assign(actionItem,{
+          sopStepChrgEmpList:[],
+          smsContents: ''
+        })
+        Object.assign(actionItem, this.addItemObject('cmmnCd'))
+        Object.assign(actionItem, this.addItemObject('userData'))
+        Object.assign(actionItem, this.addItemObject('inputParam'))
+      }
+      if(action.type == 'ActionBroad') {
+        actionItem.type = 'ActionBroad'
+        actionItem.itemKnd = 'S0500200'
+        Object.assign(actionItem,{
+          brdcstContents: ''
+        })
+        Object.assign(actionItem, this.addItemObject('cmmnCd'))
+        Object.assign(actionItem, this.addItemObject('userData'))
+        Object.assign(actionItem, this.addItemObject('inputParam'))
+      }
+      if(action.type == 'broadon') {
+        actionItem.type = 'ActionBroadOnOff'
+        actionItem.itemKnd = 'S0500200'
+      }
+      if(action.type == 'ActionOrder') {
+        actionItem.type = 'ActionOrder'
+        actionItem.itemKnd = 'S0500300'
+        Object.assign(actionItem,{drctContents: ''})
+      }
+      
+      for ( let key in action) {
+        console.log(action[key])
+        actionItem[key] = action[key]
+      }
+      this.sopNewData.sopStepList[this.newNumber - 1].actionItem.push(actionItem)
     },
     addItemObject (name) {
       const addItems = {}

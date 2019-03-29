@@ -12,6 +12,13 @@ export default {
   name: 'App',
   components: {
     VueExtendLayouts
+  },
+  data() {
+    return {
+
+    }
+  },
+  methods: {
   }
 }
 </script>

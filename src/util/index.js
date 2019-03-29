@@ -1,3 +1,6 @@
+import Vue from 'vue'
+
+const EventBus = new Vue()
 
 const codeGenerator = (code, text) => {
   const dialog = {
@@ -30,7 +33,8 @@ const codeGenerator = (code, text) => {
       dialog.buttons = [{
         title: '확인',
         handler: () => {
-          delete localStorage.userInfo
+          delete sessionStorage.userInfo
+          // delete localStorage.userInfo
           window.location.replace('/')
         }
       }]
@@ -42,6 +46,7 @@ const codeGenerator = (code, text) => {
 }
 
 const convertDateFormat = (date, format) => {
+  if(date == null) return  
   const month = date.getMonth() + 1
   const day = date.getDate()
 
@@ -54,5 +59,6 @@ const convertDateFormat = (date, format) => {
 
 export {
   codeGenerator,
-  convertDateFormat
+  convertDateFormat,
+  EventBus
 }

@@ -1,5 +1,7 @@
 <template lang="pug">
   div#Login.full(@keyup.enter="onLogin")
+    ResetPassword(@close="$modal.hide('reset-password')")
+    //- modals-container
     div.login-container.full
       div.logo
         img(src="../assets/CI_logo.png", alt="logo")
@@ -35,6 +37,9 @@ export default {
       message: ''
     }
   },
+  components: {
+    ResetPassword
+  },
   created() {
   },
   methods: {
@@ -50,7 +55,7 @@ export default {
         if(result.data.msgCode == 'Y') {
           this.$router.push('/')
         }else if(result.data.msgCode == 'P') {
-          this.$modal.show(ResetPassword, {
+          this.$modal.show('reset-password', {
             title: '비밀번호변경',
             text: result.data.msgValue,
             userId: this.loginInfo.oprtrId

@@ -1,8 +1,8 @@
 <template lang="pug">
   div.broad-action
-    modals-container(
-      @select="insertData"
-    )
+    SelectBroadModal(@close="$modal.hide('select-broad')", @select="insertData")
+    CheckMediaModal(@close="$modal.hide('check-msg-modal')")
+    //- modals-container(@select="insertData")
     div.ui.form.tiny
       table.ui.table.celled.structured.very.compact.green
         thead
@@ -26,7 +26,7 @@
                 CheckTextCount(
                   :formType="formType",
                   :rownum='3',
-                  :maxLength='200',
+                  :maxLength='500',
                   v-model="broadData.brdcstContents",
                   @input="returnText")
 
@@ -112,7 +112,9 @@ export default {
     }
   },
   components: {
-    CheckTextCount
+    CheckTextCount,
+    SelectBroadModal,
+    CheckMediaModal
   },
   created () {
   },
@@ -124,7 +126,7 @@ export default {
       this.broadData.brdcstContents = text
     },
     selectStandard () {
-      this.$modal.show(SelectBroadModal, {
+      this.$modal.show('select-broad', {
         title: '표준방송 선택',
         type: 'ActionBroad',
         stepNo: this.broadData.stepNo,
@@ -133,7 +135,7 @@ export default {
       {
         id: this.idx,
         width: '80%',
-        height:'85%',
+        height:'90%',
         clickToClose: false
       })
     },
@@ -144,29 +146,39 @@ export default {
       }
     },
     setCode1 (event) {
+      this.broadData.userData1 = ''
       this.paramData1 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData1.name)
-      this.broadData.inputParam1 = this.paramData1.data
+      this.broadData.inputParam1 = this.paramData1.name
+      this.broadData.userData1 = this.paramData1.data
     },
     setCode2 (event) {
+      this.broadData.userData2 = ''
       this.paramData2 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData2.name)
-      this.broadData.inputParam2 = this.paramData2.data
+      this.broadData.inputParam2 = this.paramData2.name
+      this.broadData.userData2 = this.paramData2.data
     },
     setCode3 (event) {
+      this.broadData.userData3 = ''
       this.paramData3 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData3.name)
-      this.broadData.inputParam3 = this.paramData3.data
+      this.broadData.inputParam3 = this.paramData3.name
+      this.broadData.userData3 = this.paramData3.data
     },
     setCode4 (event) {
+      this.broadData.userData4 = ''
       this.paramData4 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData4.name)
-      this.broadData.inputParam4 = this.paramData4.data
+      this.broadData.inputParam4 = this.paramData4.name
+      this.broadData.userData4 = this.paramData4.data
     },
     setCode5 (event) {
+      this.broadData.userData5 = ''
       this.paramData5 = this.findCode(event.target.value)
       this.insertTextarea(this.paramData5.name)
-      this.broadData.inputParam5 = this.paramData5.data
+      this.broadData.inputParam5 = this.paramData5.name
+      this.broadData.userData5 = this.paramData5.data
     },
     findCode (code) {
       const value = {
@@ -184,8 +196,8 @@ export default {
       return value
     },
     insertTextarea (name) {
-      if (this.textareaData.indexOf(name) < 0) {
-        this.textareaData = `${this.textareaData}\r\n${name}`
+      if (this.broadData.brdcstContents.indexOf(name) < 0) {
+        this.broadData.brdcstContents = `${this.broadData.brdcstContents}\r\n${name}`
       }
     },
     checkBroadItem () {
@@ -193,7 +205,7 @@ export default {
       StandardBroadApi.checkDetail(requestData)
       .then(result => {
        console.log(result)
-        this.$modal.show(CheckMediaModal,{
+        this.$modal.show('check-msg-modal',{
           title: '방송문구확인',
           data: result.data
         },{

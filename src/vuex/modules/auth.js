@@ -15,15 +15,19 @@ const mutations = {
     console.log(payload)
     if (payload) {
       state.userInfo = payload.oprtrFgCd
-      localStorage.userInfo = payload.oprtrFgCd
+      // localStorage.userInfo = payload.oprtrFgCd
+      sessionStorage.userInfo = payload.oprtrFgCd;
     }
   },
   [types.LOGIN_FAILED] (state, message) {
     console.log(message)
     state.userInfo = null
-    if (localStorage.userInfo) {
-      delete localStorage.userInfo
+    if (sessionStorage.userInfo) {
+      delete sessionStorage.userInfo
     }
+    // if (localStorage.userInfo) {
+    //   delete localStorage.userInfo
+    // }
   },
   [types.LOGOUT] (state) {
     state.userInfo = {
@@ -31,7 +35,8 @@ const mutations = {
       userName: '',
       userCode: ''
     }
-    delete localStorage.userInfo
+    delete sessionStorage.userInfo
+    // delete localStorage.userInfo
   }
 }
 

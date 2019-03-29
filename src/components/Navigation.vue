@@ -41,7 +41,8 @@ export default {
   },
   created() {
       this.isActive = this.$route.name
-      this.opratorCode = localStorage.userInfo
+      this.opratorCode = sessionStorage.userInfo
+    //   this.opratorCode = localStorage.userInfo
   },
   computed: {
       ...mapGetters([

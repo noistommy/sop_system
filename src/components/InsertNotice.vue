@@ -6,7 +6,7 @@
         div.date-wrapper 
           div 게시기간  
           template
-            v-date-picker(mode='single', v-model='startDate', show-caps)
+            v-date-picker(mode='single', v-model='startDate', :min-date='startDate', show-caps)
               div.ui.input(:type='inputState.type', slot-scope='props')
                 input(
                 :value='props.inputValue', 
@@ -15,7 +15,7 @@
                 @change='props.updateValue($event.target.value, { formatInput: true, hidePopover: false })', 
                 expanded)
             span ~
-            v-date-picker(mode='single', v-model='endDate', show-caps)
+            v-date-picker(mode='single', v-model='endDate', :min-date='startDate', show-caps)
               div.ui.input(:type='inputState.type', slot-scope='props')
                 input(
                 :value='props.inputValue', 
@@ -126,18 +126,23 @@ export default {
       }
       this.setData.ntceBeginDt = convertDateFormat(this.startDate, '')
       this.setData.ntceEndDt = convertDateFormat(this.endDate, '')
+      if(this.setData.ntceEndDt==null) {this.setData.ntceEndDt = '99991231'}
       const requestData = JSON.stringify(this.setData)
       NoticeApi.setItem(requestData).then(result => {
         console.log(result)
         this.$emit('close')
         this.$modal.show('dialog', codeGenerator('Y', '저장되었습니다'))
       }).catch(error => {
-        this.$emit('close')
         const err = error.response
         console.log(err)
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        alert(err.data.msgValue)
       })
 
+    },
+    checkData () {
+      if(this.endDate < this.endDate) {
+        this.endDate = this.startDate
+      }
     }
   }
 }

@@ -98,10 +98,10 @@ export default {
       })
     },
     smsDownload () { 
-      const requestData = JSON.stringify({
+      const requestData = {
         regFromDt: this.searchData.start,
         regToDt: this.searchData.end
-      })
+      }
       HistoryApi.smsHistoryDownload(requestData)
     },
     initDate() {

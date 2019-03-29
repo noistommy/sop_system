@@ -1,6 +1,7 @@
 <template lang="pug">
   div.StandardSms.sub-container
-    modals-container
+    CheckMediaModal(@close="$modal.hide('check-msg-modal')")
+    //- modals-container
     div.sub-wrapper
       div.sub-header
         div.title 표준 문자 관리
@@ -138,7 +139,7 @@
                 div.btn-wrap.right
                   button.ui.button.blue(@click="createSmsItem('new')") 신규등록
                 div.btn-group.left
-                  button.ui.button.blue(@click="updateSmsItem") 저장
+                  button.ui.button.blue(@click="updateWithCheckItem") 저장
                   button.ui.button(@click="createSmsItem('init')", v-if="isNewInsert") 초기화
                   button.ui.button(@click="getSmsItem") 취소
           
@@ -183,7 +184,8 @@ export default {
       paramList: [],
       formType: 'textarea',
       textArea:'S0800100',
-      isNewInsert: false
+      isNewInsert: false,
+      checkMedia: false
     }
   },
   components: {
@@ -192,6 +194,7 @@ export default {
     SearchComp,
     DataForm,
     CheckTextCount,
+    CheckMediaModal
   },
   created () {
     this.getCodeList('S080')
@@ -202,9 +205,6 @@ export default {
   computed: {
     alarmYn () {
       return this.standardSmsDetail.useYn == 'Y'
-    },
-    insertTextarea () {
-      return this.standardSmsDetail.insertParams1 + this.standardSmsDetail.insertParams2 + this.standardSmsDetail.insertParams3 + this.standardSmsDetail.insertParams4 + this.standardSmsDetail.insertParams5
     }
   },
   methods: {
@@ -232,6 +232,7 @@ export default {
       .then(result => {
         console.log(result)
         this.standardSmsDetail = result.data
+        // this.standardSmsDetail.vrifyYn = 'N'
         // this.returnText(result.data.smsContents)
         this.isNewInsert = false
       })
@@ -245,6 +246,7 @@ export default {
       if(this.isNewInsert) {
         this.isNewInsert = false
       }
+      
       const requestData = JSON.stringify(this.standardSmsDetail)
       StandardSmsApi.updateDetail(requestData)
       .then(result => {
@@ -257,25 +259,52 @@ export default {
         console.log(err)
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
+      
     },
-    checkSmsItem () {
+    updateWithCheckItem () {
       const requestData = JSON.stringify(this.standardSmsDetail)
       StandardSmsApi.checkDetail(requestData).then(result => {
-       console.log(result)
-        this.$modal.show(CheckMediaModal,{
-          title: '문자(SMS)확인',
-          data: result.data
-        },{
-          width: '350px',
-          height: 'auto',
-          clickToClose: false
-        })
-      })
-      .catch(error => {
+        console.log(result,'check')
+        if(result.data.vrifyYn != 'Y'){
+          this.$modal.show('check-msg-modal',{
+            title: '문자(SMS)확인',
+            data: result.data
+          })
+        } else {
+          this.updateSmsItem()
+        }
+      }).catch(error => {
         const err = error.response
         console.log(err)
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
+    },
+    checkSmsItem () {
+      // if(this.standardSmsDetail == {}) return 
+      const requestData = JSON.stringify(this.standardSmsDetail)
+      StandardSmsApi.checkDetail(requestData).then(result => {
+        console.log(result)
+        this.$modal.show('check-msg-modal',{
+            title: '문자(SMS)확인',
+            data: result.data
+          })
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+      // .then(() => {
+      //   console.log(result)
+      //   if(res.data.vrifyYn == 'Y') {
+      //     this.updateSmsItem()
+      //   }else {
+      //     this.$modal.show('check-msg-modal',{
+      //       title: '문자(SMS)확인',
+      //       data: res.data
+      //     })
+      //   }
+      // })
+      
     },
     createSmsItem (type) {
       if(type == 'new') {
@@ -331,6 +360,10 @@ export default {
       this.standardSmsDetail.smsTitle = text
     },
     insertValueName (event) {
+      if(event.target.value == '') {
+        this.standardSmsDetail[`userData${event.target.id}`] = ''
+        this.standardSmsDetail[`inputParam${event.target.id}`] = ''
+      }
       this.paramList.forEach(e => {
         if(e.cmmnCd == event.target.value) {
           this.standardSmsDetail[`inputParam${event.target.id}`] = e.cmmnCdNm
@@ -355,7 +388,14 @@ export default {
 </script>
 
 
-<style lang="less" >
+<style lang="less">
+.StandardSms {
+  .sub-wrapper {
+    .sub-content > .content {
+      height: 100%;
+    }
+  }
+}
 .StandardSms {
   .content.section.section-1 {
     width: 30% !important;

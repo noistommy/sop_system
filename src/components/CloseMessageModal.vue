@@ -5,8 +5,8 @@
       div.content-form
         div.ui.form
           textarea(rows=10, v-model="closeData.endResn")
-      div.foot-btn
-        button.ui.floated.right.button.blue(@click="closeMessage") 작성완료
+    div.foot-btn
+      button.ui.floated.right.button.blue(@click="closeMessage") 작성완료
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
@@ -74,11 +74,13 @@ export default {
         .content-form {
           padding: 15px;
         }
-        .foot-btn {
-          display: flex;
-          justify-content: center;
-        }
+        
     }
+    .foot-btn {
+        display: flex;
+        justify-content: center;
+        padding-bottom:15px;
+      }
     .modal-close {
         position: absolute;
         top: 8px;

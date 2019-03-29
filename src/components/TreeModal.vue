@@ -37,8 +37,8 @@
                   input(type="text", v-model="editTeam.slfdfnFbrdNm")
                 div.field
                   label 소방대장
-                  select.inverted(type="text", v-model="editTeam.slfdfnFglEmplNm")
-                    option(v-for="child in children") {{child.clsfCdNm}} {{child.emplNm}}
+                  select.inverted(type="text", v-model="editTeam.slfdfnFglEmplNo" , @change="setFireBrigadeBoss")
+                    option(v-for="child in children" :value="child.emplNo") {{child.deptNm}} {{child.clsfCdNm}} {{child.emplNm}}
                 div.field
                   label 배정인원
                   input(type="text", v-model="editTeam.asignNmpr")
@@ -166,6 +166,9 @@ export default {
         options.text += '수정되었습니다'
       }
       this.$modal.show('dialog', options)
+    },
+    setFireBrigadeBoss (event) {
+      console.log(event.target.value)
     }
   } 
 }
@@ -193,6 +196,9 @@ export default {
         .treeView-footer {
           padding-top: 20px;
         }
+        .list.level-4 {
+          display: none;
+        }
       }
       .tree-editor {
         display: flex;
@@ -214,7 +220,7 @@ export default {
           .ui.form input {
             background-color: rgba(0, 0, 0, 0.2);
             color:#fff;
-        }
+         }
         }
       }
     }

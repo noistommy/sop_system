@@ -4,7 +4,7 @@
       div.lhead.ui.list(:class="listType")
           div.item.lr.listitem
             div.lh(v-if="isListNumber").center.aligned NO
-            div.lh( v-for="lh of headers", :class="[`${lh.align} aligned`]") {{lh.text}}
+            div.lh( v-for="lh of headers", :class="[`${lh.align} aligned ${lh.size}`]") {{lh.text}}
       div.lbody.ui.list(:class="listType")
         <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :selected="activeItem(item)"></slot>
       div.ui.form(v-if="isEditor")
@@ -140,6 +140,12 @@ export default {
       position {
         
       }
+    }
+    .totalLength {
+      // display: none;
+      position: absolute;
+      right: 0;
+      top: -5px;
     }
   }
 

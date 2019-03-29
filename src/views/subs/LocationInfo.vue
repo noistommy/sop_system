@@ -194,6 +194,13 @@ export default {
 </script>
 
 <style lang="less">
+.LocationInfo {
+  .sub-wrapper {
+    .sub-content > .section {
+      height: 100%;
+    }
+  }
+}
 .contant-wrapper {
     height: 95%;
     max-height: auto;
@@ -221,12 +228,10 @@ export default {
         }
       }
     }
-.LocationInfo {
   .content.section.section-1 {
       width: 50% !important;
     }
   
-  }
   .ld {
     width: 50% !important;
   }

@@ -17,9 +17,9 @@ export default {
   },
   // SOP 오작동 처리
   setErrorSop: (payload) => {
-    return HTTP.post(`${TargetURL}.updateSensorAlarmExecuteSopId.do`, payload)
+    return HTTP.post(`${TargetURL}.updateSensorAlarmMalfuncYn.do`, payload)
   },
-  // SOP 오작동 처리
+  // SOP 실행 처리
   runSopInfo: (payload) => {
     return HTTP.post(`${TargetURL}.selectLegacySopExecut.do`, payload)
   },

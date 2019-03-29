@@ -5,7 +5,8 @@
               <template v-for="(tab, index) of menuList.tabList">
                 <li class="tabItem" 
                     :key="index"
-                    :class="{ active: tab.pathName === activeTab }">
+                    :class="{ active: tab.pathName === activeTab }"
+                    >
                     <a v-if="tab.pathName=='sop-run'">{{ tab.name }}</a>
                     <a v-else-if="tab.pathName=='sop-edit'">{{ tab.name }}</a>
                     <router-link :to="{ name: tab.pathName }" v-else>{{ tab.name }}</router-link>
