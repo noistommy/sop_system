@@ -7,7 +7,7 @@
       table.ui.table.celled.structured.very.compact.green
         thead
           tr
-            th.center.aligned.wide.three 
+            th.center.aligned 
               div.type 방송
             th.right.aligned.wide.ten
               button.ui.button.basic.mini(@click="selectStandard") 선택
@@ -37,9 +37,9 @@
                   div.fields.inline
                     div.field
                       label 파라미터 1
-                      select(@change="setCode1", v-model="broadData.cmmnCd1")
+                      select(:id="1", @change="setCode", v-model="broadData.cmmnCd1")
                         option(value="") 선택
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                        option(v-for="param in paramList", :value="param.cmmnCd", :disabled="param.useYn == 'N'") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
                         input(v-model="broadData.userData1")
@@ -47,9 +47,9 @@
                   div.fields.inline
                     div.field
                       label 파라미터 2
-                      select(@change="setCode2", v-model="broadData.cmmnCd2")
+                      select(:id="2", @change="setCode", v-model="broadData.cmmnCd2")
                         option(value="") 선택
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                        option(v-for="param in paramList", :value="param.cmmnCd", :disabled="param.useYn == 'N'") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
                         input(v-model="broadData.userData2")
@@ -57,9 +57,9 @@
                   div.fields.inline
                     div.field
                       label 파라미터 3
-                      select(@change="setCode3", v-model="broadData.cmmnCd3")
+                      select(:id="3", @change="setCode", v-model="broadData.cmmnCd3")
                         option(value="") 선택
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                        option(v-for="param in paramList", :value="param.cmmnCd", :disabled="param.useYn == 'N'") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
                         input(v-model="broadData.userData3")
@@ -67,9 +67,9 @@
                   div.fields.inline
                     div.field
                       label 파라미터 4
-                      select(@change="setCode4", v-model="broadData.cmmnCd4")
+                      select(:id="4", @change="setCode", v-model="broadData.cmmnCd4")
                         option(value="") 선택
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                        option(v-for="param in paramList", :value="param.cmmnCd", :disabled="param.useYn == 'N'") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
                         input(v-model="broadData.userData4")
@@ -77,9 +77,9 @@
                   div.fields.inline
                     div.field
                       label 파라미터 5
-                      select(@change="setCode5", v-model="broadData.cmmnCd5")
+                      select(:id="5", @change="setCode", v-model="broadData.cmmnCd5")
                         option(value="") 선택
-                        option(v-for="param in paramList", :value="param.cmmnCd") {{param.cmmnCdNm}}
+                        option(v-for="param in paramList", :value="param.cmmnCd", :disabled="param.useYn == 'N'") {{param.cmmnCdNm}}
                     div.fieled
                       div.ui.input
                         input(v-model="broadData.userData5")
@@ -144,42 +144,31 @@ export default {
           this.broadData[key] = obj[key]
       }
     },
-    setCode1 (event) {
-      this.broadData.userData1 = ''
-      this.paramData1 = this.findCode(event.target.value)
-      this.insertTextarea(this.paramData1.name)
-      this.broadData.inputParam1 = this.paramData1.name
-      this.broadData.userData1 = this.paramData1.data
+    setCode (event) {
+      const index = event.target.id
+
+      if(this[`paramData${index}`][`name`] != ''){
+        this.insertTextarea(this[`paramData${index}`][`name`])
+      }
+
+      this.paramList.forEach(e => {
+        if(e.cmmnCd == this[`paramData${index}`][`code`]) {
+          e.useYn = 'Y'
+        }
+        if(e.cmmnCd == event.target.value) {
+          e.useYn = 'N'
+        }
+      })
+      
+      this.broadData[`userData${index}`] = ''
+      this.broadData[`inputParam${index}`] = ''
+      
+      this[`paramData${index}`] = this.findCode(event.target.value, index)
+      this.insertTextarea(this[`paramData${index}`][`name`])
+      this.broadData[`inputParam${index}`] = this[`paramData${index}`][`name`]
+      this.broadData[`userData${index}`] = this[`paramData${index}`][`data`]
     },
-    setCode2 (event) {
-      this.broadData.userData2 = ''
-      this.paramData2 = this.findCode(event.target.value)
-      this.insertTextarea(this.paramData2.name)
-      this.broadData.inputParam2 = this.paramData2.name
-      this.broadData.userData2 = this.paramData2.data
-    },
-    setCode3 (event) {
-      this.broadData.userData3 = ''
-      this.paramData3 = this.findCode(event.target.value)
-      this.insertTextarea(this.paramData3.name)
-      this.broadData.inputParam3 = this.paramData3.name
-      this.broadData.userData3 = this.paramData3.data
-    },
-    setCode4 (event) {
-      this.broadData.userData4 = ''
-      this.paramData4 = this.findCode(event.target.value)
-      this.insertTextarea(this.paramData4.name)
-      this.broadData.inputParam4 = this.paramData4.name
-      this.broadData.userData4 = this.paramData4.data
-    },
-    setCode5 (event) {
-      this.broadData.userData5 = ''
-      this.paramData5 = this.findCode(event.target.value)
-      this.insertTextarea(this.paramData5.name)
-      this.broadData.inputParam5 = this.paramData5.name
-      this.broadData.userData5 = this.paramData5.data
-    },
-    findCode (code) {
+    findCode (code, i) {
       const value = {
         code: '',
         name: '',
@@ -196,7 +185,9 @@ export default {
     },
     insertTextarea (name) {
       if (this.broadData.brdcstContents.indexOf(name) < 0) {
-        this.broadData.brdcstContents = `${this.broadData.brdcstContents}\r\n${name}`
+        this.broadData.brdcstContents = `${this.broadData.brdcstContents}${name} `
+      } else {
+        this.broadData.brdcstContents = this.broadData.brdcstContents.replace(name, '')
       }
     },
     checkBroadItem () {
@@ -207,6 +198,10 @@ export default {
         this.$modal.show('check-msg-modal',{
           title: '방송문구확인',
           data: result.data
+        },{
+          width: '350px',
+          height: 'auto',
+          clickToClose: false
         })
       })
       .catch(error => {

@@ -25,8 +25,8 @@
                     div.ui.list 
                       div.item(v-for="act in node.historyList") 
                         i.icon.mobile.alternate.blue(v-if="act.itemKndNm == '문자'")
-                        i.icon.mobile.microphone.green(v-if="act.itemKndNm == '방송'")
-                        i.icon.mobile.bullhorn.yellow(v-if="act.itemKndNm == '지시사항'")
+                        i.icon.microphone.green(v-if="act.itemKndNm == '방송'")
+                        i.icon.bullhorn.yellow(v-if="act.itemKndNm == '지시사항'")
                         div.content {{act.itemKndNm}} {{act.contents}}
                       
             div.history-wrapper(v-if="sopType == 'run'")
@@ -62,7 +62,8 @@
                     component(:is="action.type",
                     v-model="activeStep.actionItem[index]",
                     :idx="index",
-                    :activeNum="activeCount"
+                    :activeNum="activeCount",
+                    :nextRun="nextRunAction",
                     @runstep="runAction")
             div.running-control
               div.btnSet
@@ -118,6 +119,7 @@ import SopManageApi from '@/api/SopManage'
 import SopSlideApi from '@/api/SopSlide'
 import ActionSms from '@/components/ActionSmsRun'
 import ActionBroad from '@/components/ActionBroadRun'
+import ActionBroadOnOff from '@/components/ActionBroadRunOnOff'
 import ActionOrder from '@/components/ActionOrderRun'
 import DataTable from '@/components/DataTable'
 import CloseMessageModal from '@/components/CloseMessageModal'
@@ -149,7 +151,7 @@ export default {
         pageInfo: {},
         tableType: 'compact'
       },
-      
+      nextRunAction: 1,
       activeStep: {},
       activeCount: 0,
       endMessage: ''
@@ -158,6 +160,7 @@ export default {
   components: {
     ActionSms,
     ActionBroad,
+    ActionBroadOnOff,
     ActionOrder,
     DataTable
   },
@@ -170,6 +173,7 @@ export default {
     this.sopExecutSn = this.$route.params.sopExecutSn
     this.sopType = this.$route.params.type
     EventBus.$on('trans-sop', returnData => {
+      this.activeStep = []
       console.log(returnData)
       this.initRunSop(returnData)
     })
@@ -222,9 +226,12 @@ export default {
           this.$set(e, 'historyList', [])
           this.activeHistory (e)
         })
+        
+        // this.moveActiveStep ('')
+      }).then(() => {
+        console.log('success')
         this.activeStep = []
         this.activeStep = this.sopStepExecutMisnList[this.activeCount]
-        // this.moveActiveStep ('')
       }).catch(error => {
         console.log(error)
         const err = error.response
@@ -257,7 +264,7 @@ export default {
         data: closeData
       },{
         width: '350px',
-        height: 'auto',
+        height: '350px',
         clickToClose: false
       })
     },
@@ -287,8 +294,8 @@ export default {
       let req = {
         sopId: this.sopId,
         sopExecutSn: this.sopExecutSn,
-        stepSn: this.activeStep.stepSn,
-        stepNo: this.activeStep.stepNo,
+        stepSn: actionData.stepSn,
+        stepNo: actionData.stepNo,
         itemKnd: actionData.itemKnd
       }
       if(actionData.type == 'ActionSms') {
@@ -303,7 +310,14 @@ export default {
           brdcstContents: actionData.brdcstContents,
           autoYn: actionData.autoYn
         })
-      } if(actionData.type == 'ActionOrder'){
+      } 
+      if(actionData.type == 'ActionBroadOnOff') {
+        Object.assign(req, {
+          autoYn: actionData.autoYn,
+          brdcstOnOffFlag: actionData.brdcstOnOffFlag
+        })
+      } 
+      if(actionData.type == 'ActionOrder'){
         Object.assign(req, {
           drctContents: actionData.drctContents,
           autoYn: actionData.autoYn
@@ -313,8 +327,11 @@ export default {
       const requestData = JSON.stringify(req)
       SopManageApi.runStepAction(requestData).then(result => {
         console.log(result)
+      }).then(() => {
+        this.setActive(this.activeStep, this.activeCount)
         this.getStepHistoryList()
-        this.getStepList(this.activeCount + 1)
+        // alert(`${this.nextRunAction}번째 액션 실행`)
+        this.nextRunAction = actionData.stepSn + 1
       }).catch(error => {
         const err = error.response
         console.log(err.data.msgCode)
@@ -327,6 +344,9 @@ export default {
 
     },
     setActive (step, i) {
+      if(this.activeCount != i) {
+        this.nextRunAction = 1
+      }
       this.activeStep = {}
       this.activeCount = i
       this.getStepList(this.activeCount + 1)
@@ -461,6 +481,7 @@ export default {
               background-color: #fff;
               margin-bottom: 5px;
               padding: 3px;
+              font-size: 0.85em;
             }
             // box-shadow: 0 0 5px #ddd;
             &.active {

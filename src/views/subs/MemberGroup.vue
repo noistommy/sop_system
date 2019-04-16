@@ -3,7 +3,8 @@
     div.sub-wrapper
       div.sub-header
         div.title 조직도 관리
-        SearchComp(v-model="searchData", 
+        SearchComp(v-model="searchData",
+        :searchClass="['condition1']",
         :isTextSearch="true",
         @search="searchList")
           template(slot="condition1", slot-scope="props")

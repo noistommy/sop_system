@@ -16,8 +16,8 @@
             )
               <template slot="items" slot-scope="props">
                 div.item.lr.listitem(:class="{active:props.selected}", @click="selectedItem(props)" )
-                  .ld.center {{props.item.eqpmnClId}}
-                  .ld {{props.item.eqpmnClNm}}
+                  .ld.center.six {{props.item.eqpmnClId}}
+                  .ld.eight {{props.item.eqpmnClNm}}
               </template>
         div.content.section.section-2
           h3.title 장비상세정보
@@ -239,9 +239,9 @@ export default {
     }
     
   }
-  .ld,.lh {
-    width: 30% !important;
-  }
+  // .ld,.lh {
+  //   width: 30% !important;
+  // }
  
 }
 </style>

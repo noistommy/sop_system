@@ -5,6 +5,7 @@
       div.sub-header
         div.title 자위소방대관리
         SearchComp(v-model="searchData",
+        :searchClass="['condition1']",
         :isTextSearch="true",
         @search="searchList")
           template(slot="condition1", slot-scope="props")
@@ -271,8 +272,10 @@ export default {
         type: editType,
         children: this.fireBrigade.fireBrigadeGroup
       },{
-        width: '70%',
-        height: '50%',
+        adaptive: true,
+        width: '50%',
+        height: '80%',
+        minHeight: 700,
         clickToClose: false
       },{
         'before-close': () => {
@@ -286,7 +289,7 @@ export default {
         // url: 'http://192.168.43.8:8080/n3n.sop.SlfdfnFbrdInfo.uploadSlfdfnFbrdExcelFile.do'
       },{
         width: '300px',
-        height: 'auto',
+        height: '250px',
         clickToClose: false
       })
     },
@@ -388,7 +391,7 @@ export default {
   position:relative;
   .file-movement {
     width: 100%;
-    height: 85%;
+    height: 90%;
     display: flex;
     flex-direction: row;
     .movement-btn {

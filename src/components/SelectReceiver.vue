@@ -1,6 +1,6 @@
 <template lang="pug">
   modal(name="select-reciever", width='1000', height='800', :clickToClose="false", @before-open="setProps")
-    div.modal
+    div.modal.selectRecieve
       div.modal-header {{title}}
       div.modal-content.treeSelector
         div.tree-editor-modal
@@ -32,11 +32,12 @@
                           div {{item.deptNm}} 
                           div {{item.clsfNm}} 
                           div {{item.emplNm}} 
-          div.btnSet
-            div.btn-group.left
-            div.btn-wrap.right
-              button.ui.button(@click="sendReciever(recieveList)") 선택
-              button.ui.button(@click="initReciever") 취소
+      div.modal-footer
+        div.btnSet
+          div.btn-group.left
+          div.btn-wrap.right
+            button.ui.button.green(@click="sendReciever(recieveList)") 선택
+            button.ui.button(@click="initReciever") 취소
       div.modal-close(@click="$emit('close')")
           div.close X
 </template>
@@ -237,44 +238,32 @@ export default {
 }
 </script>
 
-<style lang="less">
-.modal {
-    background-color: #fff;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    .modal-header {
-        background-color: #5d5e68;
-        color: #fff;
-        padding: .8em 1.2em;
-        font-weight: 700;
-    }
-    .modal-content {
-      flex-grow: 1;
-      padding: 15px;
-      &.treeSelector {
-        overflow-y: auto;
-        background-color: #454545;
-        .treeView-footer {
-          padding-top: 20px;
-        }
-        .list.level-4 {
-          display: block;
-        }
+<style lang="less" scoped>
+
+    
+    .treeSelector {
+      overflow-y: auto;
+      background-color: #454545;
+      .treeView-footer {
+        padding-top: 20px;
+      }
+      .list.level-4 {
+        display: block;
       }
       .tree-editor-modal {
         display: flex;
         background-color: #454545;
-        height: 90%;
+        width: 100%;
+        height: 100%;
         > div {
           color:#fff;
-          width: 100%;
+          width: 50%;
+          height: 100%;
           padding: 10px;
           margin: 0 5px;
-          .treeView-wrapper.select-part {
+          .treeView-wrapper {
             width: 100%;
-            height: 85%;
+            height: 95%;
             .treeview {
               height: 90%;
             }
@@ -311,10 +300,12 @@ export default {
           }
         }
         .select-person {
+          .level-0 {
+            border: 0;
+          }
           .select-part-name {
             font-size: 1.2rem;
-            height: 45px;
-            padding-bottom: 10px;
+            height: 35px;
             .title {
               float: left;
               padding: 5px 0
@@ -323,31 +314,8 @@ export default {
         }
       }
     }
-    .treeView-footer {
+    .modal-footer {
       background-color: #454545;
-      height: 15%;
-      padding: 10px;
+    }
 
-    }
-    .modal-close {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        color: #fff;
-        // background-color: #fff;
-        font-size: 1rem;
-        i {
-          margin:0;
-        }
-        &:hover {
-          background-color: #fff;
-          color: #5d5e68;
-        }
-    }
-    &.small {width: 300px;}
-    &.large {width: 600px;}
-    &.full {width: 90%;}
-  }
 </style>

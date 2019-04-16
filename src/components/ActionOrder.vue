@@ -4,7 +4,7 @@
       table.ui.table.celled.structured.very.compact.yellow
         thead
           tr
-            th.center.aligned 
+            th.center.aligned.wide.three
               div.type 지시사항
             th.right.aligned.wide.nine
             th.center.aligned 

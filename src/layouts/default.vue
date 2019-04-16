@@ -36,6 +36,7 @@ export default {
 </script>
 
 <style lang="less">
+@import '../assets/css/modal.less';
 // transition mixin
 .transition (@type: all, @duration: 250ms, @Function: ease-out) {
   -webkit-transition: @arguments;
@@ -121,7 +122,7 @@ i {
 #SOP {
   display: flex;
   height: 100%;
-  min-width: 1280px;
+  // min-width: 1280px;
 }
 .basepage {
   width:100%;
@@ -265,6 +266,7 @@ i {
   height: 88%
 }
 
+
 // base mediaquery
  @media only screen
   and (max-width : 1600px)
@@ -279,6 +281,17 @@ i {
         top:0;
         right: 0;
       }
+    }
+  }
+ @media only screen
+  and (max-height : 1000px)
+  // and (orientation : portrait)
+  {
+    body {
+      overflow: hidden;
+    }
+    #app {
+      min-height: 900px;
     }
   }
 

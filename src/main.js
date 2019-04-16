@@ -29,7 +29,7 @@ Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
 router.beforeEach((to, from, next) => {
-  if (!sessionStorage.userInfo && to.path !== "/login") return next("/login");
+  if (!sessionStorage.userInfo && to.path !== '/login') return next('/login')
   // if (!localStorage.userInfo && to.path !== '/login') return next('/login')
   next()
 })

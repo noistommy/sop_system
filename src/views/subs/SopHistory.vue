@@ -1,5 +1,6 @@
 <template lang="pug">
   div.SopEdit.sub-container
+    modals-container
     div.sub-wrapper
       div.sub-header
         div.title SOP실행이력
@@ -12,6 +13,7 @@
       div.sub-content
         div.content
           DataTable(
+            :tableType="'fixed celled'",
             v-model="sopHistory.selected"
             :headers="sopHistory.headers",
             :items="sopHistory.sopHistoryData",
@@ -22,11 +24,12 @@
             :isPagination="sopHistory.isPagination",
             :page="sopHistory.pageInfo",
             @search="getHistoryList"
-          ).ui.table.celled.selectable
+          )
             <template slot="items" slot-scope="props">
-              tr
+              tr(@click="selectedItem(props)" )
                 td(v-if="sopHistory.isListNumber").center.aligned {{(sopHistory.pageInfo.currPage - 1) * 10 + props.idx + 1}}
                 td.center.aligned {{props.item.executDt}}
+                td.center.aligned {{props.item.executFgCdNm}}
                 td.center.aligned {{props.item.msfrtnKndCdNm}}
                 td.center.aligned {{props.item.crisisGnfdStepCdNm}}
                 td.ellipse {{props.item.sopTitle}}
@@ -44,16 +47,19 @@
 <script>
 import DataTable from '@/components/DataTable.vue'
 import SearchDate from '@/components/SearchDate.vue'
+import SopHistoryModal from '@/components/SopHistoryModal.vue'
 import { sopHistoryTableHeader } from '@/setting'
 import { convertDateFormat } from '@/util'
 import HistoryApi from '@/api/History'
+import SopManageApi from '@/api/SopManage'
 import { codeGenerator } from '@/util'
 
 export default {
   name: 'sophistory',
   components: {
     DataTable,
-    SearchDate
+    SearchDate,
+    SopHistoryModal
   },
   data () {
     return {
@@ -74,7 +80,12 @@ export default {
         headers: sopHistoryTableHeader.headers,
         sopHistoryData: [],
         itemkey: 'rn'
-      }
+      },
+      sopHistoryDetailList: {
+        stepInfo: {},
+        stepList: []
+      },
+      isSelected: false
     }
   },
   created () {
@@ -103,6 +114,31 @@ export default {
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
+    getHistoryDetail () {
+      const requestData = JSON.stringify({
+        sopId: this.sopHistory.selected[0].sopId,
+        sopExecutSn: this.sopHistory.selected[0].sopExecutSn,
+        stepNo: 0
+      })
+    HistoryApi.getSOPDetail(requestData).then(result => {
+        console.log(result)
+        this.sopHistoryDetailList.stepInfo = result.data.selectSopExecutManagerInfo
+        this.sopHistoryDetailList.stepList = result.data.sopExecutEndStepHistList
+      }).then(()=> {
+        this.$modal.show(SopHistoryModal,{
+          title: '상세보기',
+          data: this.sopHistoryDetailList
+        },{
+          width: '50%',
+          height: '80%',
+          clickToClose: false
+        })
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+      })
+    },
     sopDownload () {
       const requestData = {
         executEndFromDt: this.searchData.start,
@@ -116,7 +152,15 @@ export default {
       today.setDate(d-7)
       this.searchData.start = convertDateFormat(today, '')
       this.searchData.end = convertDateFormat(new Date(), '')
-    }
+    },
+    selectedItem(itemInfo) {
+      this.sopHistory.selected = []
+      if(!itemInfo.selected) {
+        this.sopHistory.selected.push(this.sopHistory.sopHistoryData[itemInfo.idx])
+        this.isSelected = true
+      }
+      this.getHistoryDetail()
+    },
 
   }
 }

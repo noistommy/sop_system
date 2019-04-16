@@ -11,6 +11,7 @@
             div.mainContent
               div.content
                 DataTable(
+                  :tableType="'fixed celled'",
                   v-model="selected"
                   :headers="mainSopHistory.headers",
                   :items="mainSopHistory.sopHistoryData",
@@ -59,6 +60,7 @@
             div.mainContent
               div.content
                 DataTable(
+                  :tableType="'fixed celled'"
                   v-model="selected"
                   :headers="mainSmsHistory.headers",
                   :items="mainSmsHistory.smsHistoryData",
@@ -123,11 +125,11 @@ export default {
         smsHistoryData: []
       },
       chartData: {
-        labels: [],
+        labels: ['No-Data',''],
         datasets: [{
-          label: '',
-          data: [],
-          backgroundColor: ['#7977c2', '#7bbae7'],
+          label: 'nodata',
+          data: [100,0],
+          backgroundColor: ['#f9f9f9', '#7bbae7'],
           borderColor: [],
           borderWidth: 1
         }]
@@ -153,12 +155,14 @@ export default {
         this.mainSmsHistory.smsHistoryData = result.data.smsExecutHistList
         this.noticeList = result.data.noticeList
         this.chartText = result.data.sensorAlarmStats
-        this.chartData = {
-          labels: result.data.sensorAlarmStats.label,
-          datasets: [{
-            data: result.data.sensorAlarmStats.data,
-            backgroundColor: ['#7977c2', '#7bbae7']
-          }]
+        if(this.chartText.totCnt > 0) {
+          this.chartData = {
+            labels: result.data.sensorAlarmStats.label,
+            datasets: [{
+              data: result.data.sensorAlarmStats.data,
+              backgroundColor: ['#7977c2', '#7bbae7']
+            }]
+          }
         }
       }).catch(error => {
         const err = error.response
@@ -197,10 +201,10 @@ export default {
         width: 100%;
         table {
           width: 100%;
-          .text-wrap {
-            display: inline-block;
-            max-width: 200px;
-          }
+          // .text-wrap {
+          //   display: inline-block;
+          //   max-width: 200px;
+          // }
         }
       }
     }

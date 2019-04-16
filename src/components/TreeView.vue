@@ -1,16 +1,18 @@
 <template lang="pug">
     div.treeitem
         div.treecontent
-            div.treeheader(@click.stop="getClick")
+            div.treeheader(@click.stop="getClick", :class="{selected:treeItem.selected == 'Y'}")
                 template(v-if="childCount > 0")
                     i.icon.caret(:class="activeItem ? 'down' : 'right'", @click.stop="setActive")
-                    span {{treeItem.title}}
-                    i.icon.check(v-if="treeItem.selected == 'Y'", :style="activeStyle")
+                    span.title 
+                        | {{treeItem.title}}
+                        i.icon.check(v-if="treeItem.selected == 'Y'", :style="activeStyle")
                     span.badge(v-if="childCount > 0") {{childCount}}
                 template(v-else-if="treeItem.title")
                     i.icon
-                    span {{treeItem.title}}
-                    i.icon.check(v-if="treeItem.selected == 'Y'", :style="activeStyle")
+                    span.title 
+                        | {{treeItem.title}}
+                        i.icon.check(v-if="treeItem.selected == 'Y'", :style="activeStyle")
                 template(v-else)
                     div.item-wrapper
                         div {{treeItem.clsfCdNm}} 
@@ -46,7 +48,8 @@ export default {
         branchActive: true,
         activeItem: this.isActive,
         activeStyle : {
-            color:'#80b1ca',
+            // background: '#525252',
+            // color:'#80b1ca',
             fontWeight: 'bold'
         }
       }
@@ -121,9 +124,14 @@ export default {
             }
         }
         .treecontent > .treeheader.selected {
-            background-color: #80b7be;
+            // background-color: #80b7be;
             color: #525252;
             font-weight: bold;
+            span.title {
+                background: rgb(128, 177, 202);
+                padding: 3px 10px;
+                border-radius: 15px;
+            }
         }
         
     }
@@ -203,12 +211,6 @@ export default {
             position:relative;
             padding: 0.5em 1.2em;
             color:#ddd;
-            // &:hover {
-            //     background-color: #818080;
-            //     // color: rgb(223, 201, 77);
-            //     color: #fff;
-            //     font-weight: bold;
-            // }
             .item-wrapper {
                 display: flex;
                 > div {
@@ -218,7 +220,6 @@ export default {
                     &:nth-child(2) {
                         width: 30%;
                     }
-                    // display: inline-block;
                 }
             }
         }
@@ -233,12 +234,7 @@ span.badge {
     width: 1.5rem;
     text-align: center;
     background-color: rgb(53, 54, 54);
-    // border-radius: 0.9rem;
     right: 5px;    
 }
-
-// .level-0 > .treeitem .treeheader:hover { color:rgb(64, 130, 184) !important; }
-// .level-1 > .treeitem .treeheader:hover { color:rgb(77, 141, 17) !important; }
-// .level-2 > .treeitem .treeheader:hover { color: rgb(223, 201, 77) !important; }
 
 </style>

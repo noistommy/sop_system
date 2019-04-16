@@ -9,18 +9,9 @@
             td.wide.eight
             td.center.aligned  완료
             td.center.aligned 
-              button.ui.button.basic.mini(:class="{blue:state == 'run'}", @click="stepRunning") {{state ? '완료' : '실행'}}
+              button.ui.button.basic.mini(:class="{blue:actionData.brdcstOnOffFlag}", @click="stepRunning") {{actionData.brdcstOnOffFlag ? 'OFF' : 'ON'}}
             td.center.aligned  시간
-            td.center.aligned  11:11
-          //- tr 
-          //-   td(colspan="6") 
-          //-     div.field
-          //-       CheckTextCount(
-          //-         :formType="formType",
-          //-         :rownum='3',
-          //-         :maxLength='500',
-          //-         v-model="textareaData",
-          //-         @input="returnText")
+            td.center.aligned  {{actionData.executDt}}
           
 </template>
 
@@ -28,27 +19,24 @@
 import CheckTextCount from '@/components/CheckTextCount.vue'
 
 export default {
-  name: 'action-sms',
+  name: 'action-broad-onoff-run',
   props: {
     idx: Number,
+    nextRun: Number,
     value: Object
   },
   data () {
     return {
       actionCheck: false,
       formType: 'textarea',
-      textareaData: this.value.brdcstContents,
-      actionData: this.value,
-      state: 'ready'
+      actionData: this.value
     }
   },
   components: {
     CheckTextCount,
   },
   created () {
-    if(this.actionData.autoYn == null) {
-      this.actionData.autoYn = 'N'
-    } else if(this.actionData.autoYn == 'Y') {
+   if(this.actionData.autoYn == 'Y' && this.actionData.stepSn == this.nextRun) {
       this.stepRunning()
     } else{
       console.log('start')
@@ -58,17 +46,13 @@ export default {
     $('ui.checkbox').checkbox()
   },
   methods: {
-    returnText (text) {
-      this.textareaData = text
-    },
     stepRunning () {
-      if(this.state) {
-        this.state = false
+      if(this.actionData.brdcstOnOffFlag) {
+        this.actionData.brdcstOnOffFlag = 0
       } else {
-        this.state = true
-        this.$emit('runstep', this.actionData)
+        this.actionData.brdcstOnOffFlag = 1
       }
-      
+      this.$emit('runstep', this.actionData)
     }
   }
 }
@@ -96,6 +80,9 @@ export default {
       th:nth-child(1) {
         width: 15%
       }
+      td:last-child {
+          width: 15%;
+        }
       td {
         overflow: visible;
       }

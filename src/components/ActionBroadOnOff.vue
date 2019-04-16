@@ -4,12 +4,12 @@
       table.ui.table.celled.structured.very.compact.green
         thead
           tr
-            th.center.aligned 
+            th.center.aligned.wide.three
               div.type 방송
             th.right.aligned.wide.nine
             th.center.aligned 
               div.ui.radio.checkbox 
-                input(type="checkbox", v-model="broadData.autoYn", true-value="Y", false-value="N")
+                input(type="checkbox", v-model="broadOnOffData.autoYn", true-value="Y", false-value="N")
                 label 자동실행
             th.center.aligned 
               button.ui.button.icon.basic.mini(@click="$emit('delete')")
@@ -28,7 +28,7 @@ export default {
   },
   data () {
     return {
-      broadData: this.value,
+      broadOnOffData: this.value,
       actionCheck: false,
     }
   },

@@ -1,12 +1,17 @@
 
+const actionItemsList = [
+  { actionCode: 'ActionSms', name: '문자' },
+  { actionCode: 'ActionBroad', name: '방송' },
+  { actionCode: 'ActionBroadOnOff', name: '방송(삼척)' },
+  { actionCode: 'ActionOrder', name: '지시사항' }
+]
+
 const sopMenuList = {
   defaultTab: 'sop-list',
   tabList: [
     { name: '재난관리조회', pathName: 'sop-list', default: true, icon: '', type: 'list' },
     { name: '재난관리생성', pathName: 'sop-edit', default: false, icon: '', type: 'new' },
-    // { name: '재난관리편집', pathName: 'sop-edit', default: false, icon: '', type: 'edit' },
     { name: '재난관리실행', pathName: 'sop-run', default: false, icon: '', type: 'run' }
-    // { name: '모니터링', pathName: 'sop-run', default: false, icon: '', type: 'monitor' }
   ]
 }
 
@@ -50,15 +55,12 @@ const standardInfoMenuList2 = {
   ]
 }
 // MAIN TABLE
-
 const mainSopHistoryHeader = {
   headers: [
-    { text: '실행일시', align: 'center', value: 'executBeginDt', size: '' },
-    { text: '재난절차', align: 'center', value: 'msfrtnKndCdNm', size: '' },
-    // { text: '위기발령단계', align: 'center', value: 'titcrisisGnfdStepNmle', size: '' },
-    { text: 'SOP', align: 'center', value: 'sopTitle', size: '' },
-    { text: '위치', align: 'center', value: 'buldNm', size: '' }
-    // { text: '담당자', align: 'center', value: 'oprtrNm', size: '' }
+    { text: '실행일시', align: 'center', value: 'executBeginDt', size: 'three' },
+    { text: '재난절차', align: 'center', value: 'msfrtnKndCdNm', size: 'two' },
+    { text: 'SOP', align: 'center', value: 'sopTitle', size: 'six' },
+    { text: '위치', align: 'center', value: 'buldNm', size: 'four' }
   ]
 }
 // sms전송이력
@@ -66,21 +68,21 @@ const mainSmsHistoryHeader = {
   headers: [
     { text: '날짜', align: 'center', value: 'regDt', size: 'three' },
     { text: '위치', align: 'center', value: 'buldNm', size: 'four' },
-    { text: '인원', align: 'center', value: 'cnt', size: 'two' },
+    { text: '전송인원', align: 'center', value: 'cnt', size: 'two' },
     { text: '전송내용', align: 'center', value: 'smsContents', size: 'six' }
   ]
 }
 
 // TABLE HEADER
 // 실행이력
-
 const sopHistoryTableHeader = {
   headers: [
-    { text: '실행일시', align: 'center', value: 'executBeginDt', size: '' },
-    { text: '재난절차', align: 'center', value: 'msfrtnKndCdNm', size: '' },
-    { text: '위기발령단계', align: 'center', value: 'crisisGnfdStepNm', size: '' },
-    { text: 'SOP', align: 'center', value: 'sopTitle', size: '' },
-    { text: '위치', align: 'center', value: 'buldNm', size: '' },
+    { text: '실행일시', align: 'center', value: 'executBeginDt', size: 'four' },
+    { text: '실행모드', align: 'center', value: 'executFgCdNm', size: 'one' },
+    { text: '재난절차', align: 'center', value: 'msfrtnKndCdNm', size: 'one' },
+    { text: '위기발령단계', align: 'center', value: 'crisisGnfdStepNm', size: 'two' },
+    { text: 'SOP', align: 'center', value: 'sopTitle', size: 'three' },
+    { text: '위치', align: 'center', value: 'buldNm', size: 'three' },
     { text: '담당자', align: 'center', value: 'oprtrNm', size: '' }
   ]
 }
@@ -97,15 +99,14 @@ const smsHistoryTableHeader = {
 // 센서탐지이력
 const sensorHistoryTableHeader = {
   headers: [
-    // { text: 'NO', align: 'center', value: 'no', size: '' },
     { text: '감사일자', align: 'center', value: 'prcpDt', size: '' },
     { text: '오작동여부', align: 'center', value: 'date', size: '' },
     { text: '센서종류', align: 'center', value: 'location', size: '' },
     { text: '센서아이디', align: 'center', value: 'sensorId', size: '' },
-    { text: '발생위치', align: 'center', value: 'buldId', size: '' },
-    { text: 'SOP명', align: 'center', value: 'sopTitle', size: '' },
+    { text: '발생위치', align: 'center', value: 'buldId', size: 'three' },
+    { text: 'SOP명', align: 'center', value: 'sopTitle', size: 'three' },
     { text: '담당자', align: 'center', value: 'endtime', size: '' },
-    { text: '처리상태', align: 'center', value: 'endtime', size: '' }
+    { text: '처리상태', align: 'center', value: 'endtime', size: 'one' }
   ]
 }
 // 공지사항
@@ -142,14 +143,14 @@ const partnerGroupeHeader = {
     { text: '협력업체', align: 'center', value: 'emplNm', size: '' },
     { text: '이름', align: 'center', value: 'emplNm', size: '' },
     { text: '직급', align: 'center', value: 'ofcpsCdNm', size: '' },
-    { text: '휴대전화번호', align: 'center', value: 'moblphonNo', size: 'four' }
+    { text: '휴대전화번호', align: 'center', value: 'moblphonNo', size: '' }
   ]
 }
 // 건물/층 관리 - 건물관리
 const locationInfoHeader = {
   headers: [
-    { text: '건물ID', align: 'center', value: 'buldId', size: '1' },
-    { text: '건물명', align: 'center', value: 'buldNm', size: '1' }
+    { text: '건물ID', align: 'center', value: 'buldId', size: 'eight' },
+    { text: '건물명', align: 'center', value: 'buldNm', size: 'eight' }
   ]
 }
 // 건물/층 관리 - 건물층 정보
@@ -162,14 +163,14 @@ const locationFloorHeader = {
 // 장비관리-장비구분관리
 const sensorTypeHeader = {
   headers: [
-    { text: '종류', align: 'center', value: 'eqpmnClId', size: '1' },
-    { text: '종류명', align: 'center', value: 'eqpmnClNm', size: '3' }
+    { text: '종류', align: 'center', value: 'eqpmnClId', size: 'six' },
+    { text: '종류명', align: 'center', value: 'eqpmnClNm', size: 'eight' }
   ]
 }
 // 장비관리-구분별 센서 목록
 const sensorByTypeHeader = {
   headers: [
-    { text: 'ID', align: 'center', value: 'iwId', size: '' },
+    { text: 'ID', align: 'center', value: 'iwId', size: 'one' },
     { text: '센서명', align: 'center', value: 'sensorNm', size: '' },
     { text: '건물명', align: 'center', value: 'buldNm', size: '' },
     { text: '건물층', align: 'center', value: 'buldFloor', size: 'two' },
@@ -225,7 +226,6 @@ const systemUserHeader = {
 }
 
 // 재난절차목록
-
 const sopListHeader = {
   headers: [
     { text: 'SOP아이디', align: 'center', value: 'sopId', size: '' },
@@ -233,10 +233,9 @@ const sopListHeader = {
     { text: '위기발령단계', align: 'center', value: 'crisisGnfdStepNm', size: '' },
     { text: 'SOP제목', align: 'center', value: 'sopTitle', size: 'eight' }
   ]
-}
+} 
 
 // 재난절차목록
-
 const sopRunHistoryHeader = {
   headers: [
     { text: '실행일자', align: 'center', value: 'regDt', size: '' },
@@ -247,6 +246,7 @@ const sopRunHistoryHeader = {
 }
 
 export {
+  actionItemsList,
   sopMenuList,
   memberMenuList,
   historyMenuList,

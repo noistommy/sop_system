@@ -6,6 +6,7 @@
         div.title 재난 대응 절차 목록
         SearchComp(
           v-model="searchData",
+          :searchClass="searchClass",
           :isTextSearch='true'
           :isDateSearch="false",
           @search="getSopList")
@@ -14,7 +15,6 @@
               option(value="") 재난종류
               option(value="00") 전체
               option(v-for="code in typeCode", :value="code.cmmnCd") {{code.cmmnCdNm}}
-
           template(slot="condition2", slot-scope="props")
             select.ui.dropdown(v-model="req.crisisGnfdStepCd")
               option(value="") 위기발령단계
@@ -74,6 +74,7 @@ export default {
   data () {
     return {
       searchData: {},
+      searchClass: ['condition1', 'condition2'],
       req: {
         msfrtnKndCd: "",
         crisisGnfdStepCd: "",
@@ -209,7 +210,7 @@ export default {
           data: this.sopList.selected[0],
           buildings: this.buildingInfo
         },{
-          height: 'auto',
+          height: '450px',
           clickToClose: false
         })
       }

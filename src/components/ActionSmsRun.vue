@@ -1,6 +1,6 @@
 <template lang="pug">
   div.sms-action
-    SelectReceiver(@close="$modal.hide('select-reciever')", @reciever="setRecieverList")
+    components(:is="recieverModal", @close="$modal.hide('select-reciever')", @reciever="setRecieverList")
     //- modals-container(@reciever="setRecieverList")
     div.ui.form.tiny
       table.ui.table.celled.structured.very.compact.blue
@@ -23,21 +23,22 @@
                 CheckTextCount(
                   :formType="formType",
                   :rownum='3',
-                  :maxLength='500',
-                  v-model="actionData.smsContents",
-                  @input="returnText")
+                  :maxLength='80',
+                  v-model="actionData.smsContents")
           
 </template>
 
 <script>
 import CheckTextCount from '@/components/CheckTextCount.vue'
 import SelectReceiver from '@/components/SelectReceiver.vue'
+import { setTimeout } from 'timers';
 
 export default {
   name: 'action-sms-run',
   props: {
     idx: Number,
     stateCode: Boolean,
+    nextRun: Number,
     value: Object
   },
   data () {
@@ -49,7 +50,7 @@ export default {
       state: false,
       recieveText: '수신자선택',
       recieveCount: 0,
-      modalname: '',
+      recieverModal: ''
     }
   },
   components: {
@@ -57,9 +58,9 @@ export default {
     SelectReceiver
   },
   created () {
-    if(this.actionData.autoYn == null) {
-      this.actionData.autoYn = 'N'
-    } 
+    if(this.actionData.autoYn == 'Y' && this.actionData.stepSn == this.nextRun) {
+      this.stepRunning()
+    }
     // else if(this.actionData.autoYn == 'Y') {
     //   this.stepRunning()
     // } else{
@@ -96,18 +97,17 @@ export default {
       
     },
     selectSmsReceiver () {
-      this.$modal.show('select-reciever', {
-        modal:'locationmodal',
-        title: '수신자 선택',
-        recieveData: this.actionData.sopStepExecutChrgEmpList
-      },{
-        width: '70%',
-        height: '80%',
-        clickToClose: false
-      })
+      this.recieverModal = 'SelectReceiver'
+      setTimeout(() => {
+        this.$modal.show('select-reciever', {
+          modal:'locationmodal',
+          title: '수신자 선택',
+          recieveData: this.actionData.sopStepExecutChrgEmpList
+        })
+      },100)
     },
     setRecieverList(recieveList) {
-      this.modalname = ''
+      this.recieverModal = ''
       this.actionData.sopStepExecutChrgEmpList = recieveList
       if(recieveList.length > 0) {
         this.recieveText = `${recieveList[0].deptNm} ${recieveList[0].emplNm}`
@@ -145,7 +145,7 @@ export default {
           width: 15%;
         }
         td:last-child {
-          width: 8%;
+          width: 15%;
         }
       }
       td {

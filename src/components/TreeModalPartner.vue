@@ -31,11 +31,11 @@
                     input(type="checkbox", true-value="Y", false-value="N", v-model="createTeam.useYn")
                     label 사용여부
                    
-            div.btnSet
-              div.btn-group.left
-                button.ui.button.green(@click="createTreeItem") 등록
-              div.btn-wrap.right
-                button.ui.button(@click="$emit('close')") 취소
+            //- div.btnSet
+            //-   div.btn-group.left
+            //-     button.ui.button.green(@click="createTreeItem") 등록
+            //-   div.btn-wrap.right
+            //-     button.ui.button(@click="$emit('close')") 취소
           template(v-else)
             h3 편집
             div.content
@@ -53,11 +53,19 @@
                   div.ui.checkbox
                     input(type="checkbox", true-value="Y", false-value="N", v-model="editTeam.useYn")
                     label 허용
-            div.btnSet
-              div.btn-group.left
-                button.ui.button.blue(@click="updateTreeItem") 저장
-              div.btn-wrap.right
-                button.ui.button(@click="$emit('close')") 취소
+            //- div.btnSet
+            //-   div.btn-group.left
+            //-     button.ui.button.blue(@click="updateTreeItem") 저장
+            //-   div.btn-wrap.right
+            //-     button.ui.button(@click="$emit('close')") 취소
+    div.modal-footer.inverted
+      div.btnSet.right
+        template(v-if="type == 'new'")
+          button.ui.button.green(@click="createTreeItem") 등록
+          button.ui.button(@click="$emit('close')") 취소
+        template(v-else)
+          button.ui.button.blue(@click="updateTreeItem") 저장
+          button.ui.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
@@ -174,78 +182,88 @@ export default {
 }
 </script>
 
-<style lang="less">
-.modal {
-    background-color: #fff;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+<style lang="less" scoped>
+.treeEditor {
+  overflow-y: auto;
+  background-color: #454545;
+  .treeView-footer {
+    padding-top: 20px;
+  }
+}
+.tree-editor {
+  display: flex;
+  background-color: #454545;
+  height: 100%;
+  .treeView-wrapper {
+    width: 50%;
+  }
+  .editor-wrapper {
     position: relative;
-    .modal-header {
-        background-color: #5d5e68;
-        color: #fff;
-        padding: .8em 1.2em;
-        font-weight: 700;
-    }
-    .modal-content {
-      flex-grow: 1;
-      padding: 15px;
-      &.treeEditor {
-        overflow-y: auto;
-        background-color: #454545;
-        .treeView-footer {
-          padding-top: 20px;
-        }
-      }
-      .tree-editor {
-        display: flex;
-        background-color: #454545;
-        height: 100%;
-        .treeView-wrapper {
-          width: 50%;
-        }
-        .editor-wrapper {
-          position: relative;
-          flex-grow: 1;
-          padding: 10px;
-          color: #fff;
-          .content{
-            padding: 10px;
-
-            border: 1px solid rgba(139, 139, 139, 0.493);
-          }
-          .ui.form input {
-            background-color: rgba(0, 0, 0, 0.2);
-            color:#fff;
-        }
-        }
-      }
-    }
-    .treeView-footer {
-      background-color: #454545;
-      height: 15%;
+    flex-grow: 1;
+    padding: 10px;
+    color: #fff;
+    .content{
       padding: 10px;
 
+      border: 1px solid rgba(139, 139, 139, 0.493);
     }
-    .modal-close {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        color: #fff;
-        // background-color: #fff;
-        font-size: 1rem;
-        i {
-          margin:0;
-        }
-        &:hover {
-          background-color: #fff;
-          color: #5d5e68;
-        }
+    .ui.form input {
+      background-color: rgba(0, 0, 0, 0.2);
+      color:#fff;
     }
-    &.small {width: 300px;}
-    &.large {width: 600px;}
-    &.full {width: 90%;}
+  }
 }
+// .modal {
+//     background-color: #fff;
+//     height: 100%;
+//     display: flex;
+//     flex-direction: column;
+//     position: relative;
+//     .modal-header {
+//         background-color: #5d5e68;
+//         color: #fff;
+//         padding: .8em 1.2em;
+//         font-weight: 700;
+//     }
+//     .modal-content {
+//       flex-grow: 1;
+//       padding: 15px;
+//       &.treeEditor {
+//         overflow-y: auto;
+//         background-color: #454545;
+//         .treeView-footer {
+//           padding-top: 20px;
+//         }
+//       }
+//       .tree-editor {
+//         display: flex;
+//         background-color: #454545;
+//         height: 100%;
+//         .treeView-wrapper {
+//           width: 50%;
+//         }
+//         .editor-wrapper {
+//           position: relative;
+//           flex-grow: 1;
+//           padding: 10px;
+//           color: #fff;
+//           .content{
+//             padding: 10px;
+
+//             border: 1px solid rgba(139, 139, 139, 0.493);
+//           }
+//           .ui.form input {
+//             background-color: rgba(0, 0, 0, 0.2);
+//             color:#fff;
+//         }
+//         }
+//       }
+//     }
+//     // .treeView-footer {
+//     //   background-color: #454545;
+//     //   height: 15%;
+//     //   padding: 10px;
+
+//     // }
+// }
 </style>

@@ -131,7 +131,7 @@ export default {
         data: {}
       },{
         width: '700px',
-        height: 'auto',
+        height: '450px',
         clickToClose: false
       },{
         'before-close': () => {
@@ -151,7 +151,7 @@ export default {
           data: this.systemUser.selected[0]
         },{
           width: '700px',
-          height: 'auto',
+          height: '450px',
           clickToClose: false
         },{
           'before-close': () => {

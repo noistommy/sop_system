@@ -31,6 +31,7 @@ export default {
   name: 'action-order-run',
   props: {
     idx: Number,
+    nextRun: Number,
     value: Object
   },
   data () {
@@ -47,9 +48,9 @@ export default {
     CheckTextCount,
   },
   created () {
-    if(this.actionData.autoYn == null) {
-      this.actionData.autoYn = 'N'
-    } 
+    if(this.actionData.autoYn == 'Y' && this.actionData.stepSn == this.nextRun) {
+      this.stepRunning()
+    }
     // else if(this.actionData.autoYn == 'Y') {
     //   this.stepRunning()
     // } else{
@@ -100,7 +101,7 @@ export default {
           width: 15%;
         }
         td:last-child {
-          width: 8%;
+          width: 15%;
         }
       }
       td {

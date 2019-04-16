@@ -16,7 +16,7 @@ modal(name='run-sensor-list', :width='800', :height='600', :clickToClose="false"
                 div.item.lr.listitem(:class="{active:props.selected}", @click="selectedItem(props)" )
                   .ld.center {{props.item.msfrtnKndNm}}
                   .ld.center {{props.item.crisisGnfdStepNm}}
-                  .ld.center.title {{props.item.sopTitle}}
+                  .ld.title {{props.item.sopTitle}}
                   .ld.center {{props.item.executYnNm}}
           div.btnSet.right
             button.ui.button.blue(@click='runSelectSop') 실행
@@ -31,6 +31,7 @@ modal(name='run-sensor-list', :width='800', :height='600', :clickToClose="false"
 import DataList from '@/components/DataList.vue'
 import SopSlideApi from '@/api/SopSlide'
 import { codeGenerator } from '@/util'
+import { EventBus } from '@/util'
 
 export default {
   name: 'run-sensor-list',
@@ -50,7 +51,7 @@ export default {
       ],
       runBySensorData: [],
       isListNumber: false,
-      itemkey: 'sopExecutSn',
+      itemkey: 'sopId',
       runParams: {},
       title: '',
       text: '',
@@ -102,12 +103,23 @@ export default {
       })
       SopSlideApi.selectRunSop(requestData).then(result => {
         console.log(result.data)
-        this.$router.push({ name: 'sop-run', params: { 
+        // this.$router.push({ name: 'sop-run', params: { 
+        //   iwId: this.data,
+        //   sopId: result.data.sopId,
+        //   sopExecutSn: result.data.sopExecutSn,
+        //   type: 'run'
+        //   }})
+        const sopItem = { 
           iwId: this.data,
           sopId: result.data.sopId,
           sopExecutSn: result.data.sopExecutSn,
           type: 'run'
-          }})
+        }
+         if(this.$route.name == 'sop-run'){
+           EventBus.$emit('trans-sop', sopItem)
+         } else {
+           this.$router.push({ name: 'sop-run', params: sopItem})
+         }
         this.$emit('close')
       }).catch(error => {
         this.$emit('close')
@@ -135,7 +147,7 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .modal.select-sensor {
     background-color: #fff;
     position: relative;
@@ -157,7 +169,7 @@ export default {
           padding: 0;
           .list-content {
             height: 88%;
-            .ui.list.item {
+            .ui.list .item {
               .lh.title, .ld.title {
                 width: 80%;
               }

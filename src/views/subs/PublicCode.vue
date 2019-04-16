@@ -16,7 +16,7 @@
                 :isListNumber="publicCode.isListNumber",
                 :isEditor="publicCode.isEditor",
                 :itemKey="publicCode.itemkey"
-              ).ui.table.celled.selectable
+              )
                 <template slot="items" slot-scope="props">
                   div.item.lr.listitem(:class="{active:props.selected}", @click="selectedGroup(props)" )
                     .ld {{props.item.cmmnCd}}
@@ -34,6 +34,7 @@
             div.section_1
               div.wrapper
                 DataTable(
+                  :tableType="'celled'"
                     v-model="publicCodeDetail.selected"
                     :headers="publicCodeDetail.headers",
                     :items="publicCodeDetail.publicCodeDetailData",
@@ -42,7 +43,7 @@
                     :isListNumber="publicCodeDetail.isListNumber",
                     :isPagination="publicCodeDetail.isPagination",
                     :page="publicCodeDetail.pageInfo"
-                  ).ui.table.celled.selectable
+                  )
                     template(slot="items", slot-scope="props")
                       tr(:active="props.selected", @click="selectedItem(props)" )
                         td {{props.item.cmmnCd}}
@@ -194,7 +195,7 @@ export default {
       
       console.log(editdata)
       this.$modal.show(CodeEditor, editdata, {
-        height: 'auto',
+        height: '400px',
         draggable: true,
         clickToClose: false
       },{

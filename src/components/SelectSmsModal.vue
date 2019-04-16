@@ -100,11 +100,11 @@
                             div.field.ten.wide
                               span {{standardSmsDetail.userData5}}
                             
-                      tr
-                        td.center.aligned 
-                          span 사용여부
-                        td
-                          div {{standardSmsDetail.useYn == 'Y' ? '사용' : '사용안함'}}
+                      //- tr
+                      //-   td.center.aligned 
+                      //-     span 사용여부
+                      //-   td
+                      //-     div {{standardSmsDetail.useYn == 'Y' ? '사용' : '사용안함'}}
                           
               div.btnSet
                   div.btn-wrap.right

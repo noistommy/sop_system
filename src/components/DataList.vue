@@ -1,11 +1,16 @@
 <template lang="pug">
-    div.datalist
+    div.datalist(:class="listType").celled
       h3(v-if="isTitle") 제목
       div.lhead.ui.list(:class="listType")
           div.item.lr.listitem
-            div.lh(v-if="isListNumber").center.aligned NO
+            div.lh(v-if="isListNumber").center.aligned.one NO
             div.lh( v-for="lh of headers", :class="[`${lh.align} aligned ${lh.size}`]") {{lh.text}}
       div.lbody.ui.list(:class="listType")
+        .lr(v-if="items.length == 0").no-data
+            .ld(:colspan="headers.length")
+              .nodata-message
+                span.header NO DATA
+                span 데이터가 없습니다
         <slot name="items" v-for="(item, index) of items" :item="item" :idx="index" :selected="activeItem(item)"></slot>
       div.ui.form(v-if="isEditor")
         div.lfoot.ui.list(:class="listType")
@@ -43,7 +48,7 @@ export default {
   methods: {
     activeItem(data) {
       let isSelected = false
-      if(this.value == []) return 
+      if(this.value == [] || this.value == undefined) return 
       this.value.forEach((e, i) => {
         if(e[this.itemKey] == data[this.itemKey]) {
           isSelected = true
@@ -55,18 +60,31 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .ellipse {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+// .datalist {
+//   -ms-overflow-style: none;
+//   ::-webkit-scrollbar {
+//     // display: none !important;
+//     position: relative;
+//     // width: 0;
+//   }
+//   ::-webkit-scrollbar-thumb {
+//     position: absolute;
+
+//   }
+// }
 
  .ld {
-     .ellipse
+    .ellipse
  }
 
  .datalist {
+    padding:0 !important;
     position: relative;
     width: 100%;
     height: 100%;
@@ -94,6 +112,7 @@ export default {
           &.center {text-align: center;}
           &.left {text-align: left;}
           &.right {text-align: right;}
+
         }
         .lh {
           background-color: #f9fafb;
@@ -102,6 +121,22 @@ export default {
         &:nth-child(odd) {
           background-color: rgba(0,0,50,.02)
         }
+        .one { width: 6.25%;}
+        .two { width: 6.25% * 2}
+        .three { width: 6.25% * 3}
+        .four { width: 6.25% * 4}
+        .five { width: 6.25% * 5}
+        .six { width: 6.25% * 6}
+        .seven { width: 6.25% * 7}
+        .eight { width: 6.25% * 8}
+        .nine { width: 6.25% * 9}
+        .ten { width: 6.25% * 10}
+        .eleven { width: 6.25% * 11}
+        .twelve { width: 6.25% * 12}
+        .thirteen { width: 6.25% * 13}
+        .fourteen{ width: 6.25% * 14}
+        .fifteen { width: 6.25% * 15}
+        .sixteen { width: 6.25% * 16}
       }
     }
     .lfoot.list {
@@ -119,7 +154,7 @@ export default {
     .lbody.list {
       // .border-radius(0, 5px, 0, 5px);
       overflow-y: auto;
-      height: 95%;
+      height: 93%;
       .listitem.item.lr {
         &:hover {
           background-color: #fff;
@@ -146,6 +181,36 @@ export default {
       position: absolute;
       right: 0;
       top: -5px;
+    }
+    &.celled {
+      .lh {
+        border-right: 1px solid rgba(34, 36, 38, 0.15);
+      }
+    }
+    .no-data {
+      text-align: center;
+      .nodata-message {
+        display: flex;
+        justify-content: center;
+        font-size: 1rem;
+        span {
+          display:inline-block;
+          padding: 3px 5px;
+          &.header {
+            font-size: 1rem;
+            background-color: rgba(202, 74, 74, 0.7);
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 12px;
+          }
+        }
+      }
+      &.lr {
+        padding: 5px;
+        .ld {
+          width: 100%;
+        }
+      }
     }
   }
 

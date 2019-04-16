@@ -2,21 +2,19 @@
 modal(name="run-sop-modal", width="350", height="200", @before-open="setProps")
   div.modal.select-sop-info
       div.modal-header {{title}}
-      div.modal-content 
-        div.content-wrapper
-          div.list-content
-            div.ui.attached.segment.inverted
-              ul.ui.list.bulleted
-                li.item 재난위치: {{runSopData.msfrtnLc}}
-                li.item 재난절차: {{runSopData.msfrtnProcss}}
-                li.item 발생시간: {{runSopData.occrrncTm}}
-            div.ui.bottom.attached.segment.inverted
-              div.seg-btn.center
-                button.ui.button.blue.mini(v-if="runSopData.executPosblYn == 'Y'", @click='runSelectSop') 실행
-                button.ui.button.yellow.mini(@click='monitoringSop') 모니터링
-                button.ui.button.mini(@click="$emit('close')") 취소
-          div.modal-close(@click="$emit('close')")
-              div.close X
+      div.modal-content.run-sop-modal
+        div.ui.attached.segment.inverted
+          ul.ui.list.bulleted
+            li.item 재난위치: {{runSopData.msfrtnLc}}
+            li.item 재난절차: {{runSopData.msfrtnProcss}}
+            li.item 발생시간: {{runSopData.occrrncTm}}
+        div.ui.bottom.attached.segment.inverted
+          div.seg-btn.center
+            button.ui.button.blue.mini(v-if="runSopData.executPosblYn == 'Y'", @click='runSelectSop') 실행
+            button.ui.button.yellow.mini(@click='monitoringSop') 모니터링
+            button.ui.button.mini(@click="$emit('close')") 취소
+      div.modal-close(@click="$emit('close')")
+          div.close X
               
 </template>
 
@@ -82,7 +80,6 @@ export default {
           }
           EventBus.$emit('trans-sop', sopInfo)
         }
-      
       if( this.runSopData != undefined) {
         this.$router.push({ 
           name: 'sop-run',
@@ -125,78 +122,39 @@ export default {
 }
 </script>
 
-<style lang="less">
-.modal.select-sop-info {
-    background-color: #fff;
-    position: relative;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    .modal-header {
-        background-color: #5d5e68;
-        color: #fff;
-        padding: .8em 1.2em;
-        font-weight: 700;
-    }
-    .modal-content {
-        flex-grow: 1;
-        padding: 5px;
-        background-color: rgba(0, 0, 0, 0.2);
-        .content-wrapper {
-          height: 100%;
-          padding: 0;
-          .list-content {
-            height: 88%;
-            .ui.bottom.attached.segment {
-              background-color: rgba(0, 0, 0, 0.8);
-            }
-          }
-        }
-    }
-    .modal-close {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        color: #fff;
-        // background-color: #fff;
-        font-size: 1rem;
-        i {
-          margin:0;
-        }
-        &:hover {
-          background-color: #fff;
-          color: #5d5e68;
-        }
-    }
-    &.small {width: 300px;}
-    &.large {width: 600px;}
-    &.full {width: 90%;}
-    .msgError {
-      text-align: center;
-      font-size: 0.8rem;
-    }
-    .error {
-      color: #9f3a38;
-    }
-    .seg-btn {
-      display:flex;
-      .ui.button {
-        border-radius: 0 !important;
-      }
-      &.center {
-        justify-content: center;
-      }
-    }
-    .ui.table {
-      td:nth-child(odd) {
-        text-align: center;
-        min-width: 100px;
-        background-color: #f9fafb;
-      }
-    }
+<style lang="less" scoped>
+// .modal.select-sop-info {
+//     background-color: #fff;
+//     position: relative;
+//     height: 100%;
+//     display: flex;
+//     flex-direction: column;
+//     position: relative;
+//     .modal-header {
+//         background-color: #5d5e68;
+//         color: #fff;
+//         padding: .8em 1.2em;
+//         font-weight: 700;
+//     }
+    
+// }
+.modal-content.run-sop-modal {
+  flex-grow: 1;
+  padding: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.ui.bottom.attached.segment {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px 0;
+}
+.seg-btn {
+  display:flex;
+  .ui.button {
+    border-radius: 0 !important;
+  }
+  &.center {
+    justify-content: center;
+  }
 }
 </style>
 

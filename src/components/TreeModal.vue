@@ -23,11 +23,11 @@
                 div.field
                   label 자위소방대명
                   input(type="text", placeholder="소방대명 입력", v-model="createTeam.slfdfnFbrdNm")
-            div.btnSet
-              div.btn-group.left
-                button.ui.button.green(@click="createTreeItem") 등록
-              div.btn-wrap.right
-                button.ui.button(@click="$emit('close')") 취소
+            //- div.btnSet
+            //-   div.btn-group.left
+            //-     button.ui.button.green(@click="createTreeItem") 등록
+            //-   div.btn-wrap.right
+            //-     button.ui.button(@click="$emit('close')") 취소
           template(v-else)
             h3 편집
             div.content
@@ -45,11 +45,15 @@
                 div.field
                   label 상위자위소방대명
                   input(type="text", v-model="editTeam.upperSlfdfnFbrdNm", readonly="").readonly
-            div.btnSet
-              div.btn-group.left
-                button.ui.button.blue(@click="updateTreeItem") 저장
-              div.btn-wrap.right
-                button.ui.button(@click="$emit('close')") 취소
+    div.modal-footer.inverted
+      //- div.btn-wrapper.right
+      div.btnSet.right
+        template(v-if="type == 'new'")
+          button.ui.button.green(@click="createTreeItem") 등록
+          button.ui.button(@click="$emit('close')") 취소
+        template(v-else)
+          button.ui.button.blue(@click="updateTreeItem") 저장
+          button.ui.button(@click="$emit('close')") 취소
     div.modal-close(@click="$emit('close')")
         div.close X
 </template>
@@ -79,7 +83,8 @@ export default {
       treeviewData: this.data,
       createTeam: {
         slfdfnFbrdNm: '',
-        upperSlfdfnFbrdId: ''
+        upperSlfdfnFbrdId: '',
+        upperSlfdfnFbrdNm: ''
       },
       selectTeam: {},
       editTeam: this.target,
@@ -149,6 +154,7 @@ export default {
     },
     getItemInfo(item) {
       if(this.type == 'new') {
+
         this.createTeam.upperSlfdfnFbrdId = item.childSlfdfnFbrdId
         this.createTeam.upperSlfdfnFbrdNm = item.childSlfdfnFbrdNm
       }else {
@@ -174,82 +180,39 @@ export default {
 }
 </script>
 
-<style lang="less">
-.modal {
-    background-color: #fff;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    .modal-header {
-        background-color: #5d5e68;
-        color: #fff;
-        padding: .8em 1.2em;
-        font-weight: 700;
-    }
-    .modal-content {
-      flex-grow: 1;
-      padding: 15px;
-      &.treeEditor {
-        overflow-y: auto;
-        background-color: #454545;
-        .treeView-footer {
-          padding-top: 20px;
-        }
-        .list.level-4 {
-          display: none;
-        }
-      }
-      .tree-editor {
-        display: flex;
-        background-color: #454545;
-        height: 100%;
-        .treeView-wrapper {
-          width: 100%;
-        }
-        .editor-wrapper {
-          position: relative;
-          flex-grow: 1;
-          padding: 10px;
-          color: #fff;
-          .content{
-            padding: 10px;
-
-            border: 1px solid rgba(139, 139, 139, 0.493);
-          }
-          .ui.form input {
-            background-color: rgba(0, 0, 0, 0.2);
-            color:#fff;
-         }
-        }
-      }
-    }
+<style lang="less" scoped>
+  .treeEditor {
+    overflow-y: auto;
+    background-color: #454545;
     .treeView-footer {
-      background-color: #454545;
-      height: 15%;
+      padding-top: 20px;
+    }
+    .list.level-4 {
+      display: none;
+    }
+  }
+  .tree-editor {
+    display: flex;
+    background-color: #454545;
+    height: 100%;
+    .treeView-wrapper {
+      width: 50%;
+    }
+    .editor-wrapper {
+      position: relative;
+      flex-grow: 1;
       padding: 10px;
+      color: #fff;
+      .content{
+        padding: 10px;
 
+        border: 1px solid rgba(139, 139, 139, 0.493);
+      }
+      .ui.form input {
+        background-color: rgba(0, 0, 0, 0.2);
+        color:#fff;
+      }
     }
-    .modal-close {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        color: #fff;
-        // background-color: #fff;
-        font-size: 1rem;
-        i {
-          margin:0;
-        }
-        &:hover {
-          background-color: #fff;
-          color: #5d5e68;
-        }
-    }
-    &.small {width: 300px;}
-    &.large {width: 600px;}
-    &.full {width: 90%;}
     .ui.form select.inverted {
       background-color: rgba(0, 0, 0, 0.2);
       color: #fff;
@@ -257,5 +220,6 @@ export default {
         color: #000;
       }
     }
-}
+  }
+
 </style>

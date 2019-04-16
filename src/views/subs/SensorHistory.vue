@@ -15,6 +15,7 @@
           BarChart(v-if="isLoaded", :chart-data="chartData")
         div.content
           DataTable(
+            :tableType="'fixed celled'",
             v-model="sensorHistory.selected"
             :headers="sensorHistory.headers",
             :items="sensorHistory.sensorHistoryData",
@@ -23,7 +24,7 @@
             :isPagination="sensorHistory.isPagination",
             :page="sensorHistory.pageInfo",
             @search="getHistoryList"
-          ).ui.table.celled.selectable
+          )
             <template slot="items" slot-scope="props">
               tr
                 td.center.aligned {{(sensorHistory.pageInfo.currPage - 1) * 10 + props.idx + 1}}
@@ -121,7 +122,7 @@ export default {
           labels: result.data.alarmHistStats.labels,
           datasets: [
             {
-              label: '센서 발생 쵯수',
+              label: '센서 발생 횟수',
               data: result.data.alarmHistStats.data,
               backgroundColor: '#7bbae7'
             }

@@ -6,7 +6,7 @@
       div.logo
         img(src="../assets/CI_logo.png", alt="logo")
       div.login-panel
-        div.header(@click="onLogout") 재난관리시스템
+        div.header 재난관리시스템
         div.content
           div.ui.form
             .field

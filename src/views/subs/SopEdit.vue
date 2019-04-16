@@ -44,9 +44,10 @@
                   button.ui.button.blue.mini(@click='copyStep') 복사
                   button.ui.button.blue.mini(@click='deleteStep') 삭제
                 div.ui.buttons.right.floated
-                  button.ui.button.olive.mini(@click="addAction('ActionSms')") 문자
-                  button.ui.button.olive.mini(@click="addAction('ActionBroad')") 방송
-                  button.ui.button.olive.mini(@click="addAction('ActionOrder')") 지시사항
+                  template(v-for="item in actionItemsList")
+                    button.ui.button.olive.mini(@click="addAction(item.actionCode)") {{item.name}}
+                  //- button.ui.button.olive.mini(@click="addAction('ActionBroad')") 방송
+                  //- button.ui.button.olive.mini(@click="addAction('ActionOrder')") 지시사항
               div.edit-content
                 div.steps-wrapper
                   div.step(
@@ -55,6 +56,7 @@
                     @click="setActive(step)",
                     :id="`step_${step.stepNo}`"
                     )
+                    div.unActive
                     div.step-header
                       div.ui.input.fluid.small.labeled
                         label.ui.label {{index+1}}
@@ -89,6 +91,7 @@ import ActionBroad from '@/components/ActionBroad.vue'
 import ActionBroadOnOff from '@/components/ActionBroadOnOff.vue'
 import ActionOrder from '@/components/ActionOrder.vue'
 import SelectLocation from '@/components/SelectLocation.vue'
+import { actionItemsList } from '@/setting'
 import { codeGenerator } from '@/util'
 import SelectReceiver from '@/components/SelectReceiver'
 
@@ -96,6 +99,7 @@ export default {
   name: 'sop-edit',
   data () {
     return {
+      actionItemsList: [],
       sopNewData: {
         sopId: '',
         msfrtnKndCd: '',
@@ -142,6 +146,7 @@ export default {
     SelectLocation
   },
   created () {
+    this.actionItemsList = actionItemsList
     this.sopNewData.sopId = this.$route.params.sopId
     this.sopNewData.sopMapngCd = this.$route.params.sopMapngCd
     this.getCodeList('S090')
@@ -219,6 +224,7 @@ export default {
       }).catch(error => {
         const err = error.response
         console.log(err)
+        // alert(err.data.msgValue)
         this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
@@ -315,8 +321,8 @@ export default {
       const actionItem = {
         type: '',
         itemKnd: '',
-        stepNo: 0,
-        stepSn: 0,
+        stepNo: this.activeStep,
+        stepSn:  0,
         autoYn: 'N',
         ischeck: false
       }
@@ -365,15 +371,17 @@ export default {
           userData5: ''
         })
       }
-      if(actionType == 'broadon') {
+      if(actionType == 'ActionBroadOnOff') {
         actionItem.type = 'ActionBroadOnOff'
         actionItem.itemKnd = 'S0500200'
+        Object.assign(actionItem,{brdcstOnOffFlag: 0})
       }
       if(actionType == 'ActionOrder') {
         actionItem.type = 'ActionOrder'
         actionItem.itemKnd = 'S0500300'
         Object.assign(actionItem,{drctContents: ''})
       }
+      this.getCodeList('S080')
       Object.assign(actionItem, this.addItemObject('cmmnCd'))
       this.sopNewData.sopStepList.forEach((step, i) => {
         if(step.stepNo == this.selectedStep.stepNo) {
@@ -412,9 +420,10 @@ export default {
         Object.assign(actionItem, this.addItemObject('userData'))
         Object.assign(actionItem, this.addItemObject('inputParam'))
       }
-      if(action.type == 'broadon') {
+      if(action.type == 'ActionBroadOnOff') {
         actionItem.type = 'ActionBroadOnOff'
         actionItem.itemKnd = 'S0500200'
+        Object.assign(actionItem,{brdcstOnOffFlag: 0})
       }
       if(action.type == 'ActionOrder') {
         actionItem.type = 'ActionOrder'
@@ -610,6 +619,7 @@ export default {
           height: 100%;
           padding: 10px 15px;
           .step {
+            position: relative;
             width: 100%;
             height: auto;
             border: 1px solid rgba(0, 0, 0, 0.2);
@@ -624,6 +634,20 @@ export default {
             &.active {
               border: 1px solid rgba(1, 120, 199, 0.534);
               box-shadow: 0 0 5px rgba(0, 52, 87, 0.534);
+              .unActive {
+                display: none;
+              }
+            }
+            .unActive {
+              display: block;
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              top: 0;
+              left: 0;
+              background-color: #ccc;
+              opacity: 0.02;
+              z-index: 100;
             }
           }
         }

@@ -6,7 +6,8 @@
       div.sub-header
         div.title 표준 문자 관리
         SearchComp(
-          v-model="searchData"
+          v-model="searchData",
+          :searchClass="[]",
           :isDateSearch="false",
           :isTextSearch="true"
           @search="getSmslist")
@@ -43,10 +44,12 @@
                         span 문자제목
                       td
                         //- check-text-count(
-                        //-   :formType="''",
+                        //-   :formType="'input'",
                         //-   :rownum='0',
+                        //-   :textData="standardSmsDetail.smsTitle",
                         //-   :maxLength='50',
                         //-   v-model="standardSmsDetail.smsTitle",
+                        //-   :isShow="false",
                         //-   @input="returnText")
                         input(type="text", v-model="standardSmsDetail.smsTitle")
                         label
@@ -56,8 +59,9 @@
                       td
                         check-text-count(
                           :formType="formType",
+                          :textData="standardSmsDetail.smsContents",
                           :rownum='6',
-                          :maxLength='200',
+                          :maxLength='100',
                           v-model="standardSmsDetail.smsContents",
                           @input="returnTextarea")
                     tr

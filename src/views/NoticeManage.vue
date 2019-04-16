@@ -166,7 +166,7 @@ export default {
           title: '수정하기',
           notice: this.selected[0]
         },{
-          height: "auto",
+          height: "500px",
           clickToClose: false
         },{
           'before-close': () => {
@@ -181,7 +181,7 @@ export default {
         title: '작성하기',
         notice: {}
       },{
-        height: "auto",
+        height: "450px",
         clickToClose: false
       },{
           'before-close': () => {

@@ -7,7 +7,10 @@ const codeGenerator = (code, text) => {
     title: '',
     text: '',
     bottons: [{
-      title: '확인'
+      title: '확인',
+      handler: () => {
+        this.$modal.hide('dialog')
+      }
     }]
   }
   switch (code) {
@@ -40,7 +43,8 @@ const codeGenerator = (code, text) => {
       }]
       break
     default:
-      console.log(code, text)
+      dialog.title = '알람'
+      dialog.text = text
   }
   return dialog
 }

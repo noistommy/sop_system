@@ -27,7 +27,8 @@
                     Pagination( :totalCount="pageInfo.totalCount",
                     :currentPage="pageInfo.currPage",
                     :recordCountPerPage="pageInfo.pagePerCnt",
-                    @currpage="setCurrentPage" )
+                    @currpage="setCurrentPage",
+                    :maxLength="5" )
 </template>
 
 <script>
@@ -142,22 +143,22 @@ export default {
     padding: 0;
   }
   .no-data {
-    color: rgba(202, 74, 74, 0.7);
+    // color: rgba(202, 74, 74, 0.7);
     text-align: center;
     // background-color: rgba(202, 74, 74, 0.5);
     .nodata-message {
       display: flex;
-      // justify-content: center;
+      justify-content: center;
       font-size: 1rem;
       span {
         display:inline-block;
         padding: 3px 5px;
         &.header {
-          font-size: 1.2rem;
-          font-weight: 700;
+          font-size: 1rem;
           background-color: rgba(202, 74, 74, 0.7);
-          color: rgba(202, 74, 74, 1);
-          padding: 3px 5px
+          color: #fff;
+          padding: 3px 12px;
+          border-radius: 12px;
         }
       }
     }

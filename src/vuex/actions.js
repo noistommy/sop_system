@@ -1,10 +1,8 @@
 import * as types from './mutation-types'
 import doAsync from './async-util'
-// import axios from 'axios'
 
 import AuthApi from '@/api/Auth'
 import PublicCodeApi from '@/api/PublicCode'
-// import { restElement } from 'babel-types';
 
 export const getAsync1 = (context) => {
   return doAsync(context, {

@@ -6,7 +6,8 @@
       div.sub-header
         div.title 표준 방송 관리
         SearchComp(
-          v-model="searchData"
+          v-model="searchData",
+          :searchClass="[]",
           :isDateSearch="false",
           :isTextSearch="true",
           @search="getBroadlist")

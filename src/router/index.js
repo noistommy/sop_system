@@ -28,7 +28,7 @@ import {
 Vue.use(Router)
 
 const requireAuth = () => (from, to, next) => {
-  if (localStorage.userInfo) return next()
+  if (sessionStorage.userInfo) return next()
   next('/login')
 }
 

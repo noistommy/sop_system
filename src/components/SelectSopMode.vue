@@ -56,6 +56,7 @@ import PublicCodeApi from '@/api/PublicCode'
 import SopManageApi from '@/api/SopManage'
 import CheckTextCount from '@/components/CheckTextCount.vue'
 import { codeGenerator } from '@/util'
+import { EventBus } from '@/util'
 import LocationApi from '@/api/Location'
 
 export default {
@@ -143,6 +144,7 @@ export default {
           sopExecutSn: result.data.sopExecutSn,
           type: 'run'}
         })
+        EventBus.$emit('slide-reload')
         this.$emit('close')
       }).catch(error => {
         this.$emit('close')
@@ -175,84 +177,39 @@ export default {
 }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .v--modal-overlay, .v--modal {
   overflow: visible !important;
 }
-.modal.user-editor {
-    background-color: #fff;
-    position: relative;
-    height: 100%;
-    // border: 1px solid #5d5e68;
-    // border-radius: 5px;
-    // box-shadow: 0 0 10px rgba(0, 0, 0, .5);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    .modal-header {
-        background-color: #5d5e68;
-        color: #fff;
-        padding: .8em 1.2em;
-        font-weight: 700;
-    }
-    .modal-content {
-        flex-grow: 1;
-        padding: 15px;
-        .content-wrapper {
-          padding: 15px 15px 55px 15px;
-          .ui.table {
-            td {
-              overflow: visible !important;
-            }
-            td:nth-child(odd) {
-              text-align: center;
-              width: 100px;
-              min-width: 100px;
-              background-color: #f9fafb;
-              
-            }
-          }
-        }
-    }
-    .modal-close {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        padding: 2px 4px;
-        border-radius: 3px;
-        color: #fff;
-        // background-color: #fff;
-        font-size: 1rem;
-        i {
-          margin:0;
-        }
-        &:hover {
-          background-color: #fff;
-          color: #5d5e68;
-        }
-    }
-    &.small {width: 300px;}
-    &.large {width: 600px;}
-    &.full {width: 90%;}
-    .msgError {
-      text-align: center;
-      font-size: 0.8rem;
-    }
-    .error {
-      color: #9f3a38;
-    }
-    .btnSet {
-      position:absolute;
-      padding: 15px 0;
-      width: 100%;
-      left: 0;
-      bottom: 0;
-      display: flex;
-      justify-content: center;
-      .ui.button {
-        border-radius: 0 !important;
-      }
-    }
+.error {
+  color: #9f3a38;
+}
+.btnSet {
+  position:absolute;
+  padding: 15px 0;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  .ui.button {
+    border-radius: 0 !important;
+  }
+}
+.msgError {
+  text-align: center;
+  font-size: 0.8rem;
+}
+.ui.table {
+  td {
+    overflow: visible !important;
+  }
+  td:nth-child(odd) {
+    text-align: center;
+    width: 100px;
+    min-width: 100px;
+    background-color: #f9fafb;
     
+  }
 }
 </style>

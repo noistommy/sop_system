@@ -8,6 +8,10 @@ export default {
   getSOPList: (payload) => {
     return HTTP.post(`${TargetURL}.selectSopExecutEndHistList.do`, payload)
   },
+  // SOP 실행 이력 상세 리스트
+  getSOPDetail: (payload) => {
+    return HTTP.post(`${TargetURL}.selectSopExecutEndStepHistList.do`, payload)
+  },
   // SMS 전송 이력 리스트
   getSMSList: (payload) => {
     return HTTP.post(`${TargetURL}.selectSopExecutSmsHistList.do`, payload)
@@ -60,6 +64,17 @@ export default {
   },
   sensorHistoryDownload: (param) => {
     var url = `${BASE_URL}${TargetURL}.selectSensorDetctHistListExcel.do`
+    var form = '<form action=' + url + " method='post'>"
+    if (param != null && typeof param !== 'undefined') {
+      $.each(param, function (index, value) {
+        form += "<input type='hidden' name=" + index + ' value=' + value + ' />'
+      })
+    }
+    form += '</form>'
+    $(form).appendTo('body').submit().remove()
+  },
+  sopHistoryDetailDownload: (param) => {
+    var url = `${BASE_URL}${TargetURL}.selectSopExecutEndStepHistListExcel.do`
     var form = '<form action=' + url + " method='post'>"
     if (param != null && typeof param !== 'undefined') {
       $.each(param, function (index, value) {

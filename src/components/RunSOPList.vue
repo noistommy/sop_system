@@ -1,8 +1,8 @@
 <template lang="pug">
   div#SopList(:class="{active:activeSide}")
-    ResetPassword(@close="$modal.hide('reset-password')")
-    RunSopModal(@close="$modal.hide('run-sop-modal')")
-    RunBySensorList(@close="$modal.hide('run-sensor-list')")
+    ResetPassword(@close="closeModal('reset-password')")
+    RunSopModal(@close="closeModal('run-sop-modal')")
+    RunBySensorList(@close="closeModal('run-sensor-list')")
     div.virtual-btn(v-if="!activeSide", @click="toggleSideLayer")
     div.run-list
       div.item.userInfo
@@ -11,8 +11,8 @@
         div.userSetting
           //- div.user
           //-   | User님
-          div(@click="onLogout", class="ui button mini") 로그아웃
-          div(@click="resetPassword" class="ui button mini") 비밀번호변경
+          div(@click="onLogout", class="ui button basic inverted mini") 로그아웃
+          div(@click="resetPassword" class="ui button basic inverted mini") 비밀번호변경
       div.item.totalAlarm
         div.header
           span.alarm-icon
@@ -68,9 +68,13 @@ export default {
   },
   created () {
     this.getSOPList()
-    // this.interval = setInterval(() => {
-    //  this.getSOPList()
-    // },3000)
+    this.interval = setInterval(() => {
+     this.getSOPList()
+    },3000)
+
+    EventBus.$on('slide-reload', () => {
+      this.getSOPList()
+    })
     
   },
   methods: {
@@ -99,11 +103,14 @@ export default {
       }).catch(error => {
         this.$emit('close')
         const err = error.response
-        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        if(err != undefined) {
+          this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
+        } else {
+          console.log(error)
+        }
       })
     },
     runningSop (sopItem) {
-      
       const requestData = JSON.stringify({
         sopId: sopItem.sopId,
         sopExecutSn: sopItem.sopExecutSn
@@ -113,12 +120,14 @@ export default {
         if(this.$route.name == 'sop-run'){
           console.log(sopItem)
           sopItem.type = executFlag
-          // this.$router.push({name: 'sop-list'})
           EventBus.$emit('trans-sop', sopItem)
         } else {
           this.$router.push({ name: 'sop-run', params: {sopId: sopItem.sopId, sopExecutSn: sopItem.sopExecutSn, type: executFlag}})
         }
-
+      }).catch(error => {
+        const err = error.response
+        console.log(err)
+        this.$modal.show('dialog', codeGenerator(err.data.msgCode, err.data.msgValue))
       })
     },
     resetPassword () {
@@ -157,6 +166,10 @@ export default {
         height: '500px',
         clickToClose: false
       })
+    },
+    closeModal (target) {
+      this.getSOPList()
+      this.$modal.hide(target)
     }
   }
 }
@@ -220,7 +233,7 @@ export default {
           color: #ffffff;
           background-color: #737373;
           border-radius: 25px;
-          margin-bottom: 10px;
+          margin: 10px 0;
          .transition;
          .sub-title {
           //  display: none;
@@ -261,11 +274,12 @@ export default {
           padding-top: 5px;
           margin-left: 50px;
           .item {
+            padding: 0;
             .ellips;
             font-size: .9rem;
             .sop-item {
               color: #f2f2f2;
-              padding: 10px 0;
+              padding: 10px 30px;
             }
             a {
               margin: 10px 0;

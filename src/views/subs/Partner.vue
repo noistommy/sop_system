@@ -4,7 +4,10 @@
     div.sub-wrapper
       div.sub-header
         div.title 협력업체관리
-        SearchComp(v-model="searchData", :isTextSearch="true", @search="searchList")
+        SearchComp(v-model="searchData",
+        :searchClass="['condition1']",
+        :isTextSearch="true",
+        @search="searchList")
           template(slot="condition1", slot-scope="props")
             div.ui.form
               select(v-model="searchData.searchCnd")
@@ -45,7 +48,7 @@
                 :isPagination="partner.isPagination"
                 :isListNumber="partner.isListNumber",
                 :page="partner.pageInfo"
-              ).ui.table.celled.selectable
+              )
                 <template slot="items" slot-scope="props">
                   .item.lr.listitem(:class="{active:props.selected}", @click="selectedItem(props)" )
                     .ld.center.aligned {{props.item.ccpyNm}}
@@ -186,7 +189,7 @@ export default {
         },
         target: this.selectTeam
       }
-      this.$modal.show(PartnerEditor, partnerdata, { height: 'auto', draggable: true, clickToClose: false}, {
+      this.$modal.show(PartnerEditor, partnerdata, { height: '500px', draggable: true, clickToClose: false}, {
         'before-close': () => {
           this.getPartnerItem()
         }})
@@ -205,7 +208,7 @@ export default {
         }) 
       } else {
         partnerdata.data = this.partner.selected[0]
-        this.$modal.show(PartnerEditor, partnerdata, { height: 'auto', draggable: true, clickToClose: false}, {
+        this.$modal.show(PartnerEditor, partnerdata, { height: '500px', draggable: true, clickToClose: false}, {
         'before-close': () => {
           this.getPartnerItem()
         }})
@@ -218,8 +221,9 @@ export default {
         target: this.partnerDetailInfo,
         type: editType
       },{
-        width: '70%',
-        height: '50%',
+        width: '50%',
+        height: '80%',
+        minHeight: '700px',
         clickToClose: false
       },{
         'before-close': () => {
@@ -232,7 +236,7 @@ export default {
         title: '파일업로드'
       },{
         width: '300px',
-        height: 'auto',
+        height: '250px',
         clickToClose: false
       })
     },

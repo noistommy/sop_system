@@ -16,7 +16,7 @@ const mutations = {
     if (payload) {
       state.userInfo = payload.oprtrFgCd
       // localStorage.userInfo = payload.oprtrFgCd
-      sessionStorage.userInfo = payload.oprtrFgCd;
+      sessionStorage.userInfo = payload.oprtrFgCd
     }
   },
   [types.LOGIN_FAILED] (state, message) {

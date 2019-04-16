@@ -14,14 +14,18 @@ export default {
   props: {
     totalCount: Number,
     currentPage: Number,
-    recordCountPerPage: Number
+    recordCountPerPage: Number,
+    maxLength: {
+      type: Number,
+      default: 5
+    }
   },
   data () {
     return {
       currentnum: 1,
       pagination: [],
       minCount: 1,
-      maxCount: 5,
+      maxCount: this.maxLength,
       prevDisabled: true,
       nextDisabled: false
     }
@@ -29,6 +33,7 @@ export default {
   created () {
     this.setPage()
     this.currentnum = this.currentPage
+    this.maxCount = this.maxLength
   },
   computed: {
     totalPage () {
@@ -47,7 +52,7 @@ export default {
       const pagination = []
       if(this.current == 1){
         this.minCount = 1
-        this.maxCount = 5
+        this.maxCount = this.maxLength
       }
       this.setPage()
       for (let n = this.minCount; n <= this.maxCount; n++) {

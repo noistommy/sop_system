@@ -1,8 +1,8 @@
 <template lang="pug">
     div.search-comp
-      slot(name="condition1")
-      slot(name="condition2")
-
+      template(v-for="item in searchCondition")
+        slot(:name="item")
+        //- slot(name="condition2")
       template(v-if="isTextSearch")
         div.ui.left.icon.input
           input(v-model="value.searchNm")
@@ -18,6 +18,10 @@ export default {
   components: {
   },
   props: {
+    searchClass: {
+      type: Array,
+      default: ['condition1', 'condition2']
+    },
     isTextSearch: Boolean,
     isDateSearch: Boolean,
     value: Object,
@@ -25,28 +29,17 @@ export default {
   },
   data () {
     return {
-       searchData: this.value
+       searchData: this.value,
+       searchCondition: []
     }
   },
   created () {
-
+    if(this.searchClass) {
+      this.searchCondition = this.searchClass
+    }
   },
   mounted() {
     $('.ui.dropdown').dropdown();
-  },
-  computed: {
-    inputState() {
-      if (!this.selectedValue) {
-        return {
-          type: 'is-danger',
-          message: 'Date required.'
-        }
-      }
-      return {
-        type: 'is-primary',
-        message: ''
-      }
-    }
   },
   methods: {
     searchList() {

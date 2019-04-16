@@ -16,8 +16,8 @@
             )
               <template slot="items" slot-scope="props">
                 div.item.lr.listitem(:class="{active:props.selected}", @click.stop="selectedItem(props)" )
-                  .ld {{props.item.buldId}}
-                  .ld {{props.item.buldNm}}
+                  .ld.eight {{props.item.buldId}}
+                  .ld.eight {{props.item.buldNm}}
               </template>
         div.content.section.section-2
           h3.title 건물상세정보
@@ -34,7 +34,7 @@
                         label
                     tr
                       td.center.aligned 
-                        span 건물명*
+                        span 건물명
                       td
                         input(type="text", v-model="locationDetail.buldNm")
                         label
@@ -60,7 +60,7 @@
                       .ld.center {{props.item.buldFloor}}
                       .ld.center
                         //- input(type="text", value="")
-                        div.ui.toggle.checkbox()
+                        div.ui.toggle.checkbox
                           input(v-model="locationFloor.locationFloorData[props.idx].alarmPermYn",
                             true-value="Y",
                             false-value="N",
@@ -232,12 +232,12 @@ export default {
       width: 50% !important;
     }
   
-  .ld {
-    width: 50% !important;
-  }
-  .lh {
-    width: 50% !important;
-  }
+  // .ld {
+  //   width: 50% !important;
+  // }
+  // .lh {
+  //   width: 50% !important;
+  // }
   .readonlytext {
     padding: .6em 1em;
   }

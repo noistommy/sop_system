@@ -12,6 +12,7 @@
       div.sub-content
         div.content
           DataTable(
+            :tableType="'celled'",
             v-model="smsHistory.selected"
             :headers="smsHistory.headers",
             :items="smsHistory.smsHistoryData",
@@ -21,7 +22,7 @@
             :isPagination="smsHistory.isPagination",
             :page="smsHistory.pageInfo",
              @search="getHistoryList"
-          ).ui.table.celled.selectable
+          )
             <template slot="items" slot-scope="props">
               tr
                 td(v-if="smsHistory.isListNumber").center.aligned {{(smsHistory.pageInfo.currPage - 1) * 10 + props.idx + 1}}
